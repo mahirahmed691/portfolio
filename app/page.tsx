@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export default function Home() {
   const services = [
     {
@@ -19,16 +21,16 @@ export default function Home() {
 
   const projects = [
     {
+      name: "Sweet Dezire",
+      category: "Dessert Brand Website",
+      description:
+        "A dessert-inspired business concept with a warm, indulgent visual style, colourful branding, and a layout designed to make the menu and ordering experience feel irresistible.",
+    },
+    {
       name: "HomeHive",
       category: "Inventory & Task App",
       description:
         "A smart inventory experience with scheduling, reminders, categories, and a mobile-first interface.",
-    },
-    {
-      name: "Service Business Site",
-      category: "Lead Generation Website",
-      description:
-        "A polished marketing site focused on trust, clear calls to action, and conversion-friendly structure.",
     },
     {
       name: "Product Launch Page",
@@ -41,10 +43,26 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#0b1020] text-white">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-8%] top-[-8%] h-[420px] w-[420px] rounded-full bg-fuchsia-500/25 blur-3xl" />
-        <div className="absolute right-[-6%] top-[18%] h-[360px] w-[360px] rounded-full bg-cyan-400/20 blur-3xl" />
-        <div className="absolute bottom-[-8%] left-[18%] h-[340px] w-[340px] rounded-full bg-amber-400/15 blur-3xl" />
-        <div className="absolute bottom-[-10%] right-[10%] h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-3xl" />
+        <motion.div
+          animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-[-8%] top-[-8%] h-[420px] w-[420px] rounded-full bg-fuchsia-500/25 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, -18, 0], x: [0, -12, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute right-[-6%] top-[18%] h-[360px] w-[360px] rounded-full bg-cyan-400/20 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, 16, 0], x: [0, -8, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-8%] left-[18%] h-[340px] w-[340px] rounded-full bg-amber-400/15 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, -22, 0], x: [0, 14, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-10%] right-[10%] h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-3xl"
+        />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_32%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.35),rgba(11,16,32,0.9))]" />
       </div>
@@ -84,39 +102,65 @@ export default function Home() {
         id="home"
         className="mx-auto max-w-7xl px-6 pb-20 pt-24 md:pb-28 md:pt-32"
       >
-        <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]"
+        >
           <div>
-            <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
+            <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 backdrop-blur">
               Friendly freelance developer for businesses, founders, and growing
               brands
             </div>
-            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-white md:text-7xl">
-              I build warm, modern websites and digital products that help
-              businesses stand out and feel more human online.
+
+            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-white md:text-7xl lg:text-[5.6rem]">
+              I create{" "}
+              <span className="bg-gradient-to-r from-rose-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+                bold, high-impact
+              </span>{" "}
+              websites and product experiences that people remember.
             </h1>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-white/65 md:text-xl">
-              I help businesses, startups, and founders turn ideas into polished
-              websites and app experiences that feel clear, trustworthy, and
-              easy to connect with.
+
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-white/70 md:text-[1.35rem]">
+              I help businesses turn ideas into polished digital experiences
+              with stronger visual identity, cleaner user journeys, and a
+              premium feel from the very first click.
             </p>
+
             <div className="mt-10 flex flex-wrap gap-4">
-              <div className="w-full text-sm text-white/45">
-                Friendly, collaborative, and focused on creating work that feels
-                as good as it looks.
-              </div>
               <a
                 href="#work"
                 className="rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
               >
-                See My Work
+                Explore My Work
               </a>
               <a
                 href="#contact"
                 className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-6 py-3 text-sm font-medium text-cyan-100 transition hover:bg-cyan-400/15"
               >
-                Let’s Build Something
+                Start Your Project
               </a>
             </div>
+
+            <div className="mt-10 flex flex-wrap gap-3 text-xs uppercase tracking-[0.22em] text-white/55">
+              {[
+                "Web Design",
+                "App UI",
+                "Brand-Led Builds",
+                "Motion",
+                "Frontend",
+              ].map((item) => (
+                <motion.span
+                  key={item}
+                  whileHover={{ y: -4, scale: 1.06, rotate: [-1, 1, 0] }}
+                  className="rounded-full border border-white/10 bg-gradient-to-r from-rose-200/20 to-amber-200/20 px-3 py-1 text-xs font-medium text-rose-50 shadow-lg shadow-rose-950/10"
+                >
+                  {item}
+                </motion.span>
+              ))}
+            </div>
+
             <div className="mt-12 grid max-w-2xl gap-5 sm:grid-cols-3">
               <div>
                 <p className="text-3xl font-semibold tracking-tight text-fuchsia-300">
@@ -128,10 +172,10 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-3xl font-semibold tracking-tight text-cyan-300">
-                  Modern
+                  Distinct
                 </p>
                 <p className="mt-2 text-sm leading-6 text-white/55">
-                  Clean layouts with personality, clarity, and a premium feel.
+                  Design with character, not another forgettable template.
                 </p>
               </div>
               <div>
@@ -145,57 +189,168 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-fuchsia-400/20 via-violet-400/10 to-cyan-400/20 blur-2xl" />
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-5 shadow-2xl shadow-fuchsia-950/30">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: "easeOut" }}
+            className="relative perspective-[1600px]"
+          >
+            <motion.div
+              animate={{ rotate: [0, 2, -2, 0], scale: [1, 1.03, 1] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -inset-5 rounded-[2.2rem] bg-gradient-to-br from-fuchsia-400/25 via-violet-400/15 to-cyan-400/25 blur-2xl"
+            />
+
+            <motion.div
+              whileHover={{ rotateX: 5, rotateY: -7, y: -6 }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-5 shadow-2xl shadow-fuchsia-950/30"
+            >
+              <div className="absolute right-5 top-5 h-28 w-28 rounded-full bg-gradient-to-br from-pink-300/20 to-amber-200/10 blur-2xl" />
               <div className="mb-4 flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-white/30" />
                 <span className="h-3 w-3 rounded-full bg-white/20" />
                 <span className="h-3 w-3 rounded-full bg-white/10" />
               </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(21,24,43,0.95),rgba(13,17,31,0.95))] p-6">
+
+              <div className="rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(35,18,34,0.96),rgba(16,18,34,0.96))] p-6">
+                <div className="mb-4 flex items-center gap-3 overflow-hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[0.68rem] uppercase tracking-[0.24em] text-white/55">
+                  <motion.div
+                    animate={{ x: ["0%", "100%"] }}
+                    transition={{
+                      duration: 2.4,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.9)]"
+                  />
+                  <span>Now crafting bold brand-led experiences</span>
+                </div>
+
                 <div className="mb-8 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm uppercase tracking-[0.22em] text-white/40">
+                    <p className="text-sm uppercase tracking-[0.22em] text-rose-100/50">
                       Featured Build
                     </p>
-                    <h2 className="mt-3 text-2xl font-semibold">
-                      Thoughtful Digital Experience
+                    <h2 className="mt-3 text-2xl font-semibold text-white">
+                      Sweet Dezire
                     </h2>
                   </div>
-                  <div className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs text-amber-200">
-                    Open to projects
+                  <div className="rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-1 text-xs text-amber-100">
+                    Dessert brand concept
                   </div>
                 </div>
-                <div className="grid gap-4">
-                  <div className="rounded-2xl border border-fuchsia-300/10 bg-fuchsia-300/5 p-5">
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/35">
-                      What clients need
-                    </p>
-                    <p className="mt-3 text-lg text-white/85">
-                      Clear messaging, a warm visual identity, and a site that
-                      makes people feel comfortable straight away.
-                    </p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.35 }}
+                  className="overflow-hidden rounded-[1.4rem] border border-rose-200/10 bg-gradient-to-br from-rose-300/10 via-pink-300/10 to-amber-200/10 p-5"
+                >
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {["Waffles", "Brownies", "Milkshakes", "Cookie Dough"].map(
+                      (item) => (
+                        <motion.span
+                          key={item}
+                          whileHover={{
+                            y: -4,
+                            scale: 1.06,
+                            rotate: [-1, 1, 0],
+                          }}
+                          className="rounded-full border border-white/10 bg-gradient-to-r from-rose-200/20 to-amber-200/20 px-3 py-1 text-xs font-medium text-rose-50 shadow-lg shadow-rose-950/10"
+                        >
+                          {item}
+                        </motion.span>
+                      ),
+                    )}
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-cyan-300/10 bg-cyan-300/5 p-5">
-                      <p className="text-sm text-white/40">Build Type</p>
-                      <p className="mt-2 font-medium text-white/90">
-                        Business Website
-                      </p>
+
+                  <div className="relative overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#2a1320]/70 p-5">
+                    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-200/70 to-transparent" />
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.2em] text-rose-100/40">
+                          Landing Page Preview
+                        </p>
+                        <h3 className="mt-2 text-xl font-semibold text-white">
+                          Desserts worth craving
+                        </h3>
+                        <p className="mt-3 max-w-sm text-sm leading-6 text-rose-50/65">
+                          A playful, indulgent brand direction designed to make
+                          the menu feel irresistible and encourage quick orders.
+                        </p>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: [0, 4, -4, 0] }}
+                        transition={{
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className="text-3xl"
+                      >
+                        🍓
+                      </motion.div>
                     </div>
-                    <div className="rounded-2xl border border-cyan-300/10 bg-cyan-300/5 p-5">
-                      <p className="text-sm text-white/40">Focus</p>
-                      <p className="mt-2 font-medium text-white/90">
-                        Design + Conversion
-                      </p>
+
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-rose-200/10 bg-rose-200/5 p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-rose-100/40">
+                          Style
+                        </p>
+                        <p className="mt-2 text-sm font-medium text-rose-50">
+                          Warm, colourful, dessert-inspired
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-amber-200/10 bg-amber-200/5 p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-rose-100/40">
+                          Goal
+                        </p>
+                        <p className="mt-2 text-sm font-medium text-rose-50">
+                          Menu discovery and easy ordering
+                        </p>
+                      </div>
                     </div>
+
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      <motion.button
+                        whileHover={{
+                          y: -2,
+                          scale: 1.03,
+                          boxShadow: "0 18px 35px rgba(251, 113, 133, 0.22)",
+                        }}
+                        whileTap={{ scale: 0.98 }}
+                        className="rounded-full bg-gradient-to-r from-pink-300 via-rose-300 to-amber-200 px-4 py-2 text-sm font-semibold text-[#3b1628]"
+                      >
+                        View Menu
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ y: -2, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium text-rose-50"
+                      >
+                        Order Now
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-rose-200/10 bg-rose-200/5 p-5">
+                    <p className="text-sm text-rose-100/45">Build Type</p>
+                    <p className="mt-2 font-medium text-white">Brand Website</p>
+                  </div>
+                  <div className="rounded-2xl border border-amber-200/10 bg-amber-200/5 p-5">
+                    <p className="text-sm text-rose-100/45">Focus</p>
+                    <p className="mt-2 font-medium text-white">
+                      Menu + Ordering Journey
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </section>
 
       <section id="services" className="mx-auto max-w-7xl px-6 py-20">
@@ -209,10 +364,14 @@ export default function Home() {
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {services.map((service) => (
-            <div
+          {services.map((service, index) => (
+            <motion.div
               key={service.title}
-              className="rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-fuchsia-400/[0.08] via-violet-400/[0.05] to-cyan-400/[0.08] p-7 transition hover:-translate-y-1 hover:from-fuchsia-400/[0.12] hover:to-cyan-400/[0.12]"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.55, delay: index * 0.12 }}
+              className="rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-fuchsia-400/[0.08] via-violet-400/[0.05] to-cyan-400/[0.08] p-7 transition hover:-translate-y-1 hover:from-fuchsia-400/[0.12] hover:to-cyan-400/[0.12] hover:shadow-xl hover:shadow-fuchsia-500/10"
             >
               <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl border border-fuchsia-300/20 bg-gradient-to-br from-fuchsia-400/20 to-cyan-400/20 text-lg text-fuchsia-100">
                 ✦
@@ -223,7 +382,7 @@ export default function Home() {
               <p className="mt-4 text-base leading-7 text-white/60">
                 {service.description}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -245,16 +404,40 @@ export default function Home() {
         </div>
         <div className="grid gap-6 lg:grid-cols-3">
           {projects.map((project, index) => (
-            <div
+            <motion.div
               key={project.name}
-              className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-900/90 via-violet-950/30 to-cyan-950/30"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -8, scale: 1.01 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.55, delay: index * 0.1 }}
+              className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-slate-900/90 via-violet-950/30 to-cyan-950/30"
             >
-              <div className="flex h-56 items-end bg-gradient-to-br from-fuchsia-400/20 via-violet-400/10 to-cyan-400/20 p-6">
-                <span className="rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-100">
-                  0{index + 1}
-                </span>
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src={
+                    index === 0
+                      ? "/sweetdezire.jpg"
+                      : index === 1
+                        ? "/homehive.jpg"
+                        : "/product-launch.jpg"
+                  }
+                  alt={project.name}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110 group-hover:rotate-[1deg]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.22),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(34,211,238,0.18),transparent_30%)]" />
+                <div className="relative flex h-full items-end p-6">
+                  <span className="rounded-full border border-white/10 bg-slate-950/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-100">
+                    0{index + 1}
+                  </span>
+                </div>
               </div>
               <div className="p-7">
+                <div className="mb-4 flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-white/40">
+                  <span className="h-2 w-2 rounded-full bg-fuchsia-300" />
+                  Featured concept
+                </div>
                 <p className="text-sm uppercase tracking-[0.18em] text-white/35">
                   {project.category}
                 </p>
@@ -263,13 +446,15 @@ export default function Home() {
                   {project.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       <section id="about" className="mx-auto max-w-7xl px-6 py-20">
-        <div className="grid gap-8 rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-400/[0.08] via-slate-900/80 to-cyan-400/[0.08] p-8 md:grid-cols-[0.9fr_1.1fr] md:p-12">
+        <div className="relative grid gap-8 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-400/[0.08] via-slate-900/80 to-cyan-400/[0.08] p-8 md:grid-cols-[0.9fr_1.1fr] md:p-12">
+          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-fuchsia-400/10 blur-3xl" />
+          <div className="absolute -bottom-10 left-1/3 h-32 w-32 rounded-full bg-cyan-300/10 blur-3xl" />
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-white/40">
               About
@@ -295,7 +480,9 @@ export default function Home() {
       </section>
 
       <section id="contact" className="mx-auto max-w-7xl px-6 pb-24 pt-20">
-        <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-fuchsia-400/[0.12] via-violet-400/[0.08] to-cyan-400/[0.12] p-8 md:p-12">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-fuchsia-400/[0.12] via-violet-400/[0.08] to-cyan-400/[0.12] p-8 md:p-12">
+          <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-amber-200/15 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-cyan-200/10 blur-3xl" />
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.25em] text-white/40">
               Contact
