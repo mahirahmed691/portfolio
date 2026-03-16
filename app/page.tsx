@@ -48,32 +48,32 @@ export default function Home() {
         <motion.div
           animate={{ y: [0, 20, 0], x: [0, 10, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[-8%] top-[-8%] h-[420px] w-[420px] rounded-full bg-fuchsia-500/25 blur-3xl"
+          className="absolute left-[-22%] top-[-12%] h-[240px] w-[240px] rounded-full bg-fuchsia-500/25 blur-3xl md:left-[-8%] md:top-[-8%] md:h-[420px] md:w-[420px]"
         />
         <motion.div
           animate={{ y: [0, -18, 0], x: [0, -12, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute right-[-6%] top-[18%] h-[360px] w-[360px] rounded-full bg-cyan-400/20 blur-3xl"
+          className="absolute right-[-18%] top-[12%] h-[220px] w-[220px] rounded-full bg-cyan-400/20 blur-3xl md:right-[-6%] md:top-[18%] md:h-[360px] md:w-[360px]"
         />
         <motion.div
           animate={{ y: [0, 16, 0], x: [0, -8, 0] }}
           transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-8%] left-[18%] h-[340px] w-[340px] rounded-full bg-amber-400/15 blur-3xl"
+          className="absolute bottom-[-6%] left-[6%] h-[200px] w-[200px] rounded-full bg-amber-400/15 blur-3xl md:bottom-[-8%] md:left-[18%] md:h-[340px] md:w-[340px]"
         />
         <motion.div
           animate={{ y: [0, -22, 0], x: [0, 14, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-10%] right-[10%] h-[420px] w-[420px] rounded-full bg-violet-500/20 blur-3xl"
+          className="absolute bottom-[-8%] right-[-12%] h-[240px] w-[240px] rounded-full bg-violet-500/20 blur-3xl md:bottom-[-10%] md:right-[10%] md:h-[420px] md:w-[420px]"
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_32%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.35),rgba(11,16,32,0.9))]" />
       </div>
 
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0b1020]/65 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5">
           <a
             href="#home"
-            className="text-base font-semibold tracking-[0.2em] text-white/90 uppercase"
+            className="text-sm font-semibold tracking-[0.18em] text-white/90 uppercase sm:text-base"
           >
             Mahir Ahmed
           </a>
@@ -93,7 +93,7 @@ export default function Home() {
           </nav>
           <a
             href="#contact"
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/90 transition hover:bg-white/10"
+            className="rounded-full border border-white/15 px-3 py-2 text-xs text-white/90 transition hover:bg-white/10 sm:px-4 sm:text-sm"
           >
             Let’s Talk
           </a>
@@ -102,21 +102,21 @@ export default function Home() {
 
       <section
         id="home"
-        className="mx-auto max-w-7xl px-6 pb-20 pt-24 md:pb-28 md:pt-32"
+        className="mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 sm:pb-20 sm:pt-20 md:pb-28 md:pt-32"
       >
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]"
+          className="grid items-center gap-10 md:gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16"
         >
           <div>
-            <div className="mb-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 backdrop-blur">
+            <div className="mb-5 inline-flex max-w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/70 backdrop-blur sm:px-4 sm:text-sm">
               Friendly freelance developer for businesses, founders, and growing
               brands
             </div>
 
-            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-white md:text-7xl lg:text-[5.6rem]">
+            <h1 className="max-w-5xl text-[2.5rem] font-semibold leading-[0.96] tracking-[-0.06em] text-white sm:text-5xl md:text-7xl lg:text-[5.6rem]">
               I create{" "}
               <span className="bg-gradient-to-r from-rose-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
                 bold, high-impact
@@ -124,28 +124,28 @@ export default function Home() {
               websites and product experiences that people remember.
             </h1>
 
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-white/70 md:text-[1.35rem]">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-white/70 sm:mt-8 sm:text-lg sm:leading-8 md:text-[1.35rem]">
               I help businesses turn ideas into polished digital experiences
               with stronger visual identity, cleaner user journeys, and a
               premium feel from the very first click.
             </p>
 
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4">
               <a
                 href="#work"
-                className="rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
+                className="rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-5 py-3 text-center text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98] sm:px-6"
               >
                 Explore My Work
               </a>
               <a
                 href="#contact"
-                className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-6 py-3 text-sm font-medium text-cyan-100 transition hover:bg-cyan-400/15"
+                className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-5 py-3 text-center text-sm font-medium text-cyan-100 transition hover:bg-cyan-400/15 sm:px-6"
               >
                 Start Your Project
               </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap gap-3 text-xs uppercase tracking-[0.22em] text-white/55">
+            <div className="mt-8 flex flex-wrap gap-2 text-[0.65rem] uppercase tracking-[0.18em] text-white/55 sm:mt-10 sm:gap-3 sm:text-xs sm:tracking-[0.22em]">
               {[
                 "Web Design",
                 "App UI",
@@ -156,14 +156,14 @@ export default function Home() {
                 <motion.span
                   key={item}
                   whileHover={{ y: -4, scale: 1.06, rotate: [-1, 1, 0] }}
-                  className="rounded-full border border-white/10 bg-gradient-to-r from-rose-200/20 to-amber-200/20 px-3 py-1 text-xs font-medium text-rose-50 shadow-lg shadow-rose-950/10"
+                  className="rounded-full border border-white/10 bg-gradient-to-r from-rose-200/20 to-amber-200/20 px-3 py-1 text-[0.62rem] font-medium text-rose-50 shadow-lg shadow-rose-950/10 sm:text-xs"
                 >
                   {item}
                 </motion.span>
               ))}
             </div>
 
-            <div className="mt-12 grid max-w-2xl gap-5 sm:grid-cols-3">
+            <div className="mt-10 grid max-w-2xl gap-5 sm:mt-12 sm:grid-cols-3">
               <div>
                 <p className="text-3xl font-semibold tracking-tight text-fuchsia-300">
                   Fast
@@ -195,7 +195,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15, ease: "easeOut" }}
-            className="relative perspective-[1600px]"
+            className="relative mx-auto w-full max-w-xl lg:max-w-none perspective-[1600px]"
           >
             <motion.div
               animate={{ rotate: [0, 2, -2, 0], scale: [1, 1.03, 1] }}
