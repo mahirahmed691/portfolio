@@ -1,0 +1,111 @@
+import { projects } from "../data";
+import type { SharedProps } from "../types";
+import { ProjectCard } from "./ProjectCard";
+import { ProjectDeepDive } from "./ProjectDeepDive";
+
+export function WorkSection({
+  isLight,
+  focusMode,
+  shouldReduceMotion,
+  themeClasses,
+  activeProject,
+  setActiveProject,
+  deepDiveOpen,
+  setDeepDiveOpen,
+}: SharedProps & {
+  activeProject: number;
+  setActiveProject: React.Dispatch<React.SetStateAction<number>>;
+  deepDiveOpen: boolean;
+  setDeepDiveOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const currentProject = projects[activeProject];
+
+  return (
+    <section
+      id="work"
+      className={`mx-auto mt-6 max-w-7xl px-4 sm:px-6 ${focusMode ? "opacity-90" : ""}`}
+    >
+      <div className={`${themeClasses.shell} px-4 py-16 sm:px-6 sm:py-20`}>
+        <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p
+              className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
+            >
+              Selected work
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
+              Work that feels more like a point of view than a template.
+            </h2>
+          </div>
+          <p className={`max-w-md text-sm leading-7 ${themeClasses.subtle}`}>
+            These are the kinds of concepts and interfaces I like making:
+            stylish, conversion-aware, and distinct enough to actually be
+            remembered.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex gap-2">
+              {projects.map((project, index) => (
+                <button
+                  key={project.name}
+                  type="button"
+                  onClick={() => setActiveProject(index)}
+                  className={`h-2.5 rounded-full transition-all ${activeProject === index ? "w-10 bg-current" : isLight ? "w-2.5 bg-slate-300 hover:bg-slate-500" : "w-2.5 bg-white/25 hover:bg-white/45"}`}
+                  aria-label={`Open ${project.name} project page`}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveProject(
+                    (activeProject - 1 + projects.length) % projects.length,
+                  )
+                }
+                className={
+                  isLight
+                    ? "rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-800 hover:bg-slate-100"
+                    : "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 hover:bg-white/10"
+                }
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveProject((activeProject + 1) % projects.length)
+                }
+                className={
+                  isLight
+                    ? "rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-800 hover:bg-slate-100"
+                    : "rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 hover:bg-white/10"
+                }
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          <ProjectCard
+            currentProject={currentProject}
+            activeProject={activeProject}
+            themeClasses={themeClasses}
+          />
+          <ProjectDeepDive
+            currentProject={currentProject}
+            deepDiveOpen={deepDiveOpen}
+            setDeepDiveOpen={setDeepDiveOpen}
+            isLight={isLight}
+            focusMode={focusMode}
+            shouldReduceMotion={shouldReduceMotion}
+            themeClasses={themeClasses}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
