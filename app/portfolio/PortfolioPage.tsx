@@ -13,6 +13,8 @@ import { HeroSection } from "./components/HeroSection";
 import { WorkSection } from "./components/WorkSection";
 import { ServicesSection } from "./components/ServicesSection";
 import { AboutSection } from "./components/AboutSection";
+import { ContactSection } from "./components/ContactSection";
+import { Footer } from "./components/Footer";
 
 export function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -138,6 +140,8 @@ export function PortfolioPage() {
         focusMode={focusMode}
       />
       <AboutSection themeClasses={themeClasses} />
+      <ContactSection isLight={isLight} themeClasses={themeClasses} />
+      <Footer themeClasses={themeClasses} />
     </main>
   );
 }

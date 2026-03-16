@@ -10,8 +10,11 @@ export function ServicesSection({
   if (focusMode) return null;
 
   return (
-    <section id="services" className="mx-auto mt-6 max-w-7xl px-4 sm:px-6">
-      <div className={`${themeClasses.shell} px-4 py-16 sm:px-6 sm:py-20`}>
+    <section
+      id="services"
+      className={`mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
+    >
+      <div className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mb-12 max-w-2xl">
           <p
             className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
@@ -23,6 +26,7 @@ export function ServicesSection({
             more intentional.
           </h2>
         </div>
+
         <div className="grid gap-6 md:grid-cols-3">
           {services.map((service, index) => (
             <motion.div
@@ -42,9 +46,11 @@ export function ServicesSection({
               >
                 {service.icon}
               </div>
+
               <h3 className="text-2xl font-semibold tracking-tight">
                 {service.title}
               </h3>
+
               <p className={`mt-4 text-base leading-7 ${themeClasses.muted}`}>
                 {service.description}
               </p>

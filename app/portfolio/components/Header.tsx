@@ -31,34 +31,53 @@ export function Header({
           <a href="#services" className="transition hover:text-inherit">
             Services
           </a>
+          <a href="#process" className="transition hover:text-inherit">
+            Process
+          </a>
           <a href="#about" className="transition hover:text-inherit">
             About
           </a>
+          <a href="#contact" className="transition hover:text-inherit">
+            Contact
+          </a>
         </nav>
 
-        <button
-          type="button"
-          aria-label="Toggle navigation menu"
-          aria-expanded={menuOpen ? "true" : "false"}
-          onClick={() => setMenuOpen((prev) => !prev)}
-          className={
-            isLight
-              ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white md:hidden"
-              : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 md:hidden"
-          }
-        >
-          <span className="relative block h-4 w-5">
-            <span
-              className={`absolute left-0 top-0 h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "translate-y-[7px] rotate-45" : ""}`}
-            />
-            <span
-              className={`absolute left-0 top-[7px] h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "opacity-0" : "opacity-100"}`}
-            />
-            <span
-              className={`absolute left-0 top-[14px] h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
-            />
-          </span>
-        </button>
+        <div className="flex items-center gap-3">
+          <a
+            href="#contact"
+            className={
+              isLight
+                ? "hidden md:inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 hover:bg-slate-100"
+                : "hidden md:inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
+            }
+          >
+            Book a project
+          </a>
+
+          <button
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen ? "true" : "false"}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className={
+              isLight
+                ? "inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white md:hidden"
+                : "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 md:hidden"
+            }
+          >
+            <span className="relative block h-4 w-5">
+              <span
+                className={`absolute left-0 top-0 h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "translate-y-[7px] rotate-45" : ""}`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "opacity-0" : "opacity-100"}`}
+              />
+              <span
+                className={`absolute left-0 top-[14px] h-[2px] w-5 rounded-full transition ${isLight ? "bg-slate-900" : "bg-white"} ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
+              />
+            </span>
+          </button>
+        </div>
       </div>
 
       <motion.div
@@ -73,7 +92,9 @@ export function Header({
           {[
             ["Work", "#work"],
             ["Services", "#services"],
+            ["Process", "#process"],
             ["About", "#about"],
+            ["Contact", "#contact"],
           ].map(([label, href]) => (
             <a
               key={href}

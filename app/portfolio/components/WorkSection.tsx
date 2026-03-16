@@ -23,9 +23,11 @@ export function WorkSection({
   return (
     <section
       id="work"
-      className={`mx-auto mt-6 max-w-7xl px-4 sm:px-6 ${focusMode ? "opacity-90" : ""}`}
+      className={`mx-auto mt-6 max-w-7xl ${themeClasses.shell} ${
+        focusMode ? "opacity-90" : ""
+      }`}
     >
-      <div className={`${themeClasses.shell} px-4 py-16 sm:px-6 sm:py-20`}>
+      <div className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p
@@ -37,6 +39,7 @@ export function WorkSection({
               Work that feels more like a point of view than a template.
             </h2>
           </div>
+
           <p className={`max-w-md text-sm leading-7 ${themeClasses.subtle}`}>
             These are the kinds of concepts and interfaces I like making:
             stylish, conversion-aware, and distinct enough to actually be
@@ -52,7 +55,13 @@ export function WorkSection({
                   key={project.name}
                   type="button"
                   onClick={() => setActiveProject(index)}
-                  className={`h-2.5 rounded-full transition-all ${activeProject === index ? "w-10 bg-current" : isLight ? "w-2.5 bg-slate-300 hover:bg-slate-500" : "w-2.5 bg-white/25 hover:bg-white/45"}`}
+                  className={`h-2.5 rounded-full transition-all ${
+                    activeProject === index
+                      ? "w-10 bg-current"
+                      : isLight
+                        ? "w-2.5 bg-slate-300 hover:bg-slate-500"
+                        : "w-2.5 bg-white/25 hover:bg-white/45"
+                  }`}
                   aria-label={`Open ${project.name} project page`}
                 />
               ))}
@@ -74,6 +83,7 @@ export function WorkSection({
               >
                 Prev
               </button>
+
               <button
                 type="button"
                 onClick={() =>
@@ -95,6 +105,7 @@ export function WorkSection({
             activeProject={activeProject}
             themeClasses={themeClasses}
           />
+
           <ProjectDeepDive
             currentProject={currentProject}
             deepDiveOpen={deepDiveOpen}
