@@ -3,8 +3,6 @@ import Stripe from "stripe";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-
 const DEPOSIT_OPTIONS: Record<string, { name: string; amount: number }> = {
   starter: { name: "Starter project deposit", amount: 25000 },
   standard: { name: "Standard project deposit", amount: 50000 },
@@ -30,6 +28,8 @@ export async function POST(req: Request) {
       );
     }
 
+    const stripe = new Stripe(secretKey);
+
     const body = await req.json().catch(() => ({}));
     const tier = typeof body?.tier === "string" ? body.tier : "standard";
     const selected = DEPOSIT_OPTIONS[tier] ?? DEPOSIT_OPTIONS.standard;
@@ -46,24 +46,17 @@ export async function POST(req: Request) {
             currency: "gbp",
             product_data: {
               name: selected.name,
-              description: "Non-refundable project deposit",
+              description: "Initial project payment",
             },
             unit_amount: selected.amount,
           },
         },
       ],
       metadata: {
-        deposit_tier: tier,
-        deposit_name: selected.name,
+        package_tier: tier,
+        package_name: selected.name,
       },
     });
-
-    if (!session.url) {
-      return NextResponse.json(
-        { error: "Stripe session created without a URL" },
-        { status: 500 },
-      );
-    }
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

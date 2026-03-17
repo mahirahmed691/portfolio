@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SharedProps } from "../types";
 
 type PackageTier = "starter" | "standard" | "premium";
@@ -10,7 +10,7 @@ const packages = [
     tier: "starter" as PackageTier,
     name: "Starter",
     price: "From £250",
-    note: "Initial deposit to begin work",
+    note: "Initial payment to begin work",
     description:
       "A focused option for simple landing pages, smaller sites, and lighter design refreshes.",
     bestFor: "Quick launches and simple websites",
@@ -24,7 +24,7 @@ const packages = [
     tier: "standard" as PackageTier,
     name: "Standard",
     price: "From £500",
-    note: "Initial deposit to begin work",
+    note: "Initial payment to begin work",
     description:
       "A stronger fit for polished business websites, portfolios, and more complete branded web experiences.",
     bestFor: "Serious brands and polished web presence",
@@ -38,7 +38,7 @@ const packages = [
     tier: "premium" as PackageTier,
     name: "Premium",
     price: "From £1000",
-    note: "Initial deposit to begin work",
+    note: "Initial payment to begin work",
     description:
       "A higher-touch package for custom product UI, premium frontend work, and larger scoped builds.",
     bestFor: "Custom products and high-end builds",
@@ -56,6 +56,19 @@ export function ContactSection({
 }: Pick<SharedProps, "isLight" | "themeClasses">) {
   const [loadingTier, setLoadingTier] = useState<PackageTier | null>(null);
   const [packageOpen, setPackageOpen] = useState(false);
+
+  useEffect(() => {
+    if (!packageOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [packageOpen]);
 
   const handleCalendly = () => {
     const calendlyUrl = "https://calendly.com/mahirahmed691";
@@ -114,74 +127,159 @@ export function ContactSection({
           <div
             className={
               isLight
-                ? "overflow-hidden rounded-[2rem] border border-slate-200 bg-gradient-to-br from-fuchsia-100 via-violet-50 to-cyan-100 p-8 md:p-12"
-                : "overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-fuchsia-400/[0.12] via-violet-400/[0.08] to-cyan-400/[0.12] p-8 md:p-12"
+                ? "relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-fuchsia-100 via-violet-50 to-cyan-100 p-6 md:p-10"
+                : "relative overflow-hidden rounded-[2rem] bg-[radial-gradient(circle_at_top_left,rgba(217,70,239,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.16),transparent_32%),linear-gradient(135deg,rgba(91,33,182,0.24),rgba(15,23,42,0.88)_55%,rgba(8,47,73,0.78))] p-6 md:p-10"
             }
           >
-            <div className="max-w-3xl">
-              <p
-                className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
-              >
-                Contact
-              </p>
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/5 to-transparent" />
+            </div>
 
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
-                If you want your portfolio, business site, or product UI to feel
-                stronger, let’s talk.
-              </h2>
+            <div className="relative z-10">
+              <div className="max-w-4xl">
+                <p
+                  className={`text-sm uppercase tracking-[0.28em] ${themeClasses.label}`}
+                >
+                  Contact
+                </p>
 
-              <p
-                className={`mt-6 max-w-2xl text-lg leading-8 ${themeClasses.muted}`}
-              >
-                I can help you shape a cleaner visual direction, improve your
-                page structure, and turn rough ideas into something polished
-                enough to launch confidently.
-              </p>
+                <h2 className="mt-4 max-w-4xl text-4xl font-semibold tracking-[-0.05em] sm:text-5xl lg:text-6xl">
+                  Let’s turn your next website or product UI into something more
+                  polished, memorable, and ready to ship.
+                </h2>
+
+                <p
+                  className={`mt-6 max-w-2xl text-base leading-8 sm:text-lg ${themeClasses.muted}`}
+                >
+                  I blend frontend craft, visual direction, and production-ready
+                  thinking to help founders and brands launch with more clarity,
+                  more confidence, and a stronger digital presence.
+                </p>
+              </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
                   onClick={handleCalendly}
-                  className="rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-7 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_rgba(168,85,247,0.25)] transition-all duration-300 hover:scale-[0.98]"
                 >
-                  Book a call
+                  <svg
+                    className="h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>Book a call</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPackageOpen(true)}
-                  className={
+                  className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
                     isLight
-                      ? "rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-                      : "rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-                  }
+                      ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                      : "border border-white/10 bg-white/5 text-white backdrop-blur-md hover:bg-white/10"
+                  }`}
                 >
-                  Choose a package
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-400/20 via-violet-400/20 to-cyan-400/20 opacity-0 transition group-hover:opacity-100" />
+                  <svg
+                    className="relative h-4 w-4 opacity-70"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h10.5"
+                    />
+                  </svg>
+                  <span className="relative">View packages</span>
                 </button>
 
                 <a
-                  href="mailto:hello@mahirahmed.co.uk"
-                  className={
+                  href="mailto:mahirahmed691@gmail.com"
+                  className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
                     isLight
-                      ? "rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-                      : "rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-                  }
+                      ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                      : "border border-white/10 bg-white/5 text-white backdrop-blur-md hover:bg-white/10"
+                  }`}
                 >
-                  hello@mahirahmed.co.uk
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-400/20 via-violet-400/20 to-cyan-400/20 opacity-0 transition group-hover:opacity-100" />
+                  <svg
+                    className="relative h-4 w-4 opacity-70"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 17.25V6.75m19.5 0l-9.75 6.5-9.75-6.5m19.5 0A2.25 2.25 0 0019.5 4.5H4.5A2.25 2.25 0 002.25 6.75"
+                    />
+                  </svg>
+                  <span className="relative">mahirahmed691@gmail.com</span>
                 </a>
 
                 <a
                   href="https://github.com/mahirahmed691"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={
+                  className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
                     isLight
-                      ? "rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
-                      : "rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-                  }
+                      ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                      : "border border-white/10 bg-white/5 text-white backdrop-blur-md hover:bg-white/10"
+                  }`}
                 >
-                  GitHub profile
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-400/20 via-violet-400/20 to-cyan-400/20 opacity-0 transition group-hover:opacity-100" />
+                  <svg
+                    className="relative h-4 w-4 opacity-70"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2C6.477 2 2 6.59 2 12.253c0 4.53 2.865 8.374 6.839 9.73.5.094.683-.221.683-.49 0-.242-.009-.884-.014-1.734-2.782.615-3.369-1.37-3.369-1.37-.455-1.18-1.11-1.494-1.11-1.494-.908-.636.069-.623.069-.623 1.004.072 1.532 1.053 1.532 1.053.892 1.566 2.341 1.114 2.91.852.091-.664.349-1.114.635-1.37-2.221-.259-4.555-1.137-4.555-5.062 0-1.118.389-2.033 1.029-2.75-.103-.26-.446-1.306.098-2.723 0 0 .84-.276 2.75 1.05A9.303 9.303 0 0112 6.844c.85.004 1.705.118 2.504.346 1.909-1.326 2.748-1.05 2.748-1.05.546 1.417.202 2.463.1 2.723.64.717 1.028 1.632 1.028 2.75 0 3.935-2.337 4.8-4.566 5.055.359.317.678.942.678 1.898 0 1.37-.012 2.475-.012 2.812 0 .271.18.588.688.488C19.138 20.623 22 16.78 22 12.253 22 6.59 17.523 2 12 2z" />
+                  </svg>
+                  <span className="relative">GitHub profile</span>
                 </a>
+              </div>
+
+              <div
+                className={
+                  isLight
+                    ? "mt-8 grid gap-3 rounded-[1.5rem] border border-slate-200 bg-white/70 p-4 sm:grid-cols-3"
+                    : "mt-8 grid gap-3 rounded-[1.5rem] border border-white/10 bg-black/10 p-4 backdrop-blur-sm sm:grid-cols-3"
+                }
+              >
+                {[
+                  "Frontend craft with production-ready thinking",
+                  "Fast, polished, responsive delivery",
+                  "Clear communication from direction to launch",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className={
+                      isLight
+                        ? "rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-700"
+                        : "rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/75"
+                    }
+                  >
+                    {item}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -189,133 +287,281 @@ export function ContactSection({
       </section>
 
       {packageOpen && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 px-4 backdrop-blur-md">
-          <div
-            className={
-              isLight
-                ? "w-full max-w-6xl rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-[0_40px_120px_rgba(0,0,0,0.12)] md:p-10"
-                : "w-full max-w-6xl rounded-[2.5rem] border border-white/10 bg-[#0b1422]/90 p-6 shadow-[0_40px_120px_rgba(0,0,0,0.6)] md:p-10"
-            }
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p
-                  className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
-                >
-                  Packages
-                </p>
+        <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm">
+          <div className="hidden h-full items-center justify-center px-4 py-6 md:flex">
+            <div
+              className={
+                isLight
+                  ? "w-full max-w-6xl rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_40px_120px_rgba(0,0,0,0.12)]"
+                  : "w-full max-w-6xl rounded-[2rem] border border-white/10 bg-[#0b1422]/95 p-8 shadow-[0_40px_120px_rgba(0,0,0,0.6)]"
+              }
+            >
+              <div className="mb-8 flex items-start justify-between gap-4">
+                <div className="max-w-2xl">
+                  <p
+                    className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
+                  >
+                    Packages
+                  </p>
+                  <h3 className="mt-2 text-5xl font-semibold">
+                    Choose your starting point
+                  </h3>
+                  <p className={`mt-4 text-sm leading-7 ${themeClasses.muted}`}>
+                    Pick the package that best fits your project. Final scope
+                    and total pricing can be refined after the initial
+                    discussion.
+                  </p>
+                </div>
 
-                <h3 className="mt-2 text-3xl font-semibold md:text-5xl">
-                  Choose your starting point
-                </h3>
-
-                <p
-                  className={`mt-4 max-w-2xl text-sm leading-7 ${themeClasses.muted}`}
+                <button
+                  type="button"
+                  onClick={() => setPackageOpen(false)}
+                  className={
+                    isLight
+                      ? "rounded-full border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100"
+                      : "rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
+                  }
                 >
-                  Choose the package that best fits your project. Final scope
-                  and total pricing can be refined after the initial discussion.
-                </p>
+                  Close
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setPackageOpen(false)}
-                className={
-                  isLight
-                    ? "rounded-full border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100"
-                    : "rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
-                }
-              >
-                Close
-              </button>
-            </div>
+              <div className="grid gap-4 md:grid-cols-3">
+                {packages.map((pkg) => {
+                  const isFeatured = pkg.tier === "standard";
 
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {packages.map((pkg) => {
-                const isFeatured = pkg.tier === "standard";
+                  return (
+                    <div
+                      key={pkg.tier}
+                      className={`relative flex flex-col rounded-[2rem] p-6 ${
+                        isFeatured
+                          ? isLight
+                            ? "scale-[1.01] border border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 via-violet-50 to-cyan-50 shadow-[0_20px_80px_rgba(139,92,246,0.16)]"
+                            : "scale-[1.01] border border-white/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/20 to-cyan-500/20 shadow-[0_20px_80px_rgba(139,92,246,0.25)]"
+                          : `${themeClasses.sectionShell}`
+                      }`}
+                    >
+                      {isFeatured && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-4 py-1 text-xs font-semibold text-slate-950">
+                          Most popular
+                        </div>
+                      )}
 
-                return (
-                  <div
-                    key={pkg.tier}
-                    className={`relative flex flex-col rounded-[2rem] p-6 transition-all duration-300 ${
-                      isFeatured
-                        ? isLight
-                          ? "scale-[1.03] border border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 via-violet-50 to-cyan-50 shadow-[0_20px_80px_rgba(139,92,246,0.16)]"
-                          : "scale-[1.03] border border-white/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/20 to-cyan-500/20 shadow-[0_20px_80px_rgba(139,92,246,0.25)]"
-                        : `${themeClasses.sectionShell}`
-                    }`}
-                  >
-                    {isFeatured && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-4 py-1 text-xs font-semibold text-slate-950">
-                        Most popular
-                      </div>
-                    )}
-
-                    <div>
                       <p
                         className={`text-sm uppercase tracking-[0.22em] ${themeClasses.label}`}
                       >
                         {pkg.name}
                       </p>
-
                       <h4 className="mt-3 text-3xl font-semibold">
                         {pkg.price}
                       </h4>
-
                       <p className={`mt-2 text-xs ${themeClasses.subtle}`}>
                         {pkg.note}
                       </p>
-
                       <p
                         className={`mt-4 text-sm leading-7 ${themeClasses.muted}`}
                       >
                         {pkg.description}
                       </p>
-                    </div>
 
-                    <div className="mt-5">
-                      <p
-                        className={`text-xs uppercase tracking-[0.2em] ${themeClasses.label}`}
-                      >
-                        Best for
-                      </p>
-                      <p className="mt-2 text-sm font-medium">{pkg.bestFor}</p>
-                    </div>
-
-                    <div className="mt-6 space-y-2">
-                      {pkg.includes.map((item) => (
-                        <div
-                          key={item}
-                          className={
-                            isLight
-                              ? "rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
-                              : "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/80"
-                          }
+                      <div className="mt-5">
+                        <p
+                          className={`text-xs uppercase tracking-[0.2em] ${themeClasses.label}`}
                         >
-                          {item}
-                        </div>
-                      ))}
+                          Best for
+                        </p>
+                        <p className="mt-2 text-sm font-medium">
+                          {pkg.bestFor}
+                        </p>
+                      </div>
+
+                      <div className="mt-6 space-y-2">
+                        {pkg.includes.map((item) => (
+                          <div
+                            key={item}
+                            className={
+                              isLight
+                                ? "rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+                                : "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/80"
+                            }
+                          >
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleCheckout(pkg.tier)}
+                        disabled={loadingTier !== null}
+                        className={`mt-6 rounded-full px-6 py-3 text-sm font-semibold transition-all ${
+                          isFeatured
+                            ? "bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 text-slate-950 shadow-lg hover:scale-[0.97]"
+                            : isLight
+                              ? "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
+                              : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
+                        } ${
+                          loadingTier !== null
+                            ? "cursor-not-allowed opacity-60"
+                            : ""
+                        }`}
+                      >
+                        {loadingTier === pkg.tier
+                          ? "Redirecting..."
+                          : "Start project"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="md:hidden">
+            <div
+              className={
+                isLight
+                  ? "fixed inset-x-0 bottom-0 top-[8%] rounded-t-[2rem] border-t border-slate-200 bg-white shadow-[0_-20px_80px_rgba(0,0,0,0.16)]"
+                  : "fixed inset-x-0 bottom-0 top-[8%] rounded-t-[2rem] border-t border-white/10 bg-[#0b1422]/98 shadow-[0_-20px_80px_rgba(0,0,0,0.5)]"
+              }
+            >
+              <div className="flex h-full flex-col">
+                <div
+                  className={`shrink-0 rounded-t-[2rem] px-5 pb-4 pt-4 ${
+                    isLight ? "bg-white" : "bg-[#0b1422]/98"
+                  }`}
+                >
+                  <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p
+                        className={`text-xs uppercase tracking-[0.25em] ${themeClasses.label}`}
+                      >
+                        Packages
+                      </p>
+                      <h3 className="mt-2 text-2xl font-semibold leading-tight">
+                        Choose your package
+                      </h3>
+                      <p
+                        className={`mt-2 text-sm leading-6 ${themeClasses.muted}`}
+                      >
+                        Swipe to compare options and start the right project.
+                      </p>
                     </div>
 
                     <button
                       type="button"
-                      onClick={() => handleCheckout(pkg.tier)}
-                      disabled={loadingTier !== null}
-                      className={`mt-6 rounded-full px-6 py-3 text-sm font-semibold transition-all ${
-                        isFeatured
-                          ? "bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 text-slate-950 shadow-lg hover:scale-[0.97]"
-                          : isLight
-                            ? "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
-                            : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
-                      } ${loadingTier !== null ? "cursor-not-allowed opacity-60" : ""}`}
+                      onClick={() => setPackageOpen(false)}
+                      className={
+                        isLight
+                          ? "shrink-0 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm hover:bg-slate-100"
+                          : "shrink-0 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
+                      }
                     >
-                      {loadingTier === pkg.tier
-                        ? "Redirecting..."
-                        : "Start project"}
+                      Close
                     </button>
                   </div>
-                );
-              })}
+                </div>
+
+                <div className="flex-1 overflow-hidden pb-[max(1rem,env(safe-area-inset-bottom))]">
+                  <div className="h-full overflow-x-auto overflow-y-hidden px-5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex h-full snap-x snap-mandatory gap-4 pr-5">
+                      {packages.map((pkg) => {
+                        const isFeatured = pkg.tier === "standard";
+
+                        return (
+                          <div
+                            key={pkg.tier}
+                            className={`w-[84vw] shrink-0 snap-start self-start rounded-[2rem] p-6 ${
+                              isFeatured
+                                ? isLight
+                                  ? "border border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 via-violet-50 to-cyan-50 shadow-[0_20px_80px_rgba(139,92,246,0.16)]"
+                                  : "border border-white/20 bg-gradient-to-br from-fuchsia-500/20 via-violet-500/20 to-cyan-500/20 shadow-[0_20px_80px_rgba(139,92,246,0.25)]"
+                                : `${themeClasses.sectionShell}`
+                            }`}
+                          >
+                            {isFeatured && (
+                              <div className="mb-4 inline-flex rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-4 py-1 text-xs font-semibold text-slate-950">
+                                Most popular
+                              </div>
+                            )}
+
+                            <p
+                              className={`text-sm uppercase tracking-[0.22em] ${themeClasses.label}`}
+                            >
+                              {pkg.name}
+                            </p>
+
+                            <h4 className="mt-3 text-3xl font-semibold">
+                              {pkg.price}
+                            </h4>
+
+                            <p
+                              className={`mt-2 text-xs ${themeClasses.subtle}`}
+                            >
+                              {pkg.note}
+                            </p>
+
+                            <p
+                              className={`mt-4 text-sm leading-7 ${themeClasses.muted}`}
+                            >
+                              {pkg.description}
+                            </p>
+
+                            <div className="mt-5">
+                              <p
+                                className={`text-xs uppercase tracking-[0.2em] ${themeClasses.label}`}
+                              >
+                                Best for
+                              </p>
+                              <p className="mt-2 text-sm font-medium">
+                                {pkg.bestFor}
+                              </p>
+                            </div>
+
+                            <div className="mt-6 space-y-2">
+                              {pkg.includes.map((item) => (
+                                <div
+                                  key={item}
+                                  className={
+                                    isLight
+                                      ? "rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700"
+                                      : "rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white/80"
+                                  }
+                                >
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCheckout(pkg.tier)}
+                              disabled={loadingTier !== null}
+                              className={`mt-6 w-full rounded-full px-6 py-3 text-sm font-semibold transition-all ${
+                                isFeatured
+                                  ? "bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 text-slate-950 shadow-lg"
+                                  : isLight
+                                    ? "border border-slate-300 bg-white text-slate-900 hover:bg-slate-100"
+                                    : "border border-white/15 bg-white/5 text-white hover:bg-white/10"
+                              } ${
+                                loadingTier !== null
+                                  ? "cursor-not-allowed opacity-60"
+                                  : ""
+                              }`}
+                            >
+                              {loadingTier === pkg.tier
+                                ? "Redirecting..."
+                                : "Start project"}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
