@@ -31,9 +31,6 @@ export function Header({
           <a href="#services" className="transition hover:text-inherit">
             Services
           </a>
-          <a href="#process" className="transition hover:text-inherit">
-            Process
-          </a>
           <a href="#about" className="transition hover:text-inherit">
             About
           </a>
@@ -43,16 +40,23 @@ export function Header({
         </nav>
 
         <div className="flex items-center gap-3">
-          <a
-            href="#contact"
-            className={
-              isLight
-                ? "hidden md:inline-flex rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-900 hover:bg-slate-100"
-                : "hidden md:inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
-            }
+          <button
+            type="button"
+            onClick={() => {
+              const calendlyUrl = "https://calendly.com/mahirahmed691";
+
+              if (typeof window !== "undefined" && (window as any).Calendly) {
+                (window as any).Calendly.initPopupWidget({
+                  url: calendlyUrl,
+                });
+              } else {
+                window.open(calendlyUrl, "_blank", "noopener,noreferrer");
+              }
+            }}
+            className="inline-flex rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
           >
             Book a project
-          </a>
+          </button>
 
           <button
             type="button"
@@ -92,7 +96,6 @@ export function Header({
           {[
             ["Work", "#work"],
             ["Services", "#services"],
-            ["Process", "#process"],
             ["About", "#about"],
             ["Contact", "#contact"],
           ].map(([label, href]) => (
