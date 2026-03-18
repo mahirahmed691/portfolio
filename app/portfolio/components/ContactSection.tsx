@@ -74,6 +74,7 @@ const recommendationCopy: Record<
 type BriefForm = {
   name: string;
   email: string;
+  phone: string;
   company: string;
   website: string;
   projectType: string;
@@ -87,6 +88,7 @@ type BriefForm = {
 const initialForm: BriefForm = {
   name: "",
   email: "",
+  phone: "",
   company: "",
   website: "",
   projectType: "",
@@ -107,7 +109,6 @@ export function ContactSection({
   const [showBrief, setShowBrief] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
-  const [leadScore, setLeadScore] = useState<number | null>(null);
 
   const [form, setForm] = useState<BriefForm>(initialForm);
 
@@ -175,7 +176,6 @@ export function ContactSection({
     try {
       setBriefLoading(true);
       setBriefResult(null);
-      setLeadScore(null);
 
       const res = await fetch("/api/brief", {
         method: "POST",
@@ -215,7 +215,6 @@ export function ContactSection({
       }
 
       setBriefResult(data.recommendedPackage);
-      setLeadScore(typeof data?.leadScore === "number" ? data.leadScore : null);
     } catch (error) {
       console.error("Brief submission error:", error);
       alert("Sorry, something went wrong generating your recommendation.");
@@ -224,18 +223,24 @@ export function ContactSection({
     }
   };
 
-  const updateField = <K extends keyof BriefForm>(
-    key: K,
-    value: BriefForm[K],
-  ) => setForm((prev) => ({ ...prev, [key]: value }));
+  const updateField = (key: keyof BriefForm, value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
 
-  const inputBase = isLight
-    ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
-    : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition focus:border-white/25";
+  const fieldShell = isLight
+    ? "rounded-[1rem] border border-slate-200/80 bg-white/95 p-0.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-300 focus-within:shadow-[0_14px_32px_rgba(168,85,247,0.12)]"
+    : "rounded-[1rem] border border-white/10 bg-white/[0.045] p-0.5 shadow-[0_8px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-400/40 focus-within:bg-white/[0.07] focus-within:shadow-[0_14px_32px_rgba(168,85,247,0.14)]";
+
+  const fieldInput = isLight
+    ? "w-full rounded-[0.8rem] border border-transparent bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+    : "w-full rounded-[0.8rem] border border-transparent bg-transparent px-3 py-2 text-sm text-white outline-none placeholder:text-white/35";
+
+  const fieldLabel = isLight
+    ? "mb-1 block px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500"
+    : "mb-1 block px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45";
 
   const helperCard = isLight
-    ? "rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
-    : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70";
+    ? "rounded-[1.35rem] border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white px-5 py-4 text-sm text-slate-600 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
+    : "rounded-[1.35rem] border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.03] px-5 py-4 text-sm text-white/70 shadow-[0_10px_30px_rgba(0,0,0,0.18)]";
 
   return (
     <>
@@ -431,100 +436,151 @@ export function ContactSection({
                     </p>
                   </div>
 
-                  <div className="mt-6 grid gap-3 md:grid-cols-2">
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      value={form.name}
-                      onChange={(e) => updateField("name", e.target.value)}
-                      className={inputBase}
-                    />
+                  <div className="mt-5 grid gap-3 md:grid-cols-2">
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Your name</span>
+                      <input
+                        type="text"
+                        placeholder="e.g. Mahir Ahmed"
+                        value={form.name}
+                        onChange={(e) => updateField("name", e.target.value)}
+                        className={fieldInput}
+                      />
+                    </label>
 
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={form.email}
-                      onChange={(e) => updateField("email", e.target.value)}
-                      className={inputBase}
-                    />
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Email address</span>
+                      <input
+                        type="email"
+                        placeholder="you@company.com"
+                        value={form.email}
+                        onChange={(e) => updateField("email", e.target.value)}
+                        className={fieldInput}
+                      />
+                    </label>
 
-                    <input
-                      type="text"
-                      placeholder="Company / brand"
-                      value={form.company}
-                      onChange={(e) => updateField("company", e.target.value)}
-                      className={inputBase}
-                    />
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Phone number</span>
+                      <input
+                        type="tel"
+                        placeholder="+44 7..."
+                        value={form.phone}
+                        onChange={(e) => updateField("phone", e.target.value)}
+                        className={fieldInput}
+                      />
+                    </label>
 
-                    <input
-                      type="url"
-                      placeholder="Website (optional)"
-                      value={form.website}
-                      onChange={(e) => updateField("website", e.target.value)}
-                      className={inputBase}
-                    />
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Company / brand</span>
+                      <input
+                        type="text"
+                        placeholder="Your business or brand"
+                        value={form.company}
+                        onChange={(e) => updateField("company", e.target.value)}
+                        className={fieldInput}
+                      />
+                    </label>
+
+                    <label className="md:col-span-2">
+                      <div className={fieldShell}>
+                        <span className={fieldLabel}>Website</span>
+                        <input
+                          type="url"
+                          placeholder="https://yourwebsite.com"
+                          value={form.website}
+                          onChange={(e) =>
+                            updateField("website", e.target.value)
+                          }
+                          className={fieldInput}
+                        />
+                      </div>
+                    </label>
                   </div>
 
                   <div className="mt-3 grid gap-3 md:grid-cols-2">
-                    <select
-                      value={form.projectType}
-                      onChange={(e) =>
-                        updateField("projectType", e.target.value)
-                      }
-                      className={inputBase}
-                    >
-                      <option value="">Project type</option>
-                      <option value="landing">Landing page</option>
-                      <option value="website">Business / brand website</option>
-                      <option value="portfolio">Portfolio site</option>
-                      <option value="product">Product / app UI</option>
-                    </select>
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Project type</span>
+                      <select
+                        value={form.projectType}
+                        onChange={(e) =>
+                          updateField("projectType", e.target.value)
+                        }
+                        className={fieldInput}
+                        title="Project type"
+                      >
+                        <option value="">Select project type</option>
+                        <option value="landing">Landing page</option>
+                        <option value="website">
+                          Business / brand website
+                        </option>
+                        <option value="portfolio">Portfolio site</option>
+                        <option value="product">Product / app UI</option>
+                      </select>
+                    </label>
 
-                    <select
-                      value={form.goal}
-                      onChange={(e) => updateField("goal", e.target.value)}
-                      className={inputBase}
-                    >
-                      <option value="">Primary goal</option>
-                      <option value="Launch">Launch something new</option>
-                      <option value="Redesign">Redesign existing</option>
-                      <option value="Conversions">Improve conversions</option>
-                      <option value="MVP">Build an MVP</option>
-                    </select>
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Primary goal</span>
+                      <select
+                        value={form.goal}
+                        onChange={(e) => updateField("goal", e.target.value)}
+                        className={fieldInput}
+                        title="Primary goal"
+                      >
+                        <option value="">Select goal</option>
+                        <option value="Launch">Launch something new</option>
+                        <option value="Redesign">Redesign existing</option>
+                        <option value="Conversions">Improve conversions</option>
+                        <option value="MVP">Build an MVP</option>
+                      </select>
+                    </label>
 
-                    <select
-                      value={form.budget}
-                      onChange={(e) => updateField("budget", e.target.value)}
-                      className={inputBase}
-                    >
-                      <option value="">Budget</option>
-                      <option value="0-500">£0–£500</option>
-                      <option value="500-1000">£500–£1000</option>
-                      <option value="1000+">£1000+</option>
-                    </select>
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Budget</span>
+                      <select
+                        value={form.budget}
+                        onChange={(e) => updateField("budget", e.target.value)}
+                        className={fieldInput}
+                        title="Budget"
+                      >
+                        <option value="">Select budget</option>
+                        <option value="0-500">£0–£500</option>
+                        <option value="500-1000">£500–£1000</option>
+                        <option value="1000+">£1000+</option>
+                      </select>
+                    </label>
 
-                    <select
-                      value={form.timeline}
-                      onChange={(e) => updateField("timeline", e.target.value)}
-                      className={inputBase}
-                    >
-                      <option value="">Timeline</option>
-                      <option value="ASAP">ASAP</option>
-                      <option value="2-4 weeks">2–4 weeks</option>
-                      <option value="1-2 months">1–2 months</option>
-                      <option value="Flexible">Flexible</option>
-                    </select>
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Timeline</span>
+                      <select
+                        value={form.timeline}
+                        onChange={(e) =>
+                          updateField("timeline", e.target.value)
+                        }
+                        className={fieldInput}
+                        title="Timeline"
+                      >
+                        <option value="">Select timeline</option>
+                        <option value="ASAP">ASAP</option>
+                        <option value="2-4 weeks">2–4 weeks</option>
+                        <option value="1-2 months">1–2 months</option>
+                        <option value="Flexible">Flexible</option>
+                      </select>
+                    </label>
 
-                    <select
-                      value={form.urgency}
-                      onChange={(e) => updateField("urgency", e.target.value)}
-                      className={inputBase}
-                    >
-                      <option value="">Urgency</option>
-                      <option value="High">High</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Low">Low</option>
-                    </select>
+                    <label className={fieldShell}>
+                      <span className={fieldLabel}>Urgency</span>
+                      <select
+                        value={form.urgency}
+                        onChange={(e) => updateField("urgency", e.target.value)}
+                        className={fieldInput}
+                        title="Urgency"
+                      >
+                        <option value="">Select urgency</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </select>
+                    </label>
 
                     <div className={helperCard}>
                       Higher budgets, tighter timelines, and clearer goals help
@@ -532,12 +588,19 @@ export function ContactSection({
                     </div>
                   </div>
 
-                  <textarea
-                    placeholder="Describe the project, what success looks like, and anything important I should know..."
-                    value={form.description}
-                    onChange={(e) => updateField("description", e.target.value)}
-                    className={`${inputBase} mt-3 min-h-[140px] resize-none`}
-                  />
+                  <label className="mt-3 block">
+                    <div className={fieldShell}>
+                      <span className={fieldLabel}>Project details</span>
+                      <textarea
+                        placeholder="Describe the project, what success looks like, and anything important I should know..."
+                        value={form.description}
+                        onChange={(e) =>
+                          updateField("description", e.target.value)
+                        }
+                        className={`${fieldInput} min-h-[160px] resize-none`}
+                      />
+                    </div>
+                  </label>
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                     <button
@@ -554,7 +617,6 @@ export function ContactSection({
                       onClick={() => {
                         setForm(initialForm);
                         setBriefResult(null);
-                        setLeadScore(null);
                       }}
                       className={
                         isLight
