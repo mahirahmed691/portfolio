@@ -50,12 +50,44 @@ const packages = [
   },
 ];
 
+const recommendationCopy: Record<
+  PackageTier,
+  { title: string; summary: string }
+> = {
+  starter: {
+    title: "Starter looks like the best fit",
+    summary:
+      "This suits focused launches, smaller scopes, and quicker delivery timelines.",
+  },
+  standard: {
+    title: "Standard looks like the best fit",
+    summary:
+      "This is the strongest option for polished websites, portfolios, and more complete brand-led builds.",
+  },
+  premium: {
+    title: "Premium looks like the best fit",
+    summary:
+      "This makes sense for more custom frontend work, product UI, and higher-touch project delivery.",
+  },
+};
+
 export function ContactSection({
   isLight,
   themeClasses,
 }: Pick<SharedProps, "isLight" | "themeClasses">) {
   const [loadingTier, setLoadingTier] = useState<PackageTier | null>(null);
   const [packageOpen, setPackageOpen] = useState(false);
+
+  const [showBrief, setShowBrief] = useState(false);
+  const [briefLoading, setBriefLoading] = useState(false);
+  const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
+
+  const [form, setForm] = useState({
+    projectType: "",
+    budget: "",
+    timeline: "",
+    description: "",
+  });
 
   useEffect(() => {
     if (!packageOpen) {
@@ -114,6 +146,45 @@ export function ContactSection({
       alert("Sorry, something went wrong starting checkout.");
     } finally {
       setLoadingTier(null);
+    }
+  };
+
+  const handleBriefSubmit = async () => {
+    try {
+      setBriefLoading(true);
+      setBriefResult(null);
+
+      const res = await fetch("/api/brief", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        console.error("Brief API error:", data);
+        alert(data?.error || `Brief failed (${res.status})`);
+        return;
+      }
+
+      if (
+        data?.recommendedPackage !== "starter" &&
+        data?.recommendedPackage !== "standard" &&
+        data?.recommendedPackage !== "premium"
+      ) {
+        alert("Could not generate a recommendation.");
+        return;
+      }
+
+      setBriefResult(data.recommendedPackage);
+    } catch (error) {
+      console.error("Brief submission error:", error);
+      alert("Sorry, something went wrong generating your recommendation.");
+    } finally {
+      setBriefLoading(false);
     }
   };
 
@@ -178,6 +249,35 @@ export function ContactSection({
                     />
                   </svg>
                   <span>Book a call</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowBrief((prev) => !prev)}
+                  className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
+                    isLight
+                      ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+                      : "border border-white/10 bg-white/5 text-white backdrop-blur-md hover:bg-white/10"
+                  }`}
+                >
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-fuchsia-400/20 via-violet-400/20 to-cyan-400/20 opacity-0 transition group-hover:opacity-100" />
+                  <svg
+                    className="relative h-4 w-4 opacity-70"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12h15m-15 0l6-6m-6 6l6 6"
+                    />
+                  </svg>
+                  <span className="relative">
+                    {showBrief ? "Hide project brief" : "Start your project"}
+                  </span>
                 </button>
 
                 <button
@@ -256,6 +356,194 @@ export function ContactSection({
                   <span className="relative">GitHub profile</span>
                 </a>
               </div>
+
+              {showBrief && (
+                <div
+                  className={
+                    isLight
+                      ? "mt-8 max-w-3xl rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-6"
+                      : "mt-8 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6"
+                  }
+                >
+                  <div className="max-w-2xl">
+                    <p
+                      className={`text-xs uppercase tracking-[0.22em] ${themeClasses.label}`}
+                    >
+                      Project brief
+                    </p>
+                    <h3 className="mt-2 text-2xl font-semibold">
+                      Tell me about your project
+                    </h3>
+                    <p
+                      className={`mt-3 text-sm leading-7 ${themeClasses.muted}`}
+                    >
+                      I’ll recommend the package that fits best based on your
+                      project type, budget, and timeline.
+                    </p>
+                  </div>
+
+                  <div className="mt-6 grid gap-3 md:grid-cols-2">
+                    <select
+                      value={form.projectType}
+                      onChange={(e) =>
+                        setForm({ ...form, projectType: e.target.value })
+                      }
+                      className={
+                        isLight
+                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
+                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
+                      }
+                    >
+                      <option value="">Project type</option>
+                      <option value="landing">Landing page</option>
+                      <option value="website">Business / brand website</option>
+                      <option value="portfolio">Portfolio site</option>
+                      <option value="product">Product / app UI</option>
+                    </select>
+
+                    <select
+                      value={form.budget}
+                      onChange={(e) =>
+                        setForm({ ...form, budget: e.target.value })
+                      }
+                      className={
+                        isLight
+                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
+                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
+                      }
+                    >
+                      <option value="">Budget</option>
+                      <option value="0-500">£0–£500</option>
+                      <option value="500-1000">£500–£1000</option>
+                      <option value="1000+">£1000+</option>
+                    </select>
+
+                    <select
+                      value={form.timeline}
+                      onChange={(e) =>
+                        setForm({ ...form, timeline: e.target.value })
+                      }
+                      className={
+                        isLight
+                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
+                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
+                      }
+                    >
+                      <option value="">Timeline</option>
+                      <option value="asap">ASAP</option>
+                      <option value="2-4 weeks">2–4 weeks</option>
+                      <option value="1-2 months">1–2 months</option>
+                      <option value="flexible">Flexible</option>
+                    </select>
+
+                    <div
+                      className={
+                        isLight
+                          ? "rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
+                          : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70"
+                      }
+                    >
+                      Recommendation is based on scope, budget, and delivery
+                      depth.
+                    </div>
+                  </div>
+
+                  <textarea
+                    placeholder="Describe your project, goals, and anything important I should know..."
+                    value={form.description}
+                    onChange={(e) =>
+                      setForm({ ...form, description: e.target.value })
+                    }
+                    className={
+                      isLight
+                        ? "mt-3 min-h-[130px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
+                        : "mt-3 min-h-[130px] w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
+                    }
+                  />
+
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={handleBriefSubmit}
+                      disabled={briefLoading}
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {briefLoading ? "Analysing..." : "Get recommendation"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm({
+                          projectType: "",
+                          budget: "",
+                          timeline: "",
+                          description: "",
+                        });
+                        setBriefResult(null);
+                      }}
+                      className={
+                        isLight
+                          ? "inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900"
+                          : "inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-medium text-white"
+                      }
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  {briefResult && (
+                    <div
+                      className={
+                        isLight
+                          ? "mt-5 rounded-[1.25rem] border border-slate-200 bg-slate-50 p-5"
+                          : "mt-5 rounded-[1.25rem] border border-white/10 bg-black/10 p-5"
+                      }
+                    >
+                      <p
+                        className={`text-xs uppercase tracking-[0.22em] ${themeClasses.label}`}
+                      >
+                        Recommendation
+                      </p>
+
+                      <h4 className="mt-2 text-xl font-semibold">
+                        {recommendationCopy[briefResult].title}
+                      </h4>
+
+                      <p
+                        className={`mt-3 text-sm leading-7 ${themeClasses.muted}`}
+                      >
+                        {recommendationCopy[briefResult].summary}
+                      </p>
+
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                        <button
+                          type="button"
+                          onClick={() => handleCheckout(briefResult)}
+                          disabled={loadingTier !== null}
+                          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {loadingTier === briefResult
+                            ? "Redirecting..."
+                            : "Continue with this package"}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPackageOpen(true)}
+                          className={
+                            isLight
+                              ? "inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900"
+                              : "inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-medium text-white"
+                          }
+                        >
+                          Compare all packages
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div
                 className={
