@@ -57,18 +57,44 @@ const recommendationCopy: Record<
   starter: {
     title: "Starter looks like the best fit",
     summary:
-      "This suits focused launches, smaller scopes, and quicker delivery timelines.",
+      "Best for smaller scopes, focused launches, and quick delivery with a clearer path to getting live fast.",
   },
   standard: {
     title: "Standard looks like the best fit",
     summary:
-      "This is the strongest option for polished websites, portfolios, and more complete brand-led builds.",
+      "Best for polished websites, stronger brand presence, and more complete digital experiences with room for refinement.",
   },
   premium: {
     title: "Premium looks like the best fit",
     summary:
-      "This makes sense for more custom frontend work, product UI, and higher-touch project delivery.",
+      "Best for custom product UI, more advanced frontend work, and higher-touch collaboration across a bigger scope.",
   },
+};
+
+type BriefForm = {
+  name: string;
+  email: string;
+  company: string;
+  website: string;
+  projectType: string;
+  goal: string;
+  budget: string;
+  timeline: string;
+  urgency: string;
+  description: string;
+};
+
+const initialForm: BriefForm = {
+  name: "",
+  email: "",
+  company: "",
+  website: "",
+  projectType: "",
+  goal: "",
+  budget: "",
+  timeline: "",
+  urgency: "",
+  description: "",
 };
 
 export function ContactSection({
@@ -81,13 +107,9 @@ export function ContactSection({
   const [showBrief, setShowBrief] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
+  const [leadScore, setLeadScore] = useState<number | null>(null);
 
-  const [form, setForm] = useState({
-    projectType: "",
-    budget: "",
-    timeline: "",
-    description: "",
-  });
+  const [form, setForm] = useState<BriefForm>(initialForm);
 
   useEffect(() => {
     if (!packageOpen) {
@@ -153,6 +175,7 @@ export function ContactSection({
     try {
       setBriefLoading(true);
       setBriefResult(null);
+      setLeadScore(null);
 
       const res = await fetch("/api/brief", {
         method: "POST",
@@ -162,10 +185,22 @@ export function ContactSection({
         body: JSON.stringify(form),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const text = await res.text();
+      let data: any = null;
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
 
       if (!res.ok) {
-        console.error("Brief API error:", data);
+        console.error("Brief API error:", {
+          status: res.status,
+          raw: text,
+          parsed: data,
+        });
+
         alert(data?.error || `Brief failed (${res.status})`);
         return;
       }
@@ -180,6 +215,7 @@ export function ContactSection({
       }
 
       setBriefResult(data.recommendedPackage);
+      setLeadScore(typeof data?.leadScore === "number" ? data.leadScore : null);
     } catch (error) {
       console.error("Brief submission error:", error);
       alert("Sorry, something went wrong generating your recommendation.");
@@ -187,6 +223,19 @@ export function ContactSection({
       setBriefLoading(false);
     }
   };
+
+  const updateField = <K extends keyof BriefForm>(
+    key: K,
+    value: BriefForm[K],
+  ) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const inputBase = isLight
+    ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+    : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition focus:border-white/25";
+
+  const helperCard = isLight
+    ? "rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
+    : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70";
 
   return (
     <>
@@ -222,16 +271,16 @@ export function ContactSection({
                 <p
                   className={`mt-6 max-w-2xl text-base leading-8 sm:text-lg ${themeClasses.muted}`}
                 >
-                  I blend frontend craft, visual direction, and production-ready
-                  thinking to help founders and brands launch with more clarity,
-                  more confidence, and a stronger digital presence.
+                  Share a few details about what you’re building and I’ll point
+                  you toward the package that fits best, then you can move
+                  straight into the next step.
                 </p>
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
-                  onClick={handleCalendly}
+                  onClick={() => setShowBrief((prev) => !prev)}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-7 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_12px_30px_rgba(168,85,247,0.25)] transition-all duration-300 hover:scale-[0.98]"
                 >
                   <svg
@@ -245,15 +294,17 @@ export function ContactSection({
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"
+                      d="M4 7h16M4 12h16M4 17h10"
                     />
                   </svg>
-                  <span>Book a call</span>
+                  <span>
+                    {showBrief ? "Hide project brief" : "Start your project"}
+                  </span>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setShowBrief((prev) => !prev)}
+                  onClick={handleCalendly}
                   className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
                     isLight
                       ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
@@ -272,12 +323,10 @@ export function ContactSection({
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M4.5 12h15m-15 0l6-6m-6 6l6 6"
+                      d="M8 7V3m8 4V3m-9 8h10m-11 9h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"
                     />
                   </svg>
-                  <span className="relative">
-                    {showBrief ? "Hide project brief" : "Start your project"}
-                  </span>
+                  <span className="relative">Book a call</span>
                 </button>
 
                 <button
@@ -361,8 +410,8 @@ export function ContactSection({
                 <div
                   className={
                     isLight
-                      ? "mt-8 max-w-3xl rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-6"
-                      : "mt-8 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6"
+                      ? "mt-8 max-w-5xl rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-6"
+                      : "mt-8 max-w-5xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6"
                   }
                 >
                   <div className="max-w-2xl">
@@ -372,27 +421,57 @@ export function ContactSection({
                       Project brief
                     </p>
                     <h3 className="mt-2 text-2xl font-semibold">
-                      Tell me about your project
+                      Tell me what you’re building
                     </h3>
                     <p
                       className={`mt-3 text-sm leading-7 ${themeClasses.muted}`}
                     >
-                      I’ll recommend the package that fits best based on your
-                      project type, budget, and timeline.
+                      This helps me understand the project, qualify the fit, and
+                      recommend the best starting point.
                     </p>
                   </div>
 
                   <div className="mt-6 grid gap-3 md:grid-cols-2">
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      value={form.name}
+                      onChange={(e) => updateField("name", e.target.value)}
+                      className={inputBase}
+                    />
+
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      value={form.email}
+                      onChange={(e) => updateField("email", e.target.value)}
+                      className={inputBase}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Company / brand"
+                      value={form.company}
+                      onChange={(e) => updateField("company", e.target.value)}
+                      className={inputBase}
+                    />
+
+                    <input
+                      type="url"
+                      placeholder="Website (optional)"
+                      value={form.website}
+                      onChange={(e) => updateField("website", e.target.value)}
+                      className={inputBase}
+                    />
+                  </div>
+
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
                     <select
                       value={form.projectType}
                       onChange={(e) =>
-                        setForm({ ...form, projectType: e.target.value })
+                        updateField("projectType", e.target.value)
                       }
-                      className={
-                        isLight
-                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
-                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
-                      }
+                      className={inputBase}
                     >
                       <option value="">Project type</option>
                       <option value="landing">Landing page</option>
@@ -402,15 +481,21 @@ export function ContactSection({
                     </select>
 
                     <select
+                      value={form.goal}
+                      onChange={(e) => updateField("goal", e.target.value)}
+                      className={inputBase}
+                    >
+                      <option value="">Primary goal</option>
+                      <option value="Launch">Launch something new</option>
+                      <option value="Redesign">Redesign existing</option>
+                      <option value="Conversions">Improve conversions</option>
+                      <option value="MVP">Build an MVP</option>
+                    </select>
+
+                    <select
                       value={form.budget}
-                      onChange={(e) =>
-                        setForm({ ...form, budget: e.target.value })
-                      }
-                      className={
-                        isLight
-                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
-                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
-                      }
+                      onChange={(e) => updateField("budget", e.target.value)}
+                      className={inputBase}
                     >
                       <option value="">Budget</option>
                       <option value="0-500">£0–£500</option>
@@ -420,45 +505,38 @@ export function ContactSection({
 
                     <select
                       value={form.timeline}
-                      onChange={(e) =>
-                        setForm({ ...form, timeline: e.target.value })
-                      }
-                      className={
-                        isLight
-                          ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
-                          : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
-                      }
+                      onChange={(e) => updateField("timeline", e.target.value)}
+                      className={inputBase}
                     >
                       <option value="">Timeline</option>
-                      <option value="asap">ASAP</option>
+                      <option value="ASAP">ASAP</option>
                       <option value="2-4 weeks">2–4 weeks</option>
                       <option value="1-2 months">1–2 months</option>
-                      <option value="flexible">Flexible</option>
+                      <option value="Flexible">Flexible</option>
                     </select>
 
-                    <div
-                      className={
-                        isLight
-                          ? "rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
-                          : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70"
-                      }
+                    <select
+                      value={form.urgency}
+                      onChange={(e) => updateField("urgency", e.target.value)}
+                      className={inputBase}
                     >
-                      Recommendation is based on scope, budget, and delivery
-                      depth.
+                      <option value="">Urgency</option>
+                      <option value="High">High</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Low">Low</option>
+                    </select>
+
+                    <div className={helperCard}>
+                      Higher budgets, tighter timelines, and clearer goals help
+                      me recommend the right package faster.
                     </div>
                   </div>
 
                   <textarea
-                    placeholder="Describe your project, goals, and anything important I should know..."
+                    placeholder="Describe the project, what success looks like, and anything important I should know..."
                     value={form.description}
-                    onChange={(e) =>
-                      setForm({ ...form, description: e.target.value })
-                    }
-                    className={
-                      isLight
-                        ? "mt-3 min-h-[130px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none"
-                        : "mt-3 min-h-[130px] w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none"
-                    }
+                    onChange={(e) => updateField("description", e.target.value)}
+                    className={`${inputBase} mt-3 min-h-[140px] resize-none`}
                   />
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row">
@@ -474,13 +552,9 @@ export function ContactSection({
                     <button
                       type="button"
                       onClick={() => {
-                        setForm({
-                          projectType: "",
-                          budget: "",
-                          timeline: "",
-                          description: "",
-                        });
+                        setForm(initialForm);
                         setBriefResult(null);
+                        setLeadScore(null);
                       }}
                       className={
                         isLight
@@ -500,15 +574,19 @@ export function ContactSection({
                           : "mt-5 rounded-[1.25rem] border border-white/10 bg-black/10 p-5"
                       }
                     >
-                      <p
-                        className={`text-xs uppercase tracking-[0.22em] ${themeClasses.label}`}
-                      >
-                        Recommendation
-                      </p>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p
+                            className={`text-xs uppercase tracking-[0.22em] ${themeClasses.label}`}
+                          >
+                            Recommendation
+                          </p>
 
-                      <h4 className="mt-2 text-xl font-semibold">
-                        {recommendationCopy[briefResult].title}
-                      </h4>
+                          <h4 className="mt-2 text-xl font-semibold">
+                            {recommendationCopy[briefResult].title}
+                          </h4>
+                        </div>
+                      </div>
 
                       <p
                         className={`mt-3 text-sm leading-7 ${themeClasses.muted}`}
@@ -519,13 +597,26 @@ export function ContactSection({
                       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         <button
                           type="button"
+                          onClick={handleBriefSubmit}
+                          disabled={briefLoading}
+                          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {briefLoading ? "Redirecting..." : "Continue"}
+                        </button>
+
+                        <button
+                          type="button"
                           onClick={() => handleCheckout(briefResult)}
                           disabled={loadingTier !== null}
-                          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                          className={
+                            isLight
+                              ? "inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900"
+                              : "inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-medium text-white"
+                          }
                         >
                           {loadingTier === briefResult
                             ? "Redirecting..."
-                            : "Continue with this package"}
+                            : "Use recommended package"}
                         </button>
 
                         <button
