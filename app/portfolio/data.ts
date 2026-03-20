@@ -104,35 +104,11 @@ export const heroMetrics = [
 
 export const testimonials: Testimonial[] = [
   {
-    name: "Sarah Chen",
-    role: "Product Manager",
-    company: "Bloom Studio",
+    name: "Bahar Khorram",
+    role: "Independent Cloud Strategy Consultant & GCP Architect",
+    company: "GFT",
     quote:
-      "Mahir translated a rough brief into something that felt genuinely premium. The final site had a clarity and confidence we hadn't managed to articulate ourselves — and it converted better from day one.",
-    rating: 5,
-  },
-  {
-    name: "James Whitfield",
-    role: "Founder",
-    company: "Capsule",
-    quote:
-      "I came in with a vague idea of what I wanted and left with a product that looked more considered than anything I'd seen from studios charging five times the price. The attention to detail was exceptional.",
-    rating: 5,
-  },
-  {
-    name: "Priya Nair",
-    role: "Creative Director",
-    company: "Forma Agency",
-    quote:
-      "Working with Mahir felt more like a creative partnership than a client-developer relationship. He pushed the visual direction in ways that made the whole brand feel sharper and more alive.",
-    rating: 5,
-  },
-  {
-    name: "Tom Ellsworth",
-    role: "Co-founder",
-    company: "Fieldwork",
-    quote:
-      "We needed our landing page to feel trustworthy and bold at the same time — a hard balance to strike. Mahir nailed it quickly and was genuinely easy to work with throughout.",
+      "Mahir was a key team member who hugely contributed to the project's success. He could easily find solutions and workarounds using different software products. He is eager to help colleagues and has gone to great lengths to ensure that everything was clear and that we delivered the solution — receiving fantastic feedback from the client. He is super intelligent and knows his stuff; when you assign him a task, you know it is in good hands.",
     rating: 5,
   },
 ];
