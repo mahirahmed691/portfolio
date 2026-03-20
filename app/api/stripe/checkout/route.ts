@@ -120,15 +120,21 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "mahirahmed.co.uk";
+    const proto = req.headers.get("x-forwarded-proto") || "https";
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`).replace(/\/$/, "");
     console.error("Stripe checkout error:", JSON.stringify(error, null, 2));
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unable to create checkout session",
-        detail: error,
+        error: error instanceof Error ? error.message : "Unable to create checkout session",
+        debug: {
+          siteUrl,
+          success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${siteUrl}/?deposit=cancelled`,
+          NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+          stripeError: error instanceof Error ? { message: error.message, name: error.name } : error,
+        },
       },
       { status: 500 },
     );
