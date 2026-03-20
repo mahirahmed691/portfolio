@@ -1,25 +1,57 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import Stripe from "stripe";
-import { Resend } from "resend";
-import twilio from "twilio";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+async function getStripeClient() {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+  if (!stripeSecretKey) {
+    throw new Error("Missing STRIPE_SECRET_KEY");
+  }
+
+  const { default: Stripe } = await import("stripe");
+
+  return new Stripe(stripeSecretKey, {
+    apiVersion: "2026-02-25.clover",
+  });
+}
+
+async function getResendClient() {
+  const key = process.env.RESEND_API_KEY;
+
+  if (!key) {
+    throw new Error("Missing RESEND_API_KEY");
+  }
+
+  const { Resend } = await import("resend");
+
+  return new Resend(key);
+}
+
+async function getTwilioClient() {
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+
+  if (!sid || !token) {
+    throw new Error("Missing Twilio credentials");
+  }
+
+  const twilio = (await import("twilio")).default;
+
+  return twilio(sid, token);
+}
 
 export async function POST(req: Request) {
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!stripeSecretKey || !webhookSecret) {
+  if (!webhookSecret) {
     return NextResponse.json(
       { error: "Stripe webhook not configured" },
       { status: 500 },
     );
   }
-
-  const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: "2026-02-25.clover",
-  });
 
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
@@ -31,9 +63,10 @@ export async function POST(req: Request) {
     );
   }
 
-  let event: Stripe.Event;
+  let event: any;
 
   try {
+    const stripe = await getStripeClient();
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
     console.error("Stripe webhook verification failed:", err);
@@ -41,23 +74,24 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object;
 
-    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
-    const resendApiKey = process.env.RESEND_API_KEY;
     const resendFromEmail = process.env.RESEND_FROM_EMAIL;
-    const twilioSid = process.env.TWILIO_ACCOUNT_SID;
-    const twilioToken = process.env.TWILIO_AUTH_TOKEN;
     const twilioFrom = process.env.TWILIO_FROM_NUMBER;
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-    const name = session.metadata?.name || "there";
-    const email = session.metadata?.email || "";
+    const name =
+      session.metadata?.name || session.customer_details?.name || "there";
+    const email =
+      session.metadata?.email || session.customer_details?.email || "";
     const phone = session.metadata?.phone || "";
     const recommendedPackage =
-      session.metadata?.recommendedPackage || "package";
+      session.metadata?.recommendedPackage ||
+      session.metadata?.package_name ||
+      "package";
     const projectType = session.metadata?.projectType || "";
     const budget = session.metadata?.budget || "";
     const timeline = session.metadata?.timeline || "";
@@ -65,15 +99,32 @@ export async function POST(req: Request) {
     if (supabaseUrl && supabaseKey) {
       try {
         const supabase = createClient(supabaseUrl, supabaseKey);
-        const { error } = await supabase
+
+        const { data: brief, error } = await supabase
           .from("briefs")
           .update({
             status: "paid",
             stripe_payment_status: session.payment_status || "paid",
           })
-          .eq("stripe_session_id", session.id);
+          .eq("stripe_session_id", session.id)
+          .select("referral_code")
+          .maybeSingle();
 
-        if (error) console.error("Supabase webhook update error:", error);
+        if (error) {
+          console.error("Supabase webhook update error:", error);
+        }
+
+        if (brief?.referral_code) {
+          const { error: rpcError } = await supabase.rpc("increment_leads", {
+            ref_code: brief.referral_code,
+          });
+
+          if (rpcError) {
+            console.error("Referral increment error:", rpcError);
+          } else {
+            console.log("Referral leads incremented for:", brief.referral_code);
+          }
+        }
       } catch (err) {
         console.error("Supabase webhook crash:", err);
       }
@@ -85,15 +136,31 @@ export async function POST(req: Request) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: `💰 Payment received
-
-Name: ${name}
-Email: ${email}
-Package: ${recommendedPackage}
-Project: ${projectType}
-Budget: ${budget}
-Timeline: ${timeline}
-Amount: £${((session.amount_total || 0) / 100).toFixed(2)}`,
+            text: "💰 Payment received",
+            blocks: [
+              {
+                type: "header",
+                text: {
+                  type: "plain_text",
+                  text: "💰 Payment confirmed",
+                },
+              },
+              {
+                type: "section",
+                fields: [
+                  { type: "mrkdwn", text: `*Name:*\n${name}` },
+                  { type: "mrkdwn", text: `*Email:*\n${email || "-"}` },
+                  { type: "mrkdwn", text: `*Package:*\n${recommendedPackage}` },
+                  {
+                    type: "mrkdwn",
+                    text: `*Amount:*\n£${((session.amount_total || 0) / 100).toFixed(2)}`,
+                  },
+                  { type: "mrkdwn", text: `*Project:*\n${projectType || "-"}` },
+                  { type: "mrkdwn", text: `*Budget:*\n${budget || "-"}` },
+                  { type: "mrkdwn", text: `*Timeline:*\n${timeline || "-"}` },
+                ],
+              },
+            ],
           }),
         });
       } catch (err) {
@@ -101,9 +168,10 @@ Amount: £${((session.amount_total || 0) / 100).toFixed(2)}`,
       }
     }
 
-    if (resendApiKey && resendFromEmail && email) {
+    if (resendFromEmail && email) {
       try {
-        const resend = new Resend(resendApiKey);
+        const resend = await getResendClient();
+
         await resend.emails.send({
           from: resendFromEmail,
           to: email,
@@ -122,9 +190,10 @@ Amount: £${((session.amount_total || 0) / 100).toFixed(2)}`,
       }
     }
 
-    if (twilioSid && twilioToken && twilioFrom && phone) {
+    if (twilioFrom && phone) {
       try {
-        const client = twilio(twilioSid, twilioToken);
+        const client = await getTwilioClient();
+
         await client.messages.create({
           from: twilioFrom,
           to: phone,
