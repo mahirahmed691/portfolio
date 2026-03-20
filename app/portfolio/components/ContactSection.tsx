@@ -99,6 +99,31 @@ const initialForm: BriefForm = {
   description: "",
 };
 
+function FieldIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 opacity-60">
+      {children}
+    </span>
+  );
+}
+
+function InputWrap({ children }: { children: React.ReactNode }) {
+  return <div className="relative">{children}</div>;
+}
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function normalizePhone(phone: string) {
+  return phone.replace(/[^\d+()\-\s]/g, "");
+}
+
+function isValidPhone(phone: string) {
+  const cleaned = phone.replace(/\s+/g, "");
+  return cleaned.length >= 10;
+}
+
 export function ContactSection({
   isLight,
   themeClasses,
@@ -109,8 +134,40 @@ export function ContactSection({
   const [showBrief, setShowBrief] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
+  const [leadScore, setLeadScore] = useState<number | null>(null);
 
   const [form, setForm] = useState<BriefForm>(initialForm);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const [referralCode, setReferralCode] = useState<string>("");
+
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (ref) setReferralCode(ref);
+  }, []);
+
+  const markTouched = (key: keyof BriefForm) =>
+    setTouched((prev) => ({ ...prev, [key]: true }));
+
+  const emailError =
+    touched.email && !isValidEmail(form.email || "")
+      ? "Enter a valid email address"
+      : "";
+
+  const phoneError =
+    touched.phone && !isValidPhone(form.phone || "")
+      ? "Enter a valid phone number"
+      : "";
+
+  const canSubmit =
+    Boolean(form.name?.trim()) &&
+    Boolean(form.email?.trim()) &&
+    Boolean(form.phone?.trim()) &&
+    Boolean(form.projectType?.trim()) &&
+    Boolean(form.budget?.trim()) &&
+    Boolean(form.timeline?.trim()) &&
+    isValidEmail(form.email || "") &&
+    isValidPhone(form.phone || "");
 
   useEffect(() => {
     if (!packageOpen) {
@@ -146,7 +203,21 @@ export function ContactSection({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tier }),
+        body: JSON.stringify({
+          tier,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          website: form.website,
+          projectType: form.projectType,
+          goal: form.goal,
+          budget: form.budget,
+          timeline: form.timeline,
+          urgency: form.urgency,
+          description: form.description,
+          referral_code: referralCode,
+        }),
       });
 
       const data = await res.json().catch(() => ({}));
@@ -176,13 +247,14 @@ export function ContactSection({
     try {
       setBriefLoading(true);
       setBriefResult(null);
+      setLeadScore(null);
 
       const res = await fetch("/api/brief", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, referralCode }),
       });
 
       const text = await res.text();
@@ -215,6 +287,7 @@ export function ContactSection({
       }
 
       setBriefResult(data.recommendedPackage);
+      setLeadScore(typeof data?.leadScore === "number" ? data.leadScore : null);
     } catch (error) {
       console.error("Brief submission error:", error);
       alert("Sorry, something went wrong generating your recommendation.");
@@ -223,24 +296,29 @@ export function ContactSection({
     }
   };
 
-  const updateField = (key: keyof BriefForm, value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const handleRecommendedCheckout = () => {
+    if (!briefResult) return;
+    void handleCheckout(briefResult);
+  };
 
-  const fieldShell = isLight
-    ? "rounded-[1.2rem] border border-slate-200/80 bg-white/95 p-1 shadow-[0_10px_35px_rgba(15,23,42,0.06)] transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-300 focus-within:shadow-[0_18px_45px_rgba(168,85,247,0.14)]"
-    : "rounded-[1.2rem] border border-white/10 bg-white/[0.045] p-1 shadow-[0_10px_35px_rgba(0,0,0,0.22)] backdrop-blur-sm transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-400/40 focus-within:bg-white/[0.07] focus-within:shadow-[0_18px_45px_rgba(168,85,247,0.16)]";
+  const updateField = <K extends keyof BriefForm>(
+    key: K,
+    value: BriefForm[K],
+  ) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const fieldInput = isLight
-    ? "w-full rounded-[0.95rem] border border-transparent bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
-    : "w-full rounded-[0.95rem] border border-transparent bg-transparent px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/35";
+  const inputBase = isLight
+    ? "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+    : "w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition focus:border-white/25";
 
-  const fieldLabel = isLight
-    ? "mb-1.5 block px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500"
-    : "mb-1.5 block px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45";
+  const inputWithIcon = `${inputBase} pl-12`;
+
+  const errorClass = isLight
+    ? "border-rose-300 focus:border-rose-400"
+    : "border-rose-400/40 focus:border-rose-400";
 
   const helperCard = isLight
-    ? "rounded-[1.35rem] border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white px-5 py-4 text-sm text-slate-600 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
-    : "rounded-[1.35rem] border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.03] px-5 py-4 text-sm text-white/70 shadow-[0_10px_30px_rgba(0,0,0,0.18)]";
+    ? "rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600"
+    : "rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70";
 
   return (
     <>
@@ -419,195 +497,246 @@ export function ContactSection({
                       : "mt-8 max-w-5xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6"
                   }
                 >
-                  <div className="max-w-2xl">
-                    <p
-                      className={`text-xs uppercase tracking-[0.22em] ${themeClasses.label}`}
-                    >
-                      Project brief
-                    </p>
-                    <h3 className="mt-2 text-2xl font-semibold">
-                      Tell me what you’re building
-                    </h3>
-                    <p
-                      className={`mt-3 text-sm leading-7 ${themeClasses.muted}`}
-                    >
-                      This helps me understand the project, qualify the fit, and
-                      recommend the best starting point.
-                    </p>
+                  <div className={`${helperCard} md:flex md:items-center`}>
+                    Higher budgets, tighter timelines, and clearer goals help me
+                    recommend the strongest starting point faster.
                   </div>
 
-                  <div className="mt-6 grid gap-4 md:grid-cols-2">
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Your name</span>
+                  <div className="mt-6 grid gap-3 md:grid-cols-2">
+                    <InputWrap>
+                      <FieldIcon>
+                        <svg
+                          className="h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={1.8}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0"
+                          />
+                        </svg>
+                      </FieldIcon>
                       <input
                         type="text"
-                        placeholder="e.g. Mahir Ahmed"
-                        value={form.name}
+                        placeholder="Your name"
+                        value={form.name || ""}
                         onChange={(e) => updateField("name", e.target.value)}
-                        className={fieldInput}
+                        onBlur={() => markTouched("name")}
+                        className={inputWithIcon}
                       />
-                    </label>
+                    </InputWrap>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Email address</span>
-                      <input
-                        type="email"
-                        placeholder="you@company.com"
-                        value={form.email}
-                        onChange={(e) => updateField("email", e.target.value)}
-                        className={fieldInput}
-                      />
-                    </label>
+                    <div>
+                      <InputWrap>
+                        <FieldIcon>
+                          <svg
+                            className="h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.8}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 17.25V6.75m19.5 0l-9.75 6.5-9.75-6.5"
+                            />
+                          </svg>
+                        </FieldIcon>
+                        <input
+                          type="email"
+                          placeholder="Email address"
+                          value={form.email || ""}
+                          onChange={(e) => updateField("email", e.target.value)}
+                          onBlur={() => markTouched("email")}
+                          className={`${inputWithIcon} ${emailError ? errorClass : ""}`}
+                        />
+                      </InputWrap>
+                      {emailError && (
+                        <p className="mt-2 text-xs text-rose-400">
+                          {emailError}
+                        </p>
+                      )}
+                    </div>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Phone number</span>
-                      <input
-                        type="tel"
-                        placeholder="+44 7..."
-                        value={form.phone}
-                        onChange={(e) => updateField("phone", e.target.value)}
-                        className={fieldInput}
-                      />
-                    </label>
+                    <div>
+                      <InputWrap>
+                        <FieldIcon>
+                          <svg
+                            className="h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.8}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106a1.125 1.125 0 00-1.173.417l-.97 1.293a1.125 1.125 0 01-1.21.38 12.035 12.035 0 01-7.143-7.143 1.125 1.125 0 01.38-1.21l1.293-.97a1.125 1.125 0 00.417-1.173L7.091 3.102A1.125 1.125 0 005.999 2.25H4.627A2.25 2.25 0 002.25 4.5v2.25z"
+                            />
+                          </svg>
+                        </FieldIcon>
+                        <input
+                          type="tel"
+                          placeholder="Phone number"
+                          value={form.phone || ""}
+                          onChange={(e) =>
+                            updateField("phone", normalizePhone(e.target.value))
+                          }
+                          onBlur={() => markTouched("phone")}
+                          className={`${inputWithIcon} ${phoneError ? errorClass : ""}`}
+                        />
+                      </InputWrap>
+                      {phoneError && (
+                        <p className="mt-2 text-xs text-rose-400">
+                          {phoneError}
+                        </p>
+                      )}
+                    </div>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Company / brand</span>
+                    <InputWrap>
+                      <FieldIcon>
+                        <svg
+                          className="h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={1.8}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M3.75 21h16.5M4.5 3h15a.75.75 0 01.75.75v16.5H3.75V3.75A.75.75 0 014.5 3zm3 4.5h9m-9 3h9m-9 3h6"
+                          />
+                        </svg>
+                      </FieldIcon>
                       <input
                         type="text"
-                        placeholder="Your business or brand"
-                        value={form.company}
+                        placeholder="Company / brand"
+                        value={form.company || ""}
                         onChange={(e) => updateField("company", e.target.value)}
-                        className={fieldInput}
+                        className={inputWithIcon}
                       />
-                    </label>
+                    </InputWrap>
 
-                    <label className="md:col-span-2">
-                      <div className={fieldShell}>
-                        <span className={fieldLabel}>Website</span>
+                    <div className="md:col-span-2">
+                      <InputWrap>
+                        <FieldIcon>
+                          <svg
+                            className="h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.8}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.25 0 4.5-4.03 4.5-9S14.25 3 12 3m0 18c-2.25 0-4.5-4.03-4.5-9S9.75 3 12 3m-9 9h18"
+                            />
+                          </svg>
+                        </FieldIcon>
                         <input
                           type="url"
-                          placeholder="https://yourwebsite.com"
-                          value={form.website}
+                          placeholder="Website (optional)"
+                          value={form.website || ""}
                           onChange={(e) =>
                             updateField("website", e.target.value)
                           }
-                          className={fieldInput}
+                          className={inputWithIcon}
                         />
-                      </div>
-                    </label>
+                      </InputWrap>
+                    </div>
                   </div>
 
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Project type</span>
-                      <select
-                        value={form.projectType}
-                        onChange={(e) =>
-                          updateField("projectType", e.target.value)
-                        }
-                        className={fieldInput}
-                        title="Project type"
-                      >
-                        <option value="">Select project type</option>
-                        <option value="landing">Landing page</option>
-                        <option value="website">
-                          Business / brand website
-                        </option>
-                        <option value="portfolio">Portfolio site</option>
-                        <option value="product">Product / app UI</option>
-                      </select>
-                    </label>
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <select
+                      value={form.projectType || ""}
+                      onChange={(e) =>
+                        updateField("projectType", e.target.value)
+                      }
+                      className={inputBase}
+                    >
+                      <option value="">Project type</option>
+                      <option value="landing">Landing page</option>
+                      <option value="website">Business / brand website</option>
+                      <option value="portfolio">Portfolio site</option>
+                      <option value="product">Product / app UI</option>
+                    </select>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Primary goal</span>
-                      <select
-                        value={form.goal}
-                        onChange={(e) => updateField("goal", e.target.value)}
-                        className={fieldInput}
-                        title="Primary goal"
-                      >
-                        <option value="">Select goal</option>
-                        <option value="Launch">Launch something new</option>
-                        <option value="Redesign">Redesign existing</option>
-                        <option value="Conversions">Improve conversions</option>
-                        <option value="MVP">Build an MVP</option>
-                      </select>
-                    </label>
+                    <select
+                      value={form.goal || ""}
+                      onChange={(e) => updateField("goal", e.target.value)}
+                      className={inputBase}
+                    >
+                      <option value="">Primary goal</option>
+                      <option value="Launch">Launch something new</option>
+                      <option value="Redesign">Redesign existing</option>
+                      <option value="Conversions">Improve conversions</option>
+                      <option value="MVP">Build an MVP</option>
+                    </select>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Budget</span>
-                      <select
-                        value={form.budget}
-                        onChange={(e) => updateField("budget", e.target.value)}
-                        className={fieldInput}
-                        title="Budget"
-                      >
-                        <option value="">Select budget</option>
-                        <option value="0-500">£0–£500</option>
-                        <option value="500-1000">£500–£1000</option>
-                        <option value="1000+">£1000+</option>
-                      </select>
-                    </label>
+                    <select
+                      value={form.budget || ""}
+                      onChange={(e) => updateField("budget", e.target.value)}
+                      className={inputBase}
+                    >
+                      <option value="">Budget</option>
+                      <option value="0-500">£0–£500</option>
+                      <option value="500-1000">£500–£1000</option>
+                      <option value="1000+">£1000+</option>
+                    </select>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Timeline</span>
-                      <select
-                        value={form.timeline}
-                        onChange={(e) =>
-                          updateField("timeline", e.target.value)
-                        }
-                        className={fieldInput}
-                        title="Timeline"
-                      >
-                        <option value="">Select timeline</option>
-                        <option value="ASAP">ASAP</option>
-                        <option value="2-4 weeks">2–4 weeks</option>
-                        <option value="1-2 months">1–2 months</option>
-                        <option value="Flexible">Flexible</option>
-                      </select>
-                    </label>
+                    <select
+                      value={form.timeline || ""}
+                      onChange={(e) => updateField("timeline", e.target.value)}
+                      className={inputBase}
+                    >
+                      <option value="">Timeline</option>
+                      <option value="ASAP">ASAP</option>
+                      <option value="2-4 weeks">2–4 weeks</option>
+                      <option value="1-2 months">1–2 months</option>
+                      <option value="Flexible">Flexible</option>
+                    </select>
 
-                    <label className={fieldShell}>
-                      <span className={fieldLabel}>Urgency</span>
-                      <select
-                        value={form.urgency}
-                        onChange={(e) => updateField("urgency", e.target.value)}
-                        className={fieldInput}
-                        title="Urgency"
-                      >
-                        <option value="">Select urgency</option>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                      </select>
-                    </label>
+                    <select
+                      value={form.urgency || ""}
+                      onChange={(e) => updateField("urgency", e.target.value)}
+                      className={inputBase}
+                    >
+                      <option value="">Urgency</option>
+                      <option value="High">High</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Low">Low</option>
+                    </select>
 
                     <div className={helperCard}>
                       Higher budgets, tighter timelines, and clearer goals help
-                      me recommend the right package faster.
+                      me recommend the strongest starting point faster.
                     </div>
                   </div>
 
-                  <label className="mt-4 block">
-                    <div className={fieldShell}>
-                      <span className={fieldLabel}>Project details</span>
-                      <textarea
-                        placeholder="Describe the project, what success looks like, and anything important I should know..."
-                        value={form.description}
-                        onChange={(e) =>
-                          updateField("description", e.target.value)
-                        }
-                        className={`${fieldInput} min-h-[160px] resize-none`}
-                      />
-                    </div>
-                  </label>
+                  <textarea
+                    placeholder="Describe the project, what success looks like, and anything important I should know..."
+                    value={form.description || ""}
+                    onChange={(e) => updateField("description", e.target.value)}
+                    className={`${inputBase} mt-4 min-h-[140px] resize-none`}
+                  />
 
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                     <button
                       type="button"
                       onClick={handleBriefSubmit}
-                      disabled={briefLoading}
-                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={briefLoading || !canSubmit}
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {briefLoading ? "Analysing..." : "Get recommendation"}
                     </button>
@@ -617,6 +746,7 @@ export function ContactSection({
                       onClick={() => {
                         setForm(initialForm);
                         setBriefResult(null);
+                        setLeadScore(null);
                       }}
                       className={
                         isLight
@@ -647,6 +777,14 @@ export function ContactSection({
                           <h4 className="mt-2 text-xl font-semibold">
                             {recommendationCopy[briefResult].title}
                           </h4>
+
+                          {leadScore !== null && (
+                            <p
+                              className={`mt-2 text-sm ${themeClasses.subtle}`}
+                            >
+                              Lead score: {leadScore}/8
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -659,26 +797,13 @@ export function ContactSection({
                       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                         <button
                           type="button"
-                          onClick={handleBriefSubmit}
-                          disabled={briefLoading}
-                          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {briefLoading ? "Redirecting..." : "Continue"}
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleCheckout(briefResult)}
+                          onClick={handleRecommendedCheckout}
                           disabled={loadingTier !== null}
-                          className={
-                            isLight
-                              ? "inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-900"
-                              : "inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-medium text-white"
-                          }
+                          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {loadingTier === briefResult
                             ? "Redirecting..."
-                            : "Use recommended package"}
+                            : "Continue"}
                         </button>
 
                         <button

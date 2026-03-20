@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import "../node_modules/tw-animate-css/dist/tw-animate.css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,7 +43,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-display-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -86,10 +84,26 @@
 }
 
 body {
+  font-family: var(--font-display-sans), sans-serif;
+  font-weight: 500;
   background-image:
     radial-gradient(circle at top left, rgba(244, 114, 182, 0.12), transparent 24%),
     radial-gradient(circle at top right, rgba(34, 211, 238, 0.1), transparent 22%),
     linear-gradient(180deg, #07111f 0%, #08101c 100%);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-bold,
+.font-extrabold,
+.font-black {
+  font-family: var(--font-display-sans), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 ::selection {
@@ -148,9 +162,11 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
