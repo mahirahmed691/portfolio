@@ -61,22 +61,14 @@ export function TechStackSection({
               />
 
               {/* Brand logo */}
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl"
-                style={{
-                  background: `${item.color}18`,
-                  boxShadow: `0 0 0 1px ${item.color}22`,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://cdn.simpleicons.org/${item.icon}/${item.color.replace("#", "")}`}
-                  alt={item.label}
-                  width={22}
-                  height={22}
-                  loading="lazy"
-                />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`https://cdn.simpleicons.org/${item.icon}/${item.color.replace("#", "")}`}
+                alt={item.label}
+                width={28}
+                height={28}
+                loading="lazy"
+              />
 
               <div>
                 <p
