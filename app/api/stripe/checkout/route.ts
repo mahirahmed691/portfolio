@@ -28,7 +28,8 @@ export async function POST(req: Request) {
   try {
     const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "mahirahmed.co.uk";
     const proto = req.headers.get("x-forwarded-proto") || "https";
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`;
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`).replace(/\/$/, "");
+    console.log("[checkout] siteUrl:", siteUrl);
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -119,7 +120,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("Stripe checkout error:", error);
+    console.error("Stripe checkout error:", JSON.stringify(error, null, 2));
 
     return NextResponse.json(
       {
@@ -127,6 +128,7 @@ export async function POST(req: Request) {
           error instanceof Error
             ? error.message
             : "Unable to create checkout session",
+        detail: error,
       },
       { status: 500 },
     );
