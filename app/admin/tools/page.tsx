@@ -233,11 +233,13 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
   };
 
   const download = () => {
+    const url = URL.createObjectURL(new Blob([output], { type: "text/html" }));
     const a = Object.assign(document.createElement("a"), {
-      href: URL.createObjectURL(new Blob([output], { type: "text/html" })),
+      href: url,
       download: `${prompt.slice(0, 30).replace(/\s+/g, "-").toLowerCase()}.html`,
     });
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (

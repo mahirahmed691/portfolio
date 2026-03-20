@@ -38,13 +38,19 @@ export default function AdminLoginPage() {
         </p>
 
         <form onSubmit={handleLogin} className="mt-6 space-y-4">
-          <input
-            type="password"
-            placeholder="Admin password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
-          />
+          <div className="space-y-2">
+            <label htmlFor="admin-password" className="block text-sm text-white/50">
+              Password
+            </label>
+            <input
+              id="admin-password"
+              type="password"
+              placeholder="Enter your admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
+            />
+          </div>
 
           {error ? <p className="text-sm text-rose-400">{error}</p> : null}
 

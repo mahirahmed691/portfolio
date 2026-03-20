@@ -453,7 +453,7 @@ function AISummaryPanel({ lead }: { lead: Lead }) {
           </button>
         </div>
         {!summary && !loading && (
-          <p className="text-xs text-white/28 leading-relaxed italic">
+          <p className="text-xs text-white/45 leading-relaxed italic">
             Click generate for an AI-powered read on this lead and a recommended
             next step.
           </p>
@@ -1214,7 +1214,7 @@ export default function LeadsPage() {
                     className="flex items-center justify-between gap-4 py-2.5"
                     style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
                   >
-                    <span className="text-[10px] uppercase tracking-widest text-white/28 shrink-0">
+                    <span className="text-[10px] uppercase tracking-widest text-white/45 shrink-0">
                       {label}
                     </span>
                     {label === "Website" && value ? (
@@ -1250,7 +1250,7 @@ export default function LeadsPage() {
                     className="flex items-center justify-between gap-4 py-2.5"
                     style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
                   >
-                    <span className="text-[10px] uppercase tracking-widest text-white/28 shrink-0">
+                    <span className="text-[10px] uppercase tracking-widest text-white/45 shrink-0">
                       {label}
                     </span>
                     <span className="text-xs font-medium text-white/75 truncate max-w-[55vw] sm:max-w-[200px]">

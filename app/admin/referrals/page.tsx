@@ -356,8 +356,6 @@ export default function ReferralsPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      console.log("load data:", data);
-      console.log("load error:", JSON.stringify(error));
 
       if (!error && data) {
         setReferrals(data as Referral[]);
@@ -755,7 +753,7 @@ export default function ReferralsPage() {
               <p className="text-sm font-medium text-white/50">
                 No referral links yet
               </p>
-              <p className="text-xs text-white/28 mt-1 max-w-xs">
+              <p className="text-xs text-white/45 mt-1 max-w-xs">
                 Create your first link to start tracking who's sending you
                 clients.
               </p>
@@ -867,7 +865,7 @@ export default function ReferralsPage() {
                       }}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] uppercase tracking-widest text-white/28">
+                        <span className="text-[10px] uppercase tracking-widest text-white/45">
                           Commission
                         </span>
                         <span
@@ -880,7 +878,7 @@ export default function ReferralsPage() {
                           {referral.commission}
                         </span>
                       </div>
-                      <span className="text-[11px] text-white/28">
+                      <span className="text-[11px] text-white/45">
                         {formatDate(referral.created_at)} ·{" "}
                         {timeAgo(referral.created_at)}
                       </span>
@@ -960,7 +958,7 @@ export default function ReferralsPage() {
                   },
                 ].map((item) => (
                   <div key={item.step} className="flex gap-3">
-                    <span className="text-[10px] font-bold text-white/20 mt-0.5 shrink-0 tabular-nums">
+                    <span className="text-[10px] font-bold text-white/35 mt-0.5 shrink-0 tabular-nums">
                       {item.step}
                     </span>
                     <div>
@@ -978,10 +976,10 @@ export default function ReferralsPage() {
                 className="mt-4 pt-4 flex items-start gap-2"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
               >
-                <span className="text-[10px] text-white/20 shrink-0 mt-0.5">
+                <span className="text-[10px] text-white/35 shrink-0 mt-0.5">
                   ℹ
                 </span>
-                <p className="text-[11px] text-white/28 leading-relaxed">
+                <p className="text-[11px] text-white/45 leading-relaxed">
                   Clicks are tracked automatically via{" "}
                   <code className="text-white/40 bg-white/5 px-1 py-0.5 rounded">
                     /api/referral-click

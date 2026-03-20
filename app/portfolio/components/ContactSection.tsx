@@ -130,11 +130,13 @@ export function ContactSection({
 }: Pick<SharedProps, "isLight" | "themeClasses">) {
   const [loadingTier, setLoadingTier] = useState<PackageTier | null>(null);
   const [packageOpen, setPackageOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const [showBrief, setShowBrief] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
   const [leadScore, setLeadScore] = useState<number | null>(null);
+  const [briefError, setBriefError] = useState<string | null>(null);
 
   const [form, setForm] = useState<BriefForm>(initialForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -197,6 +199,7 @@ export function ContactSection({
   const handleCheckout = async (tier: PackageTier) => {
     try {
       setLoadingTier(tier);
+      setCheckoutError(null);
 
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
@@ -223,21 +226,18 @@ export function ContactSection({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        console.error("Stripe API error:", data);
-        alert(data?.error || `Checkout failed (${res.status})`);
+        setCheckoutError(data?.error || `Checkout failed (${res.status})`);
         return;
       }
 
       if (!data?.url) {
-        console.error("Stripe checkout missing URL:", data);
-        alert("Checkout failed: missing redirect URL.");
+        setCheckoutError("Checkout failed: missing redirect URL.");
         return;
       }
 
       window.location.href = data.url;
-    } catch (error) {
-      console.error("Checkout error:", error);
-      alert("Sorry, something went wrong starting checkout.");
+    } catch {
+      setCheckoutError("Sorry, something went wrong starting checkout.");
     } finally {
       setLoadingTier(null);
     }
@@ -248,6 +248,7 @@ export function ContactSection({
       setBriefLoading(true);
       setBriefResult(null);
       setLeadScore(null);
+      setBriefError(null);
 
       const res = await fetch("/api/brief", {
         method: "POST",
@@ -267,13 +268,7 @@ export function ContactSection({
       }
 
       if (!res.ok) {
-        console.error("Brief API error:", {
-          status: res.status,
-          raw: text,
-          parsed: data,
-        });
-
-        alert(data?.error || `Brief failed (${res.status})`);
+        setBriefError(data?.error || `Something went wrong (${res.status}). Please try again.`);
         return;
       }
 
@@ -282,15 +277,14 @@ export function ContactSection({
         data?.recommendedPackage !== "standard" &&
         data?.recommendedPackage !== "premium"
       ) {
-        alert("Could not generate a recommendation.");
+        setBriefError("Could not generate a recommendation. Please try again.");
         return;
       }
 
       setBriefResult(data.recommendedPackage);
       setLeadScore(typeof data?.leadScore === "number" ? data.leadScore : null);
-    } catch (error) {
-      console.error("Brief submission error:", error);
-      alert("Sorry, something went wrong generating your recommendation.");
+    } catch {
+      setBriefError("Sorry, something went wrong generating your recommendation.");
     } finally {
       setBriefLoading(false);
     }
@@ -758,6 +752,12 @@ export function ContactSection({
                     </button>
                   </div>
 
+                  {briefError && (
+                    <p className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
+                      {briefError}
+                    </p>
+                  )}
+
                   {briefResult && (
                     <div
                       className={
@@ -853,7 +853,13 @@ export function ContactSection({
       </section>
 
       {packageOpen && (
-        <div className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="packages-dialog-title"
+          className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+          onKeyDown={(e) => { if (e.key === "Escape") setPackageOpen(false); }}
+        >
           <div className="hidden h-full items-center justify-center px-4 py-6 md:flex">
             <div
               className={
@@ -869,7 +875,7 @@ export function ContactSection({
                   >
                     Packages
                   </p>
-                  <h3 className="mt-2 text-5xl font-semibold">
+                  <h3 id="packages-dialog-title" className="mt-2 text-5xl font-semibold">
                     Choose your starting point
                   </h3>
                   <p className={`mt-4 text-sm leading-7 ${themeClasses.muted}`}>
@@ -891,6 +897,12 @@ export function ContactSection({
                   Close
                 </button>
               </div>
+
+              {checkoutError && (
+                <p className="mb-4 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
+                  {checkoutError}
+                </p>
+              )}
 
               <div className="grid gap-4 md:grid-cols-3">
                 {packages.map((pkg) => {
