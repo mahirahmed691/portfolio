@@ -28,18 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://assets.calendly.com/assets/external/widget.css"
-        />
-      </head>
+      <head />
       <body
         className={`${displaySans.className} ${displaySans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
         <Analytics />
 
+        <Script
+          id="calendly-css"
+          strategy="afterInteractive"
+        >{`var l=document.createElement('link');l.rel='stylesheet';l.href='https://assets.calendly.com/assets/external/widget.css';document.head.appendChild(l);`}</Script>
         <Script
           src="https://assets.calendly.com/assets/external/widget.js"
           strategy="afterInteractive"

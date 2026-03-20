@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { founderNotes, heroMetrics } from "../data";
 import type { SharedProps } from "../types";
@@ -203,10 +204,13 @@ export function HeroSection({
               >
                 <div className="relative">
                   <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.28),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(244,114,182,0.2),transparent_40%)] mix-blend-screen" />
-                  <img
+                  <Image
                     src="/sweetdezire.jpg"
                     alt="Sweet Dezire project preview"
+                    width={800}
+                    height={288}
                     className="h-52 w-full object-cover sm:h-72"
+                    priority
                   />
                 </div>
                 <div className="space-y-4 p-5 sm:p-6">

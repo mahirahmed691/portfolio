@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getSessionToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -17,9 +18,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
+    const sessionToken = await getSessionToken(adminSecret);
     const res = NextResponse.json({ success: true });
 
-    res.cookies.set("admin_auth", adminSecret, {
+    res.cookies.set("admin_auth", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

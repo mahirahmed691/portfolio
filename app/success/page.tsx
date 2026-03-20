@@ -3,7 +3,7 @@ export default function SuccessPage() {
     <main className="mx-auto max-w-3xl px-6 py-24 text-center">
       <h1 className="text-4xl font-semibold">Deposit received</h1>
       <p className="mt-4 text-lg text-slate-600">
-        Thanks — your payment went through. I’ll be in touch shortly to confirm
+        Thanks — your payment went through. I'll be in touch shortly to confirm
         the next steps for your project.
       </p>
       <a

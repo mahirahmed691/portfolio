@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionToken } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  const cookieStore = await cookies();
+  const adminCookie = cookieStore.get("admin_auth")?.value;
+  const adminSecret = process.env.ADMIN_SECRET;
+  const expectedToken = adminSecret ? await getSessionToken(adminSecret) : null;
+
+  if (!expectedToken || adminCookie !== expectedToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const body = await req.json();
 
   const key = process.env.ANTHROPIC_API_KEY;

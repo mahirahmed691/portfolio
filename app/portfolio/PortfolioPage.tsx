@@ -28,7 +28,7 @@ export function PortfolioPage() {
 
   useEffect(() => {
     setTheme(getStoredTheme());
-    runDevTests();
+    if (process.env.NODE_ENV === "development") runDevTests();
   }, []);
 
   useEffect(() => {

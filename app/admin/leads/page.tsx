@@ -378,11 +378,11 @@ function AISummaryPanel({ lead }: { lead: Lead }) {
     try {
       const prompt = `You are a CRM assistant. Given this lead, write a concise 2-3 sentence sales summary and suggest one specific, personalised next step. Be direct and practical. No headers, no bullet points, just a short paragraph.\n\nLead:\n- Name: ${lead.name || "Unknown"}\n- Company: ${lead.company || "Unknown"}\n- Project type: ${lead.project_type || "Unknown"}\n- Goal: ${lead.goal || "Unknown"}\n- Budget: ${lead.budget || "Unknown"}\n- Timeline: ${lead.timeline || "Unknown"}\n- Urgency: ${lead.urgency || "Unknown"}\n- Recommended package: ${lead.recommended_package || "Unknown"}\n- Lead score: ${lead.lead_score ?? "Unknown"}/8\n- Description: ${lead.description || "None"}`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-5",
           max_tokens: 1000,
           messages: [{ role: "user", content: prompt }],
         }),
