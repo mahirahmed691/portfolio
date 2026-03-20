@@ -26,16 +26,10 @@ async function getStripeClient() {
 
 export async function POST(req: Request) {
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const origin = new URL(req.url).origin;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!siteUrl) {
-      return NextResponse.json(
-        { error: "Missing NEXT_PUBLIC_SITE_URL" },
-        { status: 500 },
-      );
-    }
 
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json(
