@@ -9,12 +9,13 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
             Mahir Ahmed
           </p>
           <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">
-            Building bold, polished digital experiences with a sharper point of
-            view.
+            Platform engineer. Frontend craftsman. Building end to end since
+            2018.
           </p>
           <p className="mt-4 max-w-lg text-sm leading-7 text-white/50">
-            Available for freelance frontend projects, brand-led websites, and
-            product interface work.
+            Available for platform engineering contracts, full-stack product
+            builds, and technical web work that needs someone who understands
+            the whole system.
           </p>
         </div>
 

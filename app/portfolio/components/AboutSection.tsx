@@ -18,8 +18,7 @@ export function AboutSection({
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
-              I’m not trying to make websites look nice. I want them to feel
-              distinctive.
+              Platform engineer by trade. Frontend craftsman by design.
             </h2>
           </div>
 
@@ -27,15 +26,18 @@ export function AboutSection({
             className={`space-y-6 text-base leading-8 md:text-lg ${themeClasses.muted}`}
           >
             <p>
-              My taste leans bold, polished, and story-led. I like websites with
-              atmosphere, interfaces with restraint, and brand moments that make
-              people feel something before they start reading.
+              I&apos;ve spent 7 years building the systems most engineers never
+              see — cloud infrastructure, CI/CD pipelines, distributed
+              services, and the observability that keeps them honest in
+              production. That depth changes how I approach everything above it.
             </p>
 
             <p>
-              Whether I’m shaping a landing page, a brand-led website, or a
-              product interface, I care about visual character just as much as
-              structure, usability, and conversion.
+              I also care deeply about what users actually experience. When I
+              build a frontend, I&apos;m not guessing what the backend can
+              handle — I built it. That end-to-end ownership produces work that
+              is faster, more reliable, and easier to scale than anything built
+              in isolation.
             </p>
           </div>
         </div>

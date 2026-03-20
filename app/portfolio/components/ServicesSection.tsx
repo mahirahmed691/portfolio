@@ -22,8 +22,7 @@ export function ServicesSection({
             Services
           </p>
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
-            I help brands feel sharper, products feel clearer, and launches feel
-            more intentional.
+            Infrastructure that holds. Interfaces that land. Shipped end to end.
           </h2>
         </div>
 

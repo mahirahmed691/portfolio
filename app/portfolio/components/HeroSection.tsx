@@ -45,7 +45,7 @@ export function HeroSection({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            Available for new projects — taking on work now
+            Platform engineer · available for new projects
           </div>
 
           <div
@@ -55,33 +55,32 @@ export function HeroSection({
                 : "inline-flex rounded-full border border-fuchsia-300/15 bg-white/5 px-4 py-2 text-xs tracking-[0.18em] text-white/70 uppercase backdrop-blur sm:text-sm"
             }
           >
-            Creative developer for founders, brands, and products that want more
-            presence
+            Platform engineer · frontend craftsman · building since 2018
           </div>
 
           <p
             className={`mt-6 max-w-xl text-sm leading-6 sm:mt-8 sm:text-base sm:leading-7 ${themeClasses.muted}`}
           >
-            Independent frontend designer-developer building premium digital
-            identities for people who want their brand to feel more valuable,
-            more confident, and harder to ignore.
+            Platform engineer with 7 years building scalable systems — and the
+            frontend craft to ship the full product, from infrastructure to
+            interface.
           </p>
 
           <h1 className="mt-5 max-w-5xl text-[2.6rem] font-semibold leading-[0.92] tracking-[-0.07em] sm:mt-6 sm:text-6xl lg:text-[5.2rem]">
-            I build digital identities
+            I build systems that scale
             <span className="bg-gradient-to-r from-rose-300 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
               {" "}
-              that feel bold
-            </span>
-            , premium, and unmistakably personal.
+              and interfaces
+            </span>{" "}
+            people actually use.
           </h1>
 
           <p
             className={`mt-5 max-w-2xl text-base leading-7 sm:mt-6 sm:text-[1.2rem] sm:leading-8 ${themeClasses.muted}`}
           >
-            I help ambitious founders and brands turn rough ideas into web
-            experiences with more taste, more edge, and a stronger sense of
-            identity.
+            Most engineers hand off at the API. I go further — building the
+            cloud infrastructure, the pipelines, and the polished frontend that
+            sits on top of it all.
           </p>
 
           <div className="mt-6 grid gap-3 sm:mt-8 sm:max-w-xl">

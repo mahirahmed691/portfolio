@@ -2,22 +2,22 @@ import type { Project, Service, Testimonial } from "./types";
 
 export const services: Service[] = [
   {
-    title: "Conversion-focused websites",
+    title: "Platform engineering",
     description:
-      "Marketing sites and business websites that look premium, load fast, and guide visitors toward a clear next step.",
-    icon: "◈",
+      "Scalable cloud infrastructure, CI/CD pipelines, Kubernetes, microservices, and distributed systems — built to stay reliable under real load.",
+    icon: "⬡",
   },
   {
     title: "Product UI & frontend",
     description:
-      "Modern interfaces for early-stage products, internal tools, and web apps with a strong focus on usability.",
+      "Modern interfaces for products, internal tools, and web apps — built with the systems depth to know what the backend actually needs.",
     icon: "✦",
   },
   {
-    title: "Design refreshes",
+    title: "End-to-end builds",
     description:
-      "Visual cleanups and UX improvements for brands that already have something live but want it to feel sharper.",
-    icon: "⬢",
+      "From infrastructure to interface. If you need someone who can own the full stack and ship something that works in production, that's the sweet spot.",
+    icon: "◈",
   },
 ];
 
@@ -91,15 +91,15 @@ export const projects: Project[] = [
 ];
 
 export const founderNotes = [
-  "I care about taste just as much as performance.",
-  "I like interfaces that feel sharp, intentional, and alive.",
-  "My best work usually sits between brand, product, and story.",
+  "I understand what's running under the hood — because I built it.",
+  "Systems thinking shapes everything I design and ship.",
+  "My best work sits where infrastructure, product, and craft meet.",
 ];
 
 export const heroMetrics = [
-  { label: "Positioning", value: "Founder-first" },
-  { label: "Aesthetic", value: "Bold luxury" },
-  { label: "Experience", value: "Story-led UI" },
+  { label: "Platform engineering", value: "Since 2018" },
+  { label: "Depth", value: "Infra → UI" },
+  { label: "Approach", value: "Full stack" },
 ];
 
 export const testimonials: Testimonial[] = [
