@@ -190,6 +190,34 @@ export async function POST(req: Request) {
       }
     }
 
+    // Onboarding email to the client after deposit
+    if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL && email) {
+      try {
+        const resend = await getResendClient();
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL,
+          to: email,
+          subject: "Welcome aboard — here's what happens next",
+          html: `<div style="font-family: Arial, sans-serif; max-width: 600px; line-height: 1.7; color: #1a1a1a;">
+  <h2 style="color: #7c3aed;">Welcome aboard, ${name} 👋</h2>
+  <p>Your deposit has been received — thank you. I'm excited to get started on your project.</p>
+  <h3>What happens next</h3>
+  <ol>
+    <li><strong>Within 24 hours:</strong> I'll send a short project questionnaire to help me understand your goals in more detail.</li>
+    <li><strong>Within 2 business days:</strong> We'll schedule a kickoff call to align on scope, timeline, and design direction.</li>
+    <li><strong>Week 1:</strong> First designs or concepts shared for your feedback.</li>
+  </ol>
+  <h3>In the meantime</h3>
+  <p>If you have any assets ready — logos, brand guidelines, copy, images — feel free to reply to this email with them. The more you can share upfront, the faster we move.</p>
+  <p>You can also book a call directly: <a href="https://calendly.com/mahirahmed691">calendly.com/mahirahmed691</a></p>
+  <p style="margin-top: 32px;">Talk soon,<br/><strong>Mahir Ahmed</strong><br/>mahirahmed.co.uk</p>
+</div>`,
+        });
+      } catch (err) {
+        console.error("Resend onboarding email crash:", err);
+      }
+    }
+
     if (twilioFrom && phone) {
       try {
         const client = await getTwilioClient();
