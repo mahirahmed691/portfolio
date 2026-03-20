@@ -8,44 +8,44 @@ type PackageTier = "starter" | "standard" | "premium";
 const packages = [
   {
     tier: "starter" as PackageTier,
-    name: "Day rate",
-    price: "From £500/day",
-    note: "Day rate contract",
+    name: "Starter",
+    price: "From £500",
+    note: "One-page or landing page",
     description:
-      "Flexible, day-rate platform engineering work. Ideal for ongoing contracts, sprint support, or embedded team work. IR35 and limited company arrangements welcome.",
-    bestFor: "Ongoing contracts and embedded team work",
+      "A fast, polished single page — landing page, portfolio, or personal site. Clean design, mobile-first, and ready to launch quickly.",
+    bestFor: "Landing pages, personal sites, simple launches",
     includes: [
-      "Flexible day-rate engagement",
-      "Sprint and team embedding",
-      "IR35 and ltd company welcome",
+      "1-page design and build",
+      "Mobile-responsive layout",
+      "Basic contact form",
     ],
   },
   {
     tier: "standard" as PackageTier,
-    name: "Project",
-    price: "From £5,000",
-    note: "Fixed-scope project",
+    name: "Growth",
+    price: "From £1,500",
+    note: "Multi-page website",
     description:
-      "A defined platform or infrastructure project with clear deliverables — CI/CD pipelines, cloud migrations, Kubernetes setup, IaC builds. Fixed price, fixed scope.",
-    bestFor: "CI/CD, Kubernetes, cloud migrations, IaC builds",
+      "A full website for a business, brand, or product — multiple pages, polished design, CMS integration if needed, and built to convert.",
+    bestFor: "Business sites, product launches, brand websites",
     includes: [
-      "Fixed price and scope",
-      "Clear deliverables and milestones",
-      "Platform and infrastructure projects",
+      "Up to 5 pages",
+      "Custom design and animations",
+      "CMS or contact integrations",
     ],
   },
   {
     tier: "premium" as PackageTier,
-    name: "Retainer",
-    price: "From £3,000/mo",
-    note: "Monthly retainer",
+    name: "Premium",
+    price: "From £3,000",
+    note: "Full product or web app",
     description:
-      "Ongoing platform support and delivery on a monthly basis. Suits teams that want consistent engineering capacity without the overhead of a full hire.",
-    bestFor: "Consistent engineering capacity, no full-hire overhead",
+      "A complete web product — custom UI, backend integration, authentication, and anything that needs serious frontend engineering behind it.",
+    bestFor: "Web apps, dashboards, client portals, full products",
     includes: [
-      "Monthly platform support",
-      "Ongoing delivery and improvements",
-      "Predictable capacity and cost",
+      "Full product design and build",
+      "API and backend integration",
+      "Ongoing support available",
     ],
   },
 ];
@@ -55,19 +55,19 @@ const recommendationCopy: Record<
   { title: string; summary: string }
 > = {
   starter: {
-    title: "Day rate looks like the best fit",
+    title: "Starter looks like the best fit",
     summary:
-      "Best for flexible, ongoing engagement where scope evolves over time — sprint support, embedded team work, or day-to-day platform engineering.",
+      "Perfect for a clean, fast landing page or personal site — designed well, built properly, and ready to go without the overhead of a full project.",
   },
   standard: {
-    title: "Project looks like the best fit",
+    title: "Growth looks like the best fit",
     summary:
-      "Best for well-defined platform work with clear deliverables — CI/CD pipelines, Kubernetes setup, cloud migrations, or IaC builds with a fixed price and scope.",
+      "Ideal for a business or brand that needs a full website — multiple pages, strong visual design, and built to turn visitors into enquiries.",
   },
   premium: {
-    title: "Retainer looks like the best fit",
+    title: "Premium looks like the best fit",
     summary:
-      "Best for teams that need consistent, ongoing platform engineering capacity without the overhead of a full hire — predictable monthly cost and delivery.",
+      "The right fit for something more ambitious — a web app, client portal, or product interface that needs serious frontend engineering and custom integrations.",
   },
 };
 
