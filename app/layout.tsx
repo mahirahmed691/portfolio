@@ -16,9 +16,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mahir Ahmed | Frontend Developer",
+  title: "Mahir Ahmed | Platform Engineer & Frontend Developer",
   description:
-    "Portfolio of Mahir Ahmed, a frontend developer creating polished websites and product interfaces for businesses, founders, and growing brands.",
+    "Mahir Ahmed — platform engineer and frontend developer. 7+ years building cloud infrastructure and polished product interfaces for HSBC, Zurich, Deutsche Bank and growing brands.",
+  metadataBase: new URL("https://mahirahmed.co.uk"),
+  alternates: {
+    canonical: "https://mahirahmed.co.uk",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://mahirahmed.co.uk",
+    title: "Mahir Ahmed | Platform Engineer & Frontend Developer",
+    description:
+      "Platform engineer and frontend developer. 7+ years building cloud infrastructure and polished product interfaces for HSBC, Zurich, Deutsche Bank and growing brands.",
+    siteName: "Mahir Ahmed",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Mahir Ahmed — Platform Engineer & Frontend Developer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mahir Ahmed | Platform Engineer & Frontend Developer",
+    description:
+      "Platform engineer and frontend developer. 7+ years building cloud infrastructure and polished product interfaces.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function RootLayout({
