@@ -217,110 +217,118 @@ function getQuickReplies(lead: Lead) {
   const goal = lead.goal || "your project";
   return [
     {
-      label: "Initial outreach",
+      label: "Outreach",
       icon: "👋",
       subject: `Working with ${company}`,
-      body: `Hi ${name},\n\nI came across your enquiry and wanted to reach out personally. Based on what you've shared about ${goal}, I think we'd be a great fit.\n\nWould you be open to a quick 20-minute call this week to explore further?\n\nBest,`,
+      body: `Hi ${name},\n\nI came across your enquiry and wanted to reach out personally. Based on what you've shared about ${goal}, I think we'd be a great fit.\n\nWould you be open to a quick 20-minute call this week?\n\nBest,`,
     },
     {
-      label: "Send proposal",
+      label: "Proposal",
       icon: "📄",
       subject: `Proposal for ${company} — ${pkg} package`,
-      body: `Hi ${name},\n\nThank you for your time — it was great learning more about what you're building at ${company}.\n\nI've put together a proposal based on our conversation. I'd recommend our ${pkg} package, which I think aligns well with your goals around ${goal}.\n\nI'll send the full document separately. Let me know if you have any questions.\n\nBest,`,
+      body: `Hi ${name},\n\nThank you for your time — it was great learning more about ${company}.\n\nI've put together a proposal based on our conversation. I'd recommend our ${pkg} package, which aligns with your goals around ${goal}.\n\nBest,`,
     },
     {
       label: "Follow up",
       icon: "🔁",
       subject: `Following up — ${company}`,
-      body: `Hi ${name},\n\nJust following up on my previous message. I know things get busy, so I wanted to check in and see if you'd had a chance to look it over.\n\nHappy to answer any questions or jump on a call at your convenience.\n\nBest,`,
+      body: `Hi ${name},\n\nJust following up on my previous message. I know things get busy — did you get a chance to look it over?\n\nHappy to answer any questions.\n\nBest,`,
     },
     {
       label: "Closing",
       icon: "✅",
       subject: `Ready to get started?`,
-      body: `Hi ${name},\n\nI wanted to circle back one more time — we have availability opening up soon and I'd love to secure your spot before it fills.\n\nIf now isn't the right time, no worries at all. Just let me know either way.\n\nBest,`,
+      body: `Hi ${name},\n\nI wanted to circle back — we have availability opening up soon and I'd love to secure your spot.\n\nIf now isn't the right time, no worries at all. Just let me know either way.\n\nBest,`,
     },
   ];
 }
 
-// ── Sub-components ────────────────────────────────────────────────
+// ── Collapsible Section ───────────────────────────────────────────
+function Section({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: "#0c1929",
+        boxShadow:
+          "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.25)",
+      }}
+    >
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-3.5"
+        style={{
+          borderBottom: open ? "1px solid rgba(255,255,255,0.04)" : "none",
+        }}
+      >
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-medium">
+          {title}
+        </span>
+        <span
+          className="text-white/30 text-xs transition-transform"
+          style={{
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            display: "inline-block",
+          }}
+        >
+          ▾
+        </span>
+      </button>
+      {open && <div className="p-4">{children}</div>}
+    </div>
+  );
+}
 
+// ── Sub-components ────────────────────────────────────────────────
 function ScoreRing({ score }: { score: number | null }) {
   const s = Math.max(0, Math.min(score || 0, 8));
   const pct = s / 8;
-  const r = 28;
+  const r = 22;
   const circ = 2 * Math.PI * r;
   const dash = circ * pct;
   const color = pct >= 0.75 ? "#e879f9" : pct >= 0.5 ? "#fb923c" : "#94a3b8";
   return (
     <div className="relative flex items-center justify-center">
-      <svg width={72} height={72} style={{ transform: "rotate(-90deg)" }}>
+      <svg width={56} height={56} style={{ transform: "rotate(-90deg)" }}>
         <circle
-          cx={36}
-          cy={36}
+          cx={28}
+          cy={28}
           r={r}
           fill="none"
           stroke="rgba(255,255,255,0.06)"
-          strokeWidth={5}
+          strokeWidth={4}
         />
         <circle
-          cx={36}
-          cy={36}
+          cx={28}
+          cy={28}
           r={r}
           fill="none"
           stroke={color}
-          strokeWidth={5}
+          strokeWidth={4}
           strokeDasharray={`${dash} ${circ}`}
           strokeLinecap="round"
           style={{ transition: "stroke-dasharray 0.6s ease" }}
         />
       </svg>
       <div className="absolute text-center">
-        <span className="block text-lg font-bold leading-none text-white">
+        <span className="block text-sm font-bold leading-none text-white">
           {s}
         </span>
-        <span className="block text-[9px] text-white/35 uppercase tracking-wider">
+        <span className="block text-[8px] text-white/35 uppercase tracking-wider">
           /8
         </span>
       </div>
     </div>
   );
-}
-
-function BentoCard({
-  children,
-  className = "",
-  style = {},
-}: {
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <div
-      className={`rounded-2xl bg-[#0c1929] ${className}`}
-      style={{
-        boxShadow:
-          "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.25)",
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function getGridSpanClass(span: number) {
-  const map: Record<number, string> = {
-    12: "col-span-2 md:col-span-4 lg:col-span-12",
-    8: "col-span-2 md:col-span-4 lg:col-span-8",
-    5: "col-span-2 md:col-span-4 lg:col-span-5",
-    4: "col-span-2 md:col-span-4 lg:col-span-4",
-    3: "col-span-1 md:col-span-2 lg:col-span-3",
-    2: "col-span-1 md:col-span-2 lg:col-span-2",
-  };
-
-  return map[span] || "col-span-2";
 }
 
 function Label({
@@ -350,7 +358,7 @@ function GhostBtn({
   return (
     <button
       {...props}
-      className={`inline-flex h-9 items-center justify-center rounded-xl bg-white/[0.05] px-4 text-xs font-medium text-white/75 transition-all hover:bg-white/[0.1] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed ${className}`}
+      className={`inline-flex h-9 items-center justify-center rounded-xl bg-white/[0.05] px-4 text-xs font-medium text-white/75 transition-all hover:bg-white/[0.1] hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${className}`}
     >
       {children}
     </button>
@@ -368,7 +376,7 @@ function PrimaryBtn({
   return (
     <button
       {...props}
-      className={`inline-flex h-9 items-center justify-center rounded-xl bg-white px-4 text-xs font-semibold text-[#07111f] transition hover:opacity-90 disabled:opacity-40 ${className}`}
+      className={`inline-flex h-9 items-center justify-center rounded-xl bg-white px-4 text-xs font-semibold text-[#07111f] transition hover:opacity-90 active:scale-95 disabled:opacity-40 ${className}`}
     >
       {children}
     </button>
@@ -380,7 +388,6 @@ function AISummaryPanel({ lead }: { lead: Lead }) {
   const [loading, setLoading] = useState(false);
   const [generated, setGenerated] = useState(false);
 
-  // Reset when lead changes
   useEffect(() => {
     setSummary(null);
     setGenerated(false);
@@ -390,20 +397,7 @@ function AISummaryPanel({ lead }: { lead: Lead }) {
     setLoading(true);
     setSummary(null);
     try {
-      const prompt = `You are a CRM assistant. Given this lead, write a concise 2-3 sentence sales summary and suggest one specific, personalised next step. Be direct and practical. No headers, no bullet points, just a short paragraph.
-
-Lead:
-- Name: ${lead.name || "Unknown"}
-- Company: ${lead.company || "Unknown"}
-- Project type: ${lead.project_type || "Unknown"}
-- Goal: ${lead.goal || "Unknown"}
-- Budget: ${lead.budget || "Unknown"}
-- Timeline: ${lead.timeline || "Unknown"}
-- Urgency: ${lead.urgency || "Unknown"}
-- Recommended package: ${lead.recommended_package || "Unknown"}
-- Lead score: ${lead.lead_score ?? "Unknown"}/8
-- Description: ${lead.description || "None"}`;
-
+      const prompt = `You are a CRM assistant. Given this lead, write a concise 2-3 sentence sales summary and suggest one specific, personalised next step. Be direct and practical. No headers, no bullet points, just a short paragraph.\n\nLead:\n- Name: ${lead.name || "Unknown"}\n- Company: ${lead.company || "Unknown"}\n- Project type: ${lead.project_type || "Unknown"}\n- Goal: ${lead.goal || "Unknown"}\n- Budget: ${lead.budget || "Unknown"}\n- Timeline: ${lead.timeline || "Unknown"}\n- Urgency: ${lead.urgency || "Unknown"}\n- Recommended package: ${lead.recommended_package || "Unknown"}\n- Lead score: ${lead.lead_score ?? "Unknown"}/8\n- Description: ${lead.description || "None"}`;
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -413,7 +407,6 @@ Lead:
           messages: [{ role: "user", content: prompt }],
         }),
       });
-
       const data = await res.json();
       const text =
         data.content
@@ -432,12 +425,15 @@ Lead:
   };
 
   return (
-    <BentoCard
-      className="p-5 relative overflow-hidden"
-      style={{ gridColumn: "span 12" }}
+    <div
+      className="rounded-2xl p-4 relative overflow-hidden"
+      style={{
+        background: "#0c1929",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+      }}
     >
       <div
-        className="absolute top-0 left-0 h-40 w-72 pointer-events-none"
+        className="absolute top-0 left-0 h-32 w-56 pointer-events-none"
         style={{
           background:
             "radial-gradient(ellipse, rgba(99,102,241,0.1) 0%, transparent 70%)",
@@ -462,7 +458,7 @@ Lead:
           <button
             onClick={generate}
             disabled={loading}
-            className="inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-[11px] font-medium transition-all disabled:opacity-60"
+            className="inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-[11px] font-medium transition-all disabled:opacity-60 active:scale-95"
             style={{
               background: "rgba(99,102,241,0.15)",
               color: "#818cf8",
@@ -481,11 +477,9 @@ Lead:
             )}
           </button>
         </div>
-
         {!summary && !loading && (
           <p className="text-xs text-white/28 leading-relaxed italic">
-            Click generate for an AI-powered read on this lead and a recommended
-            next step.
+            Click generate for an AI-powered read on this lead.
           </p>
         )}
         {loading && (
@@ -507,7 +501,7 @@ Lead:
           <p className="text-sm text-white/68 leading-relaxed">{summary}</p>
         )}
       </div>
-    </BentoCard>
+    </div>
   );
 }
 
@@ -536,7 +530,6 @@ function ActivityTimeline({ events }: { events: ActivityEvent[] }) {
         return "↗";
     }
   };
-
   return (
     <div className="space-y-1">
       {events.map((event, i) => {
@@ -590,19 +583,21 @@ function QuickReplyPanel({ lead }: { lead: Lead }) {
 
   const openMail = () => {
     const r = replies[selected];
-    if (lead.email) {
+    if (lead.email)
       window.location.href = `mailto:${lead.email}?subject=${encodeURIComponent(r.subject)}&body=${encodeURIComponent(r.body)}`;
-    }
   };
 
   return (
     <div>
-      <div className="flex flex-wrap gap-1.5 mb-3">
+      <div
+        className="flex gap-1.5 mb-3 overflow-x-auto pb-1 -mx-1 px-1"
+        style={{ scrollbarWidth: "none" }}
+      >
         {replies.map((r, i) => (
           <button
             key={i}
             onClick={() => setSelected(i)}
-            className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all"
+            className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all shrink-0 active:scale-95"
             style={
               selected === i
                 ? {
@@ -622,13 +617,12 @@ function QuickReplyPanel({ lead }: { lead: Lead }) {
           </button>
         ))}
       </div>
-
       <div
         className="rounded-xl px-4 py-3 text-xs leading-relaxed text-white/50 whitespace-pre-line"
         style={{
           background: "rgba(255,255,255,0.02)",
           border: "1px solid rgba(255,255,255,0.04)",
-          minHeight: "120px",
+          minHeight: "100px",
         }}
       >
         <p className="text-[10px] uppercase tracking-widest text-white/25 mb-2.5">
@@ -636,10 +630,88 @@ function QuickReplyPanel({ lead }: { lead: Lead }) {
         </p>
         <span className="text-white/60">{replies[selected].body}</span>
       </div>
-
       <div className="mt-3 flex gap-2">
         <GhostBtn onClick={copy}>{copied ? "✓ Copied" : "Copy"}</GhostBtn>
         {lead.email && <GhostBtn onClick={openMail}>Open in Mail</GhostBtn>}
+      </div>
+    </div>
+  );
+}
+
+// ── Lead List (mobile drawer) ─────────────────────────────────────
+function LeadListDrawer({
+  leads,
+  currentIndex,
+  onSelect,
+  onClose,
+}: {
+  leads: Lead[];
+  currentIndex: number;
+  onSelect: (i: number) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex flex-col"
+      style={{ background: "#060e1a" }}
+    >
+      <div
+        className="flex items-center justify-between px-4 py-4 border-b"
+        style={{ borderColor: "rgba(255,255,255,0.06)" }}
+      >
+        <span className="text-sm font-semibold text-white">
+          All Leads ({leads.length})
+        </span>
+        <button
+          onClick={onClose}
+          className="h-8 w-8 rounded-xl bg-white/[0.06] flex items-center justify-center text-white/60 text-sm"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {leads.map((l, i) => {
+          const st = getStatusStyle(l.status);
+          const priority = getPriority(l);
+          return (
+            <button
+              key={l.id}
+              onClick={() => {
+                onSelect(i);
+                onClose();
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-white/[0.04]"
+              style={{
+                background:
+                  i === currentIndex ? "rgba(255,255,255,0.04)" : "transparent",
+                borderBottom: "1px solid rgba(255,255,255,0.03)",
+              }}
+            >
+              <div className="h-9 w-9 rounded-xl bg-white/[0.06] flex items-center justify-center text-sm font-semibold text-white shrink-0">
+                {(l.name || "?")[0].toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {l.name || "Unnamed"}
+                </p>
+                <p className="text-xs text-white/40 truncate">
+                  {l.company || l.email || "—"}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1 shrink-0">
+                <span
+                  className="rounded-md px-2 py-0.5 text-[10px] font-medium"
+                  style={{ background: st.bg, color: st.color }}
+                >
+                  {l.status || "new"}
+                </span>
+                {priority === "hot" && (
+                  <span className="text-[9px] text-fuchsia-400">🔥 hot</span>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -658,6 +730,8 @@ export default function LeadsPage() {
   const [activityLogs, setActivityLogs] = useState<
     Record<string, ActivityEvent[]>
   >({});
+  const [showList, setShowList] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     const loadLeads = async () => {
@@ -835,9 +909,10 @@ export default function LeadsPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#060e1a] text-white"
+      className="min-h-screen bg-[#060e1a] text-white pb-24 lg:pb-8"
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
+      {/* Background ambience */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/8 blur-[100px]" />
         <div className="absolute top-1/3 -right-32 h-80 w-80 rounded-full bg-violet-600/8 blur-[100px]" />
@@ -852,12 +927,22 @@ export default function LeadsPage() {
         />
       </div>
 
-      <div className="relative mx-auto max-w-[1440px] px-5 py-6 lg:px-8">
-        {/* Top bar */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      {/* Mobile lead list drawer */}
+      {showList && (
+        <LeadListDrawer
+          leads={filteredLeads}
+          currentIndex={currentIndex}
+          onSelect={setCurrentIndex}
+          onClose={() => setShowList(false)}
+        />
+      )}
+
+      <div className="relative mx-auto max-w-[1440px] px-4 pt-4 lg:px-8 lg:pt-6">
+        {/* ── Top bar ── */}
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
             <div
-              className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center"
+              className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0"
               style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -900,341 +985,516 @@ export default function LeadsPage() {
               </svg>
             </div>
             <div>
-              <span className="text-[10px] uppercase tracking-[0.22em] text-white/30">
+              <span className="text-[9px] uppercase tracking-[0.22em] text-white/30">
                 Admin
               </span>
-              <h1 className="text-base font-semibold text-white leading-none mt-0.5">
+              <h1 className="text-sm font-semibold text-white leading-none mt-0.5">
                 Lead Desk
               </h1>
             </div>
           </div>
-          <GhostBtn
-            onClick={async () => {
-              await fetch("/api/admin/logout", { method: "POST" });
-              window.location.href = "/admin/login";
-            }}
-          >
-            Log out
-          </GhostBtn>
+          <div className="flex items-center gap-2">
+            {/* Mobile search toggle */}
+            <button
+              onClick={() => setShowSearch((s) => !s)}
+              className="lg:hidden h-8 w-8 rounded-xl bg-white/[0.05] flex items-center justify-center text-white/50 text-xs"
+            >
+              🔍
+            </button>
+            <GhostBtn
+              className="hidden lg:inline-flex"
+              onClick={async () => {
+                await fetch("/api/admin/logout", { method: "POST" });
+                window.location.href = "/admin/login";
+              }}
+            >
+              Log out
+            </GhostBtn>
+            <GhostBtn
+              className="lg:hidden !px-3 !text-[11px]"
+              onClick={async () => {
+                await fetch("/api/admin/logout", { method: "POST" });
+                window.location.href = "/admin/login";
+              }}
+            >
+              Out
+            </GhostBtn>
+          </div>
         </div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-12">
-          {/* Stats */}
-          <BentoCard
-            className={`p-5 flex flex-col justify-between min-h-[100px] ${getGridSpanClass(3)}`}
-          >
-            <Label>Total leads</Label>
-            <div>
-              <p className="text-4xl font-bold tracking-tight text-white leading-none">
-                {stats.total}
-              </p>
-              <p className="mt-1 text-xs text-white/35">All enquiries</p>
-            </div>
-          </BentoCard>
-
-          <BentoCard
-            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
-          >
-            <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-fuchsia-500/10 blur-2xl" />
-            <Label>Hot leads</Label>
-            <div>
-              <p className="text-4xl font-bold tracking-tight text-fuchsia-300 leading-none">
-                {stats.hot}
-              </p>
-              <p className="mt-1 text-xs text-white/35">Score 5+</p>
-            </div>
-          </BentoCard>
-
-          <BentoCard
-            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
-          >
-            <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl" />
-            <Label>Won deals</Label>
-            <div>
-              <p className="text-4xl font-bold tracking-tight text-emerald-300 leading-none">
-                {stats.won}
-              </p>
-              <p className="mt-1 text-xs text-white/35">
-                {stats.conversion}% conversion
-              </p>
-            </div>
-          </BentoCard>
-
-          <BentoCard
-            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
-          >
-            <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-cyan-500/10 blur-2xl" />
-            <Label>Pipeline</Label>
-            <div>
-              <p className="text-4xl font-bold tracking-tight text-cyan-300 leading-none">
-                £{(stats.pipeline / 1000).toFixed(1)}k
-              </p>
-              <p className="mt-1 text-xs text-white/35">Est. total value</p>
-            </div>
-          </BentoCard>
-
-          {/* Search & Nav */}
-          <BentoCard
-            className={`p-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${getGridSpanClass(12)}`}
-          >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <select
-                aria-label="Filter leads"
-                value={filter}
+        {/* ── Mobile search bar ── */}
+        {showSearch && (
+          <div className="mb-3 lg:hidden">
+            <div
+              className="flex h-10 items-center rounded-xl bg-white/[0.05] px-3 gap-2"
+              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <svg
+                className="text-white/30 shrink-0"
+                width="13"
+                height="13"
+                viewBox="0 0 13 13"
+                fill="none"
+              >
+                <circle
+                  cx="5.5"
+                  cy="5.5"
+                  r="4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M8.5 8.5L11 11"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <input
+                type="text"
+                value={search}
                 onChange={(e) => {
-                  setFilter(e.target.value);
+                  setSearch(e.target.value);
                   setCurrentIndex(0);
                 }}
-                className="h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
-                style={{ border: "1px solid rgba(255,255,255,0.04)" }}
-              >
-                <option value="all">All leads</option>
-                <option value="hot">Hot leads</option>
-                <option value="new">New</option>
-                <option value="contacted">Contacted</option>
-                <option value="qualified">Qualified</option>
-                <option value="won">Won</option>
-                <option value="lost">Lost</option>
-              </select>
-              <div
-                className="flex h-9 min-w-[18rem] items-center rounded-xl bg-white/[0.05] px-3 gap-2"
-                style={{ border: "1px solid rgba(255,255,255,0.04)" }}
-              >
-                <svg
-                  className="text-white/30 shrink-0"
-                  width="13"
-                  height="13"
-                  viewBox="0 0 13 13"
-                  fill="none"
+                placeholder="Search leads…"
+                className="h-full w-full bg-transparent text-xs text-white outline-none placeholder:text-white/30"
+                autoFocus
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="text-white/30 text-xs"
                 >
-                  <circle
-                    cx="5.5"
-                    cy="5.5"
-                    r="4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M8.5 8.5L11 11"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentIndex(0);
-                  }}
-                  placeholder="Search leads…"
-                  className="h-full w-full bg-transparent text-xs text-white outline-none placeholder:text-white/30"
-                />
-              </div>
+                  ✕
+                </button>
+              )}
             </div>
-            <div className="flex items-center gap-2">
-              <GhostBtn
-                onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
-                disabled={currentIndex === 0}
-              >
-                ← Prev
-              </GhostBtn>
-              <span
-                className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/50 tabular-nums"
-                style={{ border: "1px solid rgba(255,255,255,0.04)" }}
-              >
-                {filteredLeads.length > 0
-                  ? `${currentIndex + 1} / ${filteredLeads.length}`
-                  : "—"}
-              </span>
-              <GhostBtn
-                onClick={() =>
-                  setCurrentIndex((p) =>
-                    Math.min(p + 1, filteredLeads.length - 1),
-                  )
-                }
-                disabled={currentIndex >= filteredLeads.length - 1}
-              >
-                Next →
-              </GhostBtn>
-            </div>
-          </BentoCard>
+          </div>
+        )}
 
-          {!lead ? (
-            <BentoCard className={`p-8 ${getGridSpanClass(12)}`}>
-              <p className="text-white/40 text-sm">
-                No leads match your filters.
-              </p>
-            </BentoCard>
-          ) : (
-            <>
-              {/* Identity */}
-              <BentoCard
-                className={`p-6 relative overflow-hidden ${getGridSpanClass(5)}`}
-              >
+        {/* ── Stats row (horizontal scroll on mobile) ── */}
+        <div
+          className="flex gap-2.5 mb-4 overflow-x-auto pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-4 lg:gap-3"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {[
+            {
+              label: "Total leads",
+              value: stats.total,
+              sub: "All enquiries",
+              color: "text-white",
+              glow: null,
+            },
+            {
+              label: "Hot leads",
+              value: stats.hot,
+              sub: "Score 5+",
+              color: "text-fuchsia-300",
+              glow: "bg-fuchsia-500/10",
+            },
+            {
+              label: "Won deals",
+              value: stats.won,
+              sub: `${stats.conversion}% conversion`,
+              color: "text-emerald-300",
+              glow: "bg-emerald-500/10",
+            },
+            {
+              label: `£${(stats.pipeline / 1000).toFixed(1)}k`,
+              value: null,
+              sub: "Est. pipeline",
+              color: "text-cyan-300",
+              glow: "bg-cyan-500/10",
+              isText: true,
+            },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-4 relative overflow-hidden shrink-0 w-36 lg:w-auto"
+              style={{
+                background: "#0c1929",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+              }}
+            >
+              {stat.glow && (
                 <div
-                  className="absolute inset-0 rounded-2xl"
-                  style={{
-                    background: `radial-gradient(ellipse at 80% -10%, ${priority === "hot" ? "rgba(232,121,249,0.07)" : priority === "warm" ? "rgba(251,146,60,0.07)" : "rgba(148,163,184,0.04)"} 0%, transparent 60%)`,
-                  }}
+                  className={`absolute top-0 right-0 h-16 w-16 rounded-full blur-xl ${stat.glow}`}
                 />
-                <div className="relative">
-                  <div className="mb-4 flex items-start justify-between gap-3">
-                    <div
-                      className="h-11 w-11 rounded-2xl bg-white/[0.06] flex items-center justify-center text-lg font-semibold text-white shrink-0"
-                      style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
+              )}
+              <Label>{stat.label}</Label>
+              <p
+                className={`text-3xl font-bold tracking-tight leading-none mt-2 ${stat.color}`}
+              >
+                {stat.isText ? stat.label : stat.value}
+              </p>
+              <p className="mt-1 text-xs text-white/35">{stat.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Nav bar (filter + prev/next) ── */}
+        <div
+          className="mb-4 rounded-2xl p-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+          style={{
+            background: "#0c1929",
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <select
+              aria-label="Filter leads"
+              value={filter}
+              onChange={(e) => {
+                setFilter(e.target.value);
+                setCurrentIndex(0);
+              }}
+              className="h-9 flex-1 sm:flex-none rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
+              style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              <option value="all">All leads</option>
+              <option value="hot">Hot leads</option>
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="qualified">Qualified</option>
+              <option value="won">Won</option>
+              <option value="lost">Lost</option>
+            </select>
+            {/* Desktop search */}
+            <div
+              className="hidden lg:flex h-9 min-w-[16rem] items-center rounded-xl bg-white/[0.05] px-3 gap-2"
+              style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              <svg
+                className="text-white/30 shrink-0"
+                width="13"
+                height="13"
+                viewBox="0 0 13 13"
+                fill="none"
+              >
+                <circle
+                  cx="5.5"
+                  cy="5.5"
+                  r="4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M8.5 8.5L11 11"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentIndex(0);
+                }}
+                placeholder="Search leads…"
+                className="h-full w-full bg-transparent text-xs text-white outline-none placeholder:text-white/30"
+              />
+            </div>
+            {/* Mobile: show list button */}
+            <button
+              onClick={() => setShowList(true)}
+              className="lg:hidden h-9 flex items-center gap-1.5 rounded-xl bg-white/[0.05] px-3 text-xs text-white/70"
+              style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              <span>☰</span>
+              <span>List</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2 justify-between sm:justify-end">
+            <GhostBtn
+              onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
+              disabled={currentIndex === 0}
+            >
+              ← Prev
+            </GhostBtn>
+            <span
+              className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/50 tabular-nums"
+              style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+            >
+              {filteredLeads.length > 0
+                ? `${currentIndex + 1} / ${filteredLeads.length}`
+                : "—"}
+            </span>
+            <GhostBtn
+              onClick={() =>
+                setCurrentIndex((p) =>
+                  Math.min(p + 1, filteredLeads.length - 1),
+                )
+              }
+              disabled={currentIndex >= filteredLeads.length - 1}
+            >
+              Next →
+            </GhostBtn>
+          </div>
+        </div>
+
+        {/* ── Lead detail ── */}
+        {!lead ? (
+          <div
+            className="rounded-2xl p-8"
+            style={{
+              background: "#0c1929",
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+            }}
+          >
+            <p className="text-white/40 text-sm">
+              No leads match your filters.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Identity card */}
+            <div
+              className="rounded-2xl p-5 relative overflow-hidden"
+              style={{
+                background: "#0c1929",
+                boxShadow:
+                  "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.25)",
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at 80% -10%, ${priority === "hot" ? "rgba(232,121,249,0.07)" : priority === "warm" ? "rgba(251,146,60,0.07)" : "rgba(148,163,184,0.04)"} 0%, transparent 60%)`,
+                }}
+              />
+              <div className="relative">
+                {/* Header row */}
+                <div className="flex items-start gap-3 mb-4">
+                  <div
+                    className="h-12 w-12 rounded-2xl bg-white/[0.06] flex items-center justify-center text-xl font-semibold text-white shrink-0"
+                    style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
+                  >
+                    {(lead.name || "?")[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl font-bold tracking-tight text-white leading-tight truncate">
+                      {lead.name || "Unnamed"}
+                    </h2>
+                    <p className="text-sm text-white/45">
+                      {lead.company || "No company"}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <span
+                      className="rounded-lg px-2.5 py-1 text-[10px] font-medium uppercase"
+                      style={{
+                        background: statusStyle.bg,
+                        color: statusStyle.color,
+                        border: `1px solid ${statusStyle.border}`,
+                      }}
                     >
-                      {(lead.name || "?")[0].toUpperCase()}
-                    </div>
-                    <div className="flex flex-wrap justify-end gap-1.5">
+                      {lead.status || "new"}
+                    </span>
+                    {lead.stripe_payment_status ? (
                       <span
-                        className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
+                        className="rounded-lg px-2.5 py-1 text-[10px] font-medium uppercase"
                         style={{
-                          background: statusStyle.bg,
-                          color: statusStyle.color,
-                          border: `1px solid ${statusStyle.border}`,
+                          background: paymentStyle.bg,
+                          color: paymentStyle.color,
+                          border: `1px solid ${paymentStyle.border}`,
                         }}
                       >
-                        {lead.status || "new"}
+                        {lead.stripe_payment_status}
                       </span>
-                      {lead.stripe_payment_status ? (
-                        <span
-                          className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
-                          style={{
-                            background: paymentStyle.bg,
-                            color: paymentStyle.color,
-                            border: `1px solid ${paymentStyle.border}`,
-                          }}
-                        >
-                          {lead.stripe_payment_status}
-                        </span>
-                      ) : (
-                        <span
-                          className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
-                          style={getPriorityInlineStyle(priority)}
-                        >
-                          {priority}
-                        </span>
-                      )}
-                    </div>
+                    ) : (
+                      <span
+                        className="rounded-lg px-2.5 py-1 text-[10px] font-medium"
+                        style={getPriorityInlineStyle(priority)}
+                      >
+                        {priority}
+                      </span>
+                    )}
                   </div>
-                  <h2 className="text-2xl font-bold tracking-tight text-white leading-tight">
-                    {lead.name || "Unnamed"}
-                  </h2>
-                  <p className="text-sm text-white/45 mt-1">
-                    {lead.company || "No company"}
-                  </p>
-                  <p className="mt-4 text-sm text-white/55 leading-relaxed line-clamp-3">
-                    {lead.description || "No description provided."}
-                  </p>
-                  <p className="mt-3 text-[11px] text-white/30">
-                    Submitted {formatDate(lead.created_at)} ·{" "}
-                    {timeAgo(lead.created_at)}
-                  </p>
                 </div>
-              </BentoCard>
 
-              {/* Score ring */}
-              <BentoCard
-                className={`p-5 flex flex-col items-center justify-center gap-3 ${getGridSpanClass(2)}`}
-              >
-                <ScoreRing score={lead.lead_score} />
-                <div className="text-center">
-                  <Label>Quality</Label>
-                  <p className="mt-1 text-xs font-semibold text-white/70 capitalize">
-                    {priority} lead
-                  </p>
-                </div>
-              </BentoCard>
-
-              {/* Package / Value */}
-              <BentoCard
-                className={`p-5 flex flex-col justify-between ${getGridSpanClass(2)}`}
-              >
-                <div>
-                  <Label>Package</Label>
-                  <p className="mt-2 text-xl font-bold text-white uppercase tracking-wider">
-                    {lead.recommended_package || "—"}
-                  </p>
-                </div>
+                {/* Score + Package row */}
                 <div
-                  className="mt-4 pt-4"
+                  className="flex items-center gap-4 mb-4 p-3 rounded-xl"
+                  style={{
+                    background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <ScoreRing score={lead.lead_score} />
+                  <div className="flex-1">
+                    <Label>Quality</Label>
+                    <p className="text-sm font-semibold text-white/80 capitalize mt-0.5">
+                      {priority} lead
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <Label>Package</Label>
+                    <p className="text-base font-bold text-white uppercase tracking-wider mt-0.5">
+                      {lead.recommended_package || "—"}
+                    </p>
+                    <p className="text-sm font-bold text-emerald-300">
+                      {estimatedValue(lead.recommended_package)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                {lead.description && (
+                  <p className="text-sm text-white/55 leading-relaxed line-clamp-3 mb-3">
+                    {lead.description}
+                  </p>
+                )}
+                <p className="text-[11px] text-white/30">
+                  Submitted {formatDate(lead.created_at)} ·{" "}
+                  {timeAgo(lead.created_at)}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick actions */}
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 lg:mx-0 lg:px-0"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {lead.email && (
+                <button
+                  onClick={() => {
+                    if (lead.status === "new")
+                      updateLead(lead.id, { status: "contacted" });
+                    window.location.href = `mailto:${lead.email}`;
+                  }}
+                  className="flex items-center gap-2 h-10 rounded-xl px-4 text-xs font-medium shrink-0 active:scale-95 transition-all"
+                  style={{
+                    background: "rgba(125,211,252,0.12)",
+                    color: "#7dd3fc",
+                    border: "1px solid rgba(125,211,252,0.15)",
+                  }}
+                >
+                  ✉ Email
+                </button>
+              )}
+              {lead.phone && (
+                <button
+                  onClick={() => {
+                    if (lead.status === "new")
+                      updateLead(lead.id, { status: "contacted" });
+                    window.location.href = `tel:${lead.phone}`;
+                  }}
+                  className="flex items-center gap-2 h-10 rounded-xl px-4 text-xs font-medium shrink-0 active:scale-95 transition-all"
+                  style={{
+                    background: "rgba(110,231,183,0.12)",
+                    color: "#6ee7b7",
+                    border: "1px solid rgba(110,231,183,0.15)",
+                  }}
+                >
+                  📞 Call
+                </button>
+              )}
+              {lead.phone && (
+                <a
+                  href={`https://wa.me/${normaliseWhatsapp(lead.phone)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    if (lead.status === "new")
+                      updateLead(lead.id, { status: "contacted" });
+                  }}
+                  className="flex items-center gap-2 h-10 rounded-xl px-4 text-xs font-medium shrink-0 active:scale-95 transition-all"
+                  style={{
+                    background: "rgba(52,211,153,0.12)",
+                    color: "#6ee7b7",
+                    border: "1px solid rgba(52,211,153,0.15)",
+                  }}
+                >
+                  💬 WhatsApp
+                </a>
+              )}
+              <button
+                onClick={() => copyLead(lead)}
+                className="flex items-center gap-2 h-10 rounded-xl px-4 text-xs font-medium shrink-0 active:scale-95 transition-all"
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  color: "rgba(255,255,255,0.6)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                {copySuccessId === lead.id ? "✓ Copied" : "⎘ Copy"}
+              </button>
+            </div>
+
+            {/* AI Summary */}
+            <AISummaryPanel lead={lead} />
+
+            {/* Pipeline stage */}
+            <div
+              className="rounded-2xl p-4"
+              style={{
+                background: "#0c1929",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+              }}
+            >
+              <Label className="mb-3">Pipeline stage</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {statusOptions.map((s) => {
+                  const st = getStatusStyle(s);
+                  const active = (lead.status || "new") === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => updateLead(lead.id, { status: s })}
+                      className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium capitalize transition-all active:scale-95"
+                      style={
+                        active
+                          ? {
+                              background: st.bg,
+                              color: st.color,
+                              border: `1px solid ${st.border}`,
+                            }
+                          : {
+                              background: "rgba(255,255,255,0.03)",
+                              color: "rgba(255,255,255,0.38)",
+                              border: "1px solid transparent",
+                            }
+                      }
+                    >
+                      {active && (
+                        <span
+                          className="inline-block h-1.5 w-1.5 rounded-full"
+                          style={{ background: st.dot }}
+                        />
+                      )}
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+              {lead.stripe_payment_status && (
+                <div
+                  className="mt-4 pt-4 flex items-center gap-3"
                   style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
                 >
-                  <Label>Est. value</Label>
-                  <p className="mt-1 text-lg font-bold text-emerald-300">
-                    {estimatedValue(lead.recommended_package)}
-                  </p>
+                  <Label>Payment</Label>
+                  <span
+                    className="rounded-lg px-2.5 py-1 text-xs font-medium"
+                    style={{
+                      background: paymentStyle.bg,
+                      color: paymentStyle.color,
+                      border: `1px solid ${paymentStyle.border}`,
+                    }}
+                  >
+                    {lead.stripe_payment_status}
+                  </span>
                 </div>
-              </BentoCard>
+              )}
+            </div>
 
-              {/* Next action */}
-              <BentoCard
-                className={`p-5 flex flex-col justify-between relative overflow-hidden ${getGridSpanClass(3)}`}
-              >
-                <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full bg-white/[0.03] blur-xl" />
-                <div>
-                  <Label>Next action</Label>
-                  <p className="mt-2 text-xl font-bold text-white">
-                    {getNextAction(lead)}
-                  </p>
-                  <p className="mt-1.5 text-xs text-white/40">
-                    {savingLeadId === lead.id
-                      ? "Saving…"
-                      : "Update stage below"}
-                  </p>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {lead.email && (
-                    <GhostBtn
-                      onClick={() => {
-                        if (lead.status === "new")
-                          updateLead(lead.id, { status: "contacted" });
-                        window.location.href = `mailto:${lead.email}`;
-                      }}
-                    >
-                      Email
-                    </GhostBtn>
-                  )}
-                  {lead.phone && (
-                    <GhostBtn
-                      onClick={() => {
-                        if (lead.status === "new")
-                          updateLead(lead.id, { status: "contacted" });
-                        window.location.href = `tel:${lead.phone}`;
-                      }}
-                    >
-                      Call
-                    </GhostBtn>
-                  )}
-                  {lead.phone && (
-                    <a
-                      href={`https://wa.me/${normaliseWhatsapp(lead.phone)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        if (lead.status === "new")
-                          updateLead(lead.id, { status: "contacted" });
-                      }}
-                      className="inline-flex h-9 items-center justify-center rounded-xl bg-white/[0.05] px-4 text-xs font-medium text-white/75 transition-all hover:bg-white/[0.1] hover:text-white"
-                    >
-                      WhatsApp
-                    </a>
-                  )}
-                  <GhostBtn onClick={() => copyLead(lead)}>
-                    {copySuccessId === lead.id ? "✓ Copied" : "Copy"}
-                  </GhostBtn>
-                </div>
-              </BentoCard>
-
-              {/* AI Summary — full width */}
-              <AISummaryPanel lead={lead} />
-
-              {/* Contact details */}
-              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
-                <Label className="mb-3">Contact details</Label>
+            {/* Contact details — collapsible */}
+            <Section title="Contact details" defaultOpen={true}>
+              <div className="space-y-0">
                 {[
                   { label: "Email", value: lead.email },
                   { label: "Phone", value: lead.phone },
@@ -1254,22 +1514,23 @@ export default function LeadsPage() {
                         href={value}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-cyan-300 hover:text-cyan-200 truncate max-w-[180px]"
+                        className="text-xs text-cyan-300 hover:text-cyan-200 truncate max-w-[60vw]"
                       >
                         {value}
                       </a>
                     ) : (
-                      <span className="text-xs font-medium text-white/75 truncate max-w-[200px]">
+                      <span className="text-xs font-medium text-white/75 truncate max-w-[60vw]">
                         {value || "—"}
                       </span>
                     )}
                   </div>
                 ))}
-              </BentoCard>
+              </div>
+            </Section>
 
-              {/* Project details */}
-              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
-                <Label className="mb-3">Project details</Label>
+            {/* Project details — collapsible */}
+            <Section title="Project details">
+              <div className="space-y-0">
                 {[
                   { label: "Type", value: lead.project_type },
                   { label: "Goal", value: lead.goal },
@@ -1285,129 +1546,146 @@ export default function LeadsPage() {
                     <span className="text-[10px] uppercase tracking-widest text-white/28 shrink-0">
                       {label}
                     </span>
-                    <span className="text-xs font-medium text-white/75 truncate max-w-[200px]">
+                    <span className="text-xs font-medium text-white/75 truncate max-w-[60vw]">
                       {value || "—"}
                     </span>
                   </div>
                 ))}
-              </BentoCard>
+              </div>
+            </Section>
 
-              {/* Pipeline stage */}
-              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
-                <Label className="mb-3">Pipeline stage</Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {statusOptions.map((s) => {
-                    const st = getStatusStyle(s);
-                    const active = (lead.status || "new") === s;
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => updateLead(lead.id, { status: s })}
-                        className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium capitalize transition-all"
-                        style={
-                          active
-                            ? {
-                                background: st.bg,
-                                color: st.color,
-                                border: `1px solid ${st.border}`,
-                              }
-                            : {
-                                background: "rgba(255,255,255,0.03)",
-                                color: "rgba(255,255,255,0.38)",
-                                border: "1px solid transparent",
-                              }
-                        }
-                      >
-                        {active && (
-                          <span
-                            className="inline-block h-1.5 w-1.5 rounded-full"
-                            style={{ background: st.dot }}
-                          />
-                        )}
-                        {s}
-                      </button>
-                    );
-                  })}
-                </div>
-                {lead.stripe_payment_status && (
-                  <div
-                    className="mt-4 pt-4"
-                    style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
-                  >
-                    <Label className="mb-2">Payment</Label>
-                    <span
-                      className="rounded-lg px-2.5 py-1 text-xs font-medium text-emerald-300"
-                      style={{
-                        background: paymentStyle.bg,
-                        color: paymentStyle.color,
-                        border: `1px solid ${paymentStyle.border}`,
-                      }}
-                    >
-                      {lead.stripe_payment_status}
-                    </span>
-                  </div>
+            {/* Quick replies — collapsible */}
+            <Section title="Quick reply templates">
+              <QuickReplyPanel lead={lead} />
+            </Section>
+
+            {/* Activity — collapsible */}
+            <Section title="Activity">
+              <ActivityTimeline events={activityEvents} />
+            </Section>
+
+            {/* Notes */}
+            <div
+              className="rounded-2xl p-4"
+              style={{
+                background: "#0c1929",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.04)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <Label>Internal notes</Label>
+                {savingLeadId === lead.id && (
+                  <span className="text-[10px] text-white/30 animate-pulse">
+                    Saving…
+                  </span>
                 )}
-              </BentoCard>
-
-              {/* Quick replies (8 cols) + Activity (4 cols) */}
-              <BentoCard className={`p-5 ${getGridSpanClass(8)}`}>
-                <Label className="mb-3">Quick reply templates</Label>
-                <QuickReplyPanel lead={lead} />
-              </BentoCard>
-
-              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
-                <Label className="mb-3">Activity</Label>
-                <ActivityTimeline events={activityEvents} />
-              </BentoCard>
-
-              {/* Notes */}
-              <BentoCard className={`p-5 ${getGridSpanClass(12)}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <Label>Internal notes</Label>
-                  {savingLeadId === lead.id && (
-                    <span className="text-[10px] text-white/30 animate-pulse">
-                      Saving…
-                    </span>
-                  )}
-                </div>
-                <textarea
-                  value={notesDrafts[lead.id] || ""}
-                  onChange={(e) =>
+              </div>
+              <textarea
+                value={notesDrafts[lead.id] || ""}
+                onChange={(e) =>
+                  setNotesDrafts((prev) => ({
+                    ...prev,
+                    [lead.id]: e.target.value,
+                  }))
+                }
+                placeholder="Add follow-up notes, objections, next steps…"
+                rows={4}
+                className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/80 outline-none placeholder:text-white/25 resize-none transition-colors"
+                style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+              />
+              <div className="mt-3 flex gap-2">
+                <PrimaryBtn
+                  onClick={() =>
+                    updateLead(lead.id, { notes: notesDrafts[lead.id] || "" })
+                  }
+                >
+                  Save notes
+                </PrimaryBtn>
+                <GhostBtn
+                  onClick={() =>
                     setNotesDrafts((prev) => ({
                       ...prev,
-                      [lead.id]: e.target.value,
+                      [lead.id]: lead.notes || "",
                     }))
                   }
-                  placeholder="Add follow-up notes, objections, next steps…"
-                  rows={3}
-                  className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/80 outline-none placeholder:text-white/25 resize-none transition-colors"
-                  style={{ border: "1px solid rgba(255,255,255,0.04)" }}
-                />
-                <div className="mt-3 flex gap-2">
-                  <PrimaryBtn
-                    onClick={() =>
-                      updateLead(lead.id, { notes: notesDrafts[lead.id] || "" })
-                    }
-                  >
-                    Save notes
-                  </PrimaryBtn>
-                  <GhostBtn
-                    onClick={() =>
-                      setNotesDrafts((prev) => ({
-                        ...prev,
-                        [lead.id]: lead.notes || "",
-                      }))
-                    }
-                  >
-                    Reset
-                  </GhostBtn>
-                </div>
-              </BentoCard>
-            </>
-          )}
-        </div>
+                >
+                  Reset
+                </GhostBtn>
+              </div>
+            </div>
+
+            {/* Extra bottom padding for mobile */}
+            <div className="h-4 lg:hidden" />
+          </div>
+        )}
       </div>
+
+      {/* ── Mobile bottom action bar ── */}
+      {lead && (
+        <div
+          className="fixed bottom-0 inset-x-0 lg:hidden z-40"
+          style={{
+            background: "rgba(6,14,26,0.95)",
+            backdropFilter: "blur(20px)",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
+                disabled={currentIndex === 0}
+                className="h-10 w-10 rounded-xl flex items-center justify-center text-white/60 disabled:opacity-30 active:scale-95"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                ←
+              </button>
+              <button
+                onClick={() => setShowList(true)}
+                className="h-10 rounded-xl px-3 flex items-center gap-1.5 text-xs font-medium text-white/60 active:scale-95"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <span>☰</span>
+                <span className="tabular-nums">
+                  {currentIndex + 1}/{filteredLeads.length}
+                </span>
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentIndex((p) =>
+                    Math.min(p + 1, filteredLeads.length - 1),
+                  )
+                }
+                disabled={currentIndex >= filteredLeads.length - 1}
+                className="h-10 w-10 rounded-xl flex items-center justify-center text-white/60 disabled:opacity-30 active:scale-95"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                →
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-white/40 truncate max-w-[120px]">
+                {lead.name || "Unnamed"}
+              </span>
+              <span
+                className="rounded-md px-2 py-0.5 text-[10px] font-medium"
+                style={{ background: statusStyle.bg, color: statusStyle.color }}
+              >
+                {lead.status || "new"}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
