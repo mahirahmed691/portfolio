@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// ── Types ─────────────────────────────────────────────────────────
 type Tool =
   | "landing"
   | "components"
@@ -10,7 +9,6 @@ type Tool =
   | "contract"
   | "hosting"
   | "seo";
-
 type SavedComponent = {
   id: string;
   name: string;
@@ -19,7 +17,6 @@ type SavedComponent = {
   createdAt: string;
 };
 
-// ── Hosting pricing data ──────────────────────────────────────────
 const HOSTING_TIERS = {
   vercel: [
     {
@@ -85,7 +82,22 @@ const HOSTING_TIERS = {
   ],
 };
 
-// ── Shared UI ─────────────────────────────────────────────────────
+const MODEL = "claude-sonnet-4-5";
+
+function ai(body: object) {
+  return fetch("/api/ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: MODEL, ...body }),
+  }).then((r) => r.json());
+}
+
+function extractText(data: { content?: { type: string; text?: string }[] }) {
+  return (
+    data.content?.map((b) => (b.type === "text" ? b.text : "")).join("") || ""
+  );
+}
+
 function Label({
   children,
   className = "",
@@ -138,26 +150,6 @@ function PrimaryBtn({
   );
 }
 
-function Card({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-2xl bg-[#0c1929] ${className}`}
-      style={{
-        boxShadow:
-          "0 0 0 1px rgba(255,255,255,0.05), 0 4px 24px rgba(0,0,0,0.3)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function Spinner() {
   return (
     <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
@@ -166,19 +158,21 @@ function Spinner() {
 
 function CopyBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  };
   return (
-    <GhostBtn onClick={copy} className="!h-7 !px-3 !text-[11px]">
+    <GhostBtn
+      onClick={async () => {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1800);
+      }}
+      className="!h-7 !px-3 !text-[11px]"
+    >
       {copied ? "✓ Copied" : "Copy"}
     </GhostBtn>
   );
 }
 
-// ── Tool: Landing Page Generator ──────────────────────────────────
+// ── Landing Page Generator ────────────────────────────────────────
 function LandingPageGenerator() {
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("minimal");
@@ -186,7 +180,20 @@ function LandingPageGenerator() {
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState("");
   const [preview, setPreview] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [copied, setCopied] = useState(false);
+
+  // Rebuild blob URL whenever output changes
+  useEffect(() => {
+    if (!output) {
+      setPreviewUrl("");
+      return;
+    }
+    const blob = new Blob([output], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [output]);
 
   const generate = async () => {
     if (!prompt.trim()) return;
@@ -194,45 +201,30 @@ function LandingPageGenerator() {
     setOutput("");
     setPreview(false);
     try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Generate a complete, production-ready single-file HTML landing page for: "${prompt}"
+      const data = await ai({
+        max_tokens: 4096,
+        messages: [
+          {
+            role: "user",
+            content: `Generate a complete, production-ready single-file HTML landing page for: "${prompt}"
 
-Style direction: ${style} (${style === "minimal" ? "clean whitespace, sharp type, restrained" : style === "bold" ? "big headlines, strong contrast, energetic" : style === "luxury" ? "elegant, refined, premium feel" : "technical, developer-focused, monospace"})
-Color palette: ${palette === "dark" ? "dark background (#0a0a0a or similar), light text" : "light background, dark text"}
+Style: ${style} — ${style === "minimal" ? "clean whitespace, sharp type, restrained" : style === "bold" ? "big headlines, strong contrast, energetic" : style === "luxury" ? "elegant, refined, premium" : "technical, monospace, developer-focused"}
+Palette: ${palette === "dark" ? "dark background (#0a0a0a), light text" : "light background, dark text"}
 
 Requirements:
-- Complete self-contained HTML with embedded CSS and minimal JS
+- Complete self-contained HTML with embedded CSS + minimal JS
 - Google Fonts import for a distinctive font pairing
-- Hero section with headline, subheadline, CTA button
-- Features/benefits section (3–4 items)
-- Simple CTA section at bottom
-- Responsive mobile-first design
-- Smooth scroll, subtle hover states
-- No placeholder Lorem Ipsum — write real compelling copy based on the prompt
+- Hero, features (3-4), and CTA sections
+- Responsive mobile-first, smooth scroll, hover states
+- Real compelling copy — no Lorem Ipsum
 - No external dependencies except Google Fonts
-- The page must look genuinely polished and deployable
+- Genuinely polished and deployable
 
-Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
-            },
-          ],
-        }),
+Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
+          },
+        ],
       });
-      const data = await res.json();
-      const html =
-        data.content
-          ?.map((b: { type: string; text?: string }) =>
-            b.type === "text" ? b.text : "",
-          )
-          .join("") || "";
-      setOutput(html.trim());
+      setOutput(extractText(data).trim());
     } catch {
       setOutput("<!-- Error generating page. Please try again. -->");
     } finally {
@@ -241,24 +233,15 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
   };
 
   const download = () => {
-    const blob = new Blob([output], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${prompt.slice(0, 30).replace(/\s+/g, "-").toLowerCase()}.html`;
+    const a = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(new Blob([output], { type: "text/html" })),
+      download: `${prompt.slice(0, 30).replace(/\s+/g, "-").toLowerCase()}.html`,
+    });
     a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
   };
 
   return (
     <div className="space-y-4">
-      {/* Prompt */}
       <div>
         <Label className="mb-2">Describe the page</Label>
         <textarea
@@ -271,7 +254,6 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
         />
       </div>
 
-      {/* Options row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex-1 min-w-[140px]">
           <Label className="mb-1.5">Style</Label>
@@ -312,10 +294,8 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
         </div>
       </div>
 
-      {/* Output */}
       {output && (
         <div className="space-y-3">
-          {/* Toolbar */}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <Label>Output</Label>
             <div className="flex gap-2 flex-wrap">
@@ -325,7 +305,14 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
               >
                 {preview ? "‹› Code" : "⬡ Preview"}
               </GhostBtn>
-              <GhostBtn onClick={copy} className="!h-8 !px-3 !text-[11px]">
+              <GhostBtn
+                onClick={async () => {
+                  await navigator.clipboard.writeText(output);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1800);
+                }}
+                className="!h-8 !px-3 !text-[11px]"
+              >
                 {copied ? "✓ Copied" : "Copy HTML"}
               </GhostBtn>
               <PrimaryBtn
@@ -342,16 +329,20 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
               className="rounded-xl overflow-hidden"
               style={{
                 border: "1px solid rgba(255,255,255,0.06)",
-                height: "480px",
+                height: "520px",
               }}
             >
-              <iframe
-                src={URL.createObjectURL(
-                  new Blob([output], { type: "text/html" }),
-                )}
-                className="w-full h-full bg-white"
-                title="Preview"
-              />
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-full"
+                  title="Preview"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/30 text-xs">
+                  Building preview…
+                </div>
+              )}
             </div>
           ) : (
             <pre
@@ -376,7 +367,7 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
   );
 }
 
-// ── Tool: Component Library ───────────────────────────────────────
+// ── Component Library ─────────────────────────────────────────────
 function ComponentLibrary() {
   const [components, setComponents] = useState<SavedComponent[]>(() => {
     try {
@@ -394,14 +385,16 @@ function ComponentLibrary() {
 
   const save = () => {
     if (!name.trim() || !code.trim()) return;
-    const newComp: SavedComponent = {
-      id: Date.now().toString(),
-      name,
-      tag,
-      code,
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [newComp, ...components];
+    const updated = [
+      {
+        id: Date.now().toString(),
+        name,
+        tag,
+        code,
+        createdAt: new Date().toISOString(),
+      },
+      ...components,
+    ];
     setComponents(updated);
     localStorage.setItem("dev_components", JSON.stringify(updated));
     setName("");
@@ -418,28 +411,16 @@ function ComponentLibrary() {
     if (!genPrompt.trim()) return;
     setGenerating(true);
     try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Generate a reusable React/TSX component for: "${genPrompt}"\n\nRequirements:\n- Tailwind CSS for styling\n- TypeScript with proper prop types\n- Clean, production-ready code\n- Export as default\n- No external dependencies beyond React and Tailwind\n\nReturn ONLY the raw component code. No explanation, no markdown backticks.`,
-            },
-          ],
-        }),
+      const data = await ai({
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: `Generate a reusable React/TSX component for: "${genPrompt}"\n\nRequirements:\n- Tailwind CSS\n- TypeScript with proper prop types\n- Clean, production-ready, default export\n- No deps beyond React + Tailwind\n\nReturn ONLY raw component code. No explanation, no backticks.`,
+          },
+        ],
       });
-      const data = await res.json();
-      const result =
-        data.content
-          ?.map((b: { type: string; text?: string }) =>
-            b.type === "text" ? b.text : "",
-          )
-          .join("") || "";
-      setCode(result.trim());
+      setCode(extractText(data).trim());
       setName(genPrompt.slice(0, 40));
     } catch {
       /* noop */
@@ -459,7 +440,6 @@ function ComponentLibrary() {
 
   return (
     <div className="space-y-5">
-      {/* AI Generator */}
       <div
         className="rounded-xl p-4 space-y-3"
         style={{
@@ -493,7 +473,6 @@ function ComponentLibrary() {
         </div>
       </div>
 
-      {/* Manual save */}
       <div className="space-y-3">
         <Label>Save a snippet</Label>
         <div className="flex gap-2">
@@ -530,7 +509,6 @@ function ComponentLibrary() {
         </PrimaryBtn>
       </div>
 
-      {/* Library */}
       {components.length > 0 && (
         <div className="space-y-2">
           <Label>
@@ -592,7 +570,6 @@ function ComponentLibrary() {
           })}
         </div>
       )}
-
       {components.length === 0 && (
         <p className="text-xs text-white/25 italic">
           No components saved yet. Generate or paste one above.
@@ -602,7 +579,7 @@ function ComponentLibrary() {
   );
 }
 
-// ── Tool: Project Scaffolder ──────────────────────────────────────
+// ── Project Scaffolder ────────────────────────────────────────────
 function ProjectScaffolder() {
   const [projectName, setProjectName] = useState("");
   const [stack, setStack] = useState("nextjs-supabase");
@@ -611,7 +588,7 @@ function ProjectScaffolder() {
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const FEATURE_OPTIONS = [
+  const FEATURES = [
     "Authentication (Supabase Auth)",
     "Stripe payments",
     "Email (Resend)",
@@ -621,63 +598,29 @@ function ProjectScaffolder() {
     "API routes",
     "Dark mode",
   ];
-
-  const toggleFeature = (f: string) => {
-    setFeatures((prev) =>
-      prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f],
-    );
-  };
+  const toggle = (f: string) =>
+    setFeatures((p) => (p.includes(f) ? p.filter((x) => x !== f) : [...p, f]));
 
   const generate = async () => {
     if (!projectName.trim()) return;
     setLoading(true);
     setOutput("");
     try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Generate a complete project scaffolding guide for a project called "${projectName}".
-
-Stack: ${stack}
-Features needed: ${features.length > 0 ? features.join(", ") : "basic setup only"}
-
-Provide:
-1. Exact terminal commands to scaffold the project (npm create, npx, etc.)
-2. Required package installs (npm install ...)
-3. Essential env variables needed (just the KEY names, not values)
-4. Folder structure (key files/folders to create)
-5. First 3 things to do after setup
-
-Format as clear sections with code blocks. Be specific and production-ready. No fluff.`,
-            },
-          ],
-        }),
+      const data = await ai({
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: `Generate a complete project scaffolding guide for "${projectName}".\n\nStack: ${stack}\nFeatures: ${features.length > 0 ? features.join(", ") : "basic setup only"}\n\nProvide:\n1. Exact terminal commands\n2. npm install commands\n3. Required env variable names\n4. Key folder structure\n5. First 3 things to do after setup\n\nFormat with code blocks. Be specific and production-ready.`,
+          },
+        ],
       });
-      const data = await res.json();
-      const result =
-        data.content
-          ?.map((b: { type: string; text?: string }) =>
-            b.type === "text" ? b.text : "",
-          )
-          .join("") || "";
-      setOutput(result.trim());
+      setOutput(extractText(data).trim());
     } catch {
       setOutput("Error generating scaffold. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
   };
 
   return (
@@ -709,14 +652,13 @@ Format as clear sections with code blocks. Be specific and production-ready. No 
           </select>
         </div>
       </div>
-
       <div>
         <Label className="mb-2">Features</Label>
         <div className="flex flex-wrap gap-1.5">
-          {FEATURE_OPTIONS.map((f) => (
+          {FEATURES.map((f) => (
             <button
               key={f}
-              onClick={() => toggleFeature(f)}
+              onClick={() => toggle(f)}
               className="rounded-xl px-3 py-1.5 text-xs font-medium transition-all active:scale-95"
               style={
                 features.includes(f)
@@ -738,7 +680,6 @@ Format as clear sections with code blocks. Be specific and production-ready. No 
           ))}
         </div>
       </div>
-
       <PrimaryBtn onClick={generate} disabled={loading || !projectName.trim()}>
         {loading ? (
           <>
@@ -749,12 +690,18 @@ Format as clear sections with code blocks. Be specific and production-ready. No 
           "⚡ Generate scaffold"
         )}
       </PrimaryBtn>
-
       {output && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label>Scaffold guide</Label>
-            <GhostBtn onClick={copy} className="!h-7 !px-3 !text-[11px]">
+            <GhostBtn
+              onClick={async () => {
+                await navigator.clipboard.writeText(output);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1800);
+              }}
+              className="!h-7 !px-3 !text-[11px]"
+            >
               {copied ? "✓ Copied" : "Copy all"}
             </GhostBtn>
           </div>
@@ -774,7 +721,7 @@ Format as clear sections with code blocks. Be specific and production-ready. No 
   );
 }
 
-// ── Tool: Contract Generator ──────────────────────────────────────
+// ── Contract Generator ────────────────────────────────────────────
 function ContractGenerator() {
   const [clientName, setClientName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
@@ -791,42 +738,16 @@ function ContractGenerator() {
     setLoading(true);
     setOutput("");
     try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Generate a professional freelance ${type} document.
-
-Client name: ${clientName}
-Project: ${projectDesc}
-Project value: £${value || "TBD"}
-Timeline: ${timeline || "TBD"}
-Deposit: ${deposit}%
-Freelancer: Mahir Ahmed (Mahir Portfolio)
-Date: ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-
-${type === "contract" ? `Include: scope of work, payment terms (${deposit}% deposit upfront, remainder on completion), revision policy (2 rounds included), IP ownership (transfers on final payment), kill fee clause (50% if cancelled mid-project), dispute resolution, signatures section.` : ""}
-${type === "proposal" ? `Include: executive summary, proposed solution, deliverables, timeline breakdown, investment (with payment schedule), why choose me section, next steps, expiry date (valid 14 days).` : ""}
-${type === "invoice" ? `Include: invoice number (INV-${Date.now().toString().slice(-4)}), line items for the project, subtotal, VAT note (not VAT registered), total, payment terms (due within 14 days), bank details placeholder.` : ""}
-
-Write in professional British English. Make it ready to send. Use clear sections and formatting.`,
-            },
-          ],
-        }),
+      const data = await ai({
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: `Generate a professional freelance ${type} document.\n\nClient: ${clientName}\nProject: ${projectDesc}\nValue: £${value || "TBD"}\nTimeline: ${timeline || "TBD"}\nDeposit: ${deposit}%\nFreelancer: Mahir Ahmed\nDate: ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}\n\n${type === "contract" ? `Include: scope, payment terms (${deposit}% upfront), 2 revision rounds, IP ownership on final payment, 50% kill fee, dispute resolution, signatures.` : ""}${type === "proposal" ? "Include: executive summary, solution, deliverables, timeline, investment, why me, next steps, valid 14 days." : ""}${type === "invoice" ? `Include: invoice INV-${Date.now().toString().slice(-4)}, line items, total, VAT note (not registered), payment due 14 days, bank details placeholder.` : ""}\n\nProfessional British English. Ready to send.`,
+          },
+        ],
       });
-      const data = await res.json();
-      const result =
-        data.content
-          ?.map((b: { type: string; text?: string }) =>
-            b.type === "text" ? b.text : "",
-          )
-          .join("") || "";
-      setOutput(result.trim());
+      setOutput(extractText(data).trim());
     } catch {
       setOutput("Error generating document. Please try again.");
     } finally {
@@ -834,20 +755,12 @@ Write in professional British English. Make it ready to send. Use clear sections
     }
   };
 
-  const copy = async () => {
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-  };
-
   const download = () => {
-    const blob = new Blob([output], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${type}-${clientName.replace(/\s+/g, "-").toLowerCase()}.txt`;
+    const a = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(new Blob([output], { type: "text/plain" })),
+      download: `${type}-${clientName.replace(/\s+/g, "-").toLowerCase()}.txt`,
+    });
     a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -876,38 +789,38 @@ Write in professional British English. Make it ready to send. Use clear sections
           </button>
         ))}
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <Label className="mb-1.5">Client name</Label>
-          <input
-            value={clientName}
-            onChange={(e) => setClientName(e.target.value)}
-            placeholder="Acme Ltd"
-            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
-            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-          />
-        </div>
-        <div>
-          <Label className="mb-1.5">Project value (£)</Label>
-          <input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="2500"
-            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
-            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-          />
-        </div>
-        <div>
-          <Label className="mb-1.5">Timeline</Label>
-          <input
-            value={timeline}
-            onChange={(e) => setTimeline(e.target.value)}
-            placeholder="4–6 weeks"
-            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
-            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-          />
-        </div>
+        {[
+          {
+            label: "Client name",
+            value: clientName,
+            set: setClientName,
+            placeholder: "Acme Ltd",
+          },
+          {
+            label: "Project value (£)",
+            value,
+            set: setValue,
+            placeholder: "2500",
+          },
+          {
+            label: "Timeline",
+            value: timeline,
+            set: setTimeline,
+            placeholder: "4–6 weeks",
+          },
+        ].map(({ label, value: v, set, placeholder }) => (
+          <div key={label}>
+            <Label className="mb-1.5">{label}</Label>
+            <input
+              value={v}
+              onChange={(e) => set(e.target.value)}
+              placeholder={placeholder}
+              className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
+              style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+            />
+          </div>
+        ))}
         <div>
           <Label className="mb-1.5">Deposit %</Label>
           <select
@@ -922,19 +835,17 @@ Write in professional British English. Make it ready to send. Use clear sections
           </select>
         </div>
       </div>
-
       <div>
         <Label className="mb-1.5">Project description</Label>
         <textarea
           value={projectDesc}
           onChange={(e) => setProjectDesc(e.target.value)}
-          placeholder="Design and develop a full-stack e-commerce site with product listings, cart, and Stripe checkout…"
+          placeholder="Design and develop a full-stack e-commerce site…"
           rows={3}
           className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
       </div>
-
       <PrimaryBtn
         onClick={generate}
         disabled={loading || !clientName.trim() || !projectDesc.trim()}
@@ -948,13 +859,19 @@ Write in professional British English. Make it ready to send. Use clear sections
           `✦ Generate ${type}`
         )}
       </PrimaryBtn>
-
       {output && (
         <div className="space-y-2">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <Label>Generated {type}</Label>
             <div className="flex gap-2">
-              <GhostBtn onClick={copy} className="!h-7 !px-3 !text-[11px]">
+              <GhostBtn
+                onClick={async () => {
+                  await navigator.clipboard.writeText(output);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1800);
+                }}
+                className="!h-7 !px-3 !text-[11px]"
+              >
                 {copied ? "✓ Copied" : "Copy"}
               </GhostBtn>
               <GhostBtn onClick={download} className="!h-7 !px-3 !text-[11px]">
@@ -978,7 +895,7 @@ Write in professional British English. Make it ready to send. Use clear sections
   );
 }
 
-// ── Tool: Hosting Estimator ───────────────────────────────────────
+// ── Hosting Estimator ─────────────────────────────────────────────
 function HostingEstimator() {
   const [platform, setPlatform] =
     useState<keyof typeof HOSTING_TIERS>("vercel");
@@ -986,18 +903,17 @@ function HostingEstimator() {
   const [sites, setSites] = useState(1);
 
   const tiers = HOSTING_TIERS[platform];
-
-  const getRecommendation = () => {
-    if (traffic === "low" && sites <= 2) return 0;
-    if (traffic === "medium" || sites <= 5) return 1;
-    return 2;
-  };
-
-  const rec = getRecommendation();
+  const rec = Math.min(
+    traffic === "low" && sites <= 2
+      ? 0
+      : traffic === "medium" || sites <= 5
+        ? 1
+        : 2,
+    tiers.length - 1,
+  );
 
   return (
     <div className="space-y-5">
-      {/* Controls */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <Label className="mb-1.5">Platform</Label>
@@ -1022,7 +938,7 @@ function HostingEstimator() {
             className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
             style={{ border: "1px solid rgba(255,255,255,0.06)" }}
           >
-            <option value="low">Low (&lt;10k visits/mo)</option>
+            <option value="low">Low (&lt;10k/mo)</option>
             <option value="medium">Medium (10k–100k/mo)</option>
             <option value="high">High (100k+/mo)</option>
           </select>
@@ -1040,71 +956,64 @@ function HostingEstimator() {
           />
         </div>
       </div>
-
-      {/* Tier comparison */}
       <div className="space-y-2">
         <Label>Plan comparison</Label>
-        {tiers.map((tier, i) => {
-          const isRec = i === rec;
-          return (
-            <div
-              key={tier.name}
-              className="rounded-xl p-4"
-              style={{
-                background: isRec
-                  ? "rgba(110,231,183,0.06)"
-                  : "rgba(255,255,255,0.02)",
-                border: isRec
+        {tiers.map((tier, i) => (
+          <div
+            key={tier.name}
+            className="rounded-xl p-4"
+            style={{
+              background:
+                i === rec ? "rgba(110,231,183,0.06)" : "rgba(255,255,255,0.02)",
+              border:
+                i === rec
                   ? "1px solid rgba(110,231,183,0.2)"
                   : "1px solid rgba(255,255,255,0.05)",
-              }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-white">
-                    {tier.name}
-                  </span>
-                  {isRec && (
-                    <span
-                      className="rounded-md px-2 py-0.5 text-[10px] font-medium"
-                      style={{
-                        background: "rgba(110,231,183,0.15)",
-                        color: "#6ee7b7",
-                      }}
-                    >
-                      Recommended
-                    </span>
-                  )}
-                </div>
-                <span className="text-lg font-bold text-white">
-                  {tier.price === 0 ? "Free" : `$${tier.price}/mo`}
+            }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-white">
+                  {tier.name}
                 </span>
+                {i === rec && (
+                  <span
+                    className="rounded-md px-2 py-0.5 text-[10px] font-medium"
+                    style={{
+                      background: "rgba(110,231,183,0.15)",
+                      color: "#6ee7b7",
+                    }}
+                  >
+                    Recommended
+                  </span>
+                )}
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Builds", value: tier.builds },
-                  { label: "Bandwidth", value: tier.bandwidth },
-                  {
-                    label: platform === "railway" ? "Memory" : "Functions",
-                    value: tier.functions,
-                  },
-                ].map(({ label, value }) => (
-                  <div key={label}>
-                    <p className="text-[10px] text-white/30 uppercase tracking-wider">
-                      {label}
-                    </p>
-                    <p className="text-xs font-medium text-white/70 mt-0.5">
-                      {value}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <span className="text-lg font-bold text-white">
+                {tier.price === 0 ? "Free" : `$${tier.price}/mo`}
+              </span>
             </div>
-          );
-        })}
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { label: "Builds", value: tier.builds },
+                { label: "Bandwidth", value: tier.bandwidth },
+                {
+                  label: platform === "railway" ? "Memory" : "Functions",
+                  value: tier.functions,
+                },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <p className="text-[10px] text-white/30 uppercase tracking-wider">
+                    {label}
+                  </p>
+                  <p className="text-xs font-medium text-white/70 mt-0.5">
+                    {value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-
-      {/* Cost summary */}
       <div
         className="rounded-xl p-4"
         style={{
@@ -1125,16 +1034,15 @@ function HostingEstimator() {
           </span>
         </div>
         <p className="text-xs text-white/35 mt-1">
-          USD converted to GBP approx. Charge your clients £
-          {((tiers[rec].price * 0.79 + 5) * 1.5).toFixed(0)}+/mo to cover costs
-          + margin.
+          Charge clients £{((tiers[rec].price * 0.79 + 5) * 1.5).toFixed(0)}+/mo
+          to cover costs + margin.
         </p>
       </div>
     </div>
   );
 }
 
-// ── Tool: SEO Audit ───────────────────────────────────────────────
+// ── SEO Audit ─────────────────────────────────────────────────────
 function SEOAudit() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1145,39 +1053,16 @@ function SEOAudit() {
     setLoading(true);
     setOutput("");
     try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Perform a detailed SEO audit checklist for the website: ${url}
-
-Based on the URL and what you can infer about the site, provide:
-
-1. **Technical SEO** — likely issues (page speed, mobile, HTTPS, sitemaps, robots.txt)
-2. **On-page SEO** — title tags, meta descriptions, heading structure, image alt text
-3. **Content** — keyword strategy, content quality signals, thin content risks
-4. **Links** — internal linking, backlink building opportunities
-5. **Quick wins** — top 3 things to fix immediately for the biggest impact
-6. **Tools to use** — specific free tools to audit each area
-
-Be practical and specific. Rate each area: ✅ likely good / ⚠️ needs checking / ❌ common issue for this type of site.`,
-            },
-          ],
-        }),
+      const data = await ai({
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: `Perform a detailed SEO audit for: ${url}\n\nProvide:\n1. **Technical SEO** — page speed, mobile, HTTPS, sitemaps, robots.txt\n2. **On-page SEO** — title tags, meta descriptions, headings, alt text\n3. **Content** — keyword strategy, quality signals, thin content risks\n4. **Links** — internal linking, backlink opportunities\n5. **Quick wins** — top 3 fixes for biggest impact\n6. **Tools** — specific free tools for each area\n\nRate each: ✅ likely good / ⚠️ needs checking / ❌ common issue for this type of site.`,
+          },
+        ],
       });
-      const data = await res.json();
-      const result =
-        data.content
-          ?.map((b: { type: string; text?: string }) =>
-            b.type === "text" ? b.text : "",
-          )
-          .join("") || "";
-      setOutput(result.trim());
+      setOutput(extractText(data).trim());
     } catch {
       setOutput("Error running audit. Please try again.");
     } finally {
@@ -1210,11 +1095,10 @@ Be practical and specific. Rate each area: ✅ likely good / ⚠️ needs checki
           </PrimaryBtn>
         </div>
         <p className="text-[11px] text-white/30 mt-1.5">
-          AI-powered analysis based on URL + site type. For a full audit also
-          run PageSpeed Insights + Screaming Frog.
+          AI analysis based on URL + site type. Also run PageSpeed Insights +
+          Screaming Frog for a full audit.
         </p>
       </div>
-
       {output && (
         <div
           className="rounded-xl p-4 text-sm text-white/65 leading-relaxed overflow-auto whitespace-pre-wrap"
@@ -1310,7 +1194,6 @@ export default function ToolsPage() {
       className="min-h-screen bg-[#060e1a] text-white pb-10"
       style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
     >
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/6 blur-[120px]" />
         <div className="absolute top-1/2 -right-32 h-96 w-96 rounded-full bg-violet-600/6 blur-[120px]" />
@@ -1325,7 +1208,6 @@ export default function ToolsPage() {
       </div>
 
       <div className="relative mx-auto max-w-[1200px] px-4 py-5 lg:px-8 lg:py-7">
-        {/* ── Header ── */}
         <div className="mb-7 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
@@ -1388,7 +1270,6 @@ export default function ToolsPage() {
           </a>
         </div>
 
-        {/* ── Tool picker — horizontal scroll on mobile ── */}
         <div
           className="flex gap-2 overflow-x-auto pb-2 mb-5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-6 lg:gap-2.5"
           style={{ scrollbarWidth: "none" }}
@@ -1426,7 +1307,6 @@ export default function ToolsPage() {
           ))}
         </div>
 
-        {/* ── Active tool panel ── */}
         <div
           className="rounded-2xl p-5 lg:p-6"
           style={{
