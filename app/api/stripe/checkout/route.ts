@@ -28,8 +28,7 @@ export async function POST(req: Request) {
   try {
     const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "mahirahmed.co.uk";
     const proto = req.headers.get("x-forwarded-proto") || "https";
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`).replace(/\/$/, "");
-    console.log("[checkout] siteUrl:", siteUrl);
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`).trim().replace(/\/$/, "");
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -120,21 +119,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "mahirahmed.co.uk";
-    const proto = req.headers.get("x-forwarded-proto") || "https";
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`).replace(/\/$/, "");
-    console.error("Stripe checkout error:", JSON.stringify(error, null, 2));
-
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Unable to create checkout session",
-        debug: {
-          siteUrl,
-          success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${siteUrl}/?deposit=cancelled`,
-          NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-          stripeError: error instanceof Error ? { message: error.message, name: error.name } : error,
-        },
       },
       { status: 500 },
     );
