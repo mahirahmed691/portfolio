@@ -9,8 +9,9 @@ export const runtime = "nodejs";
 type PackageTier = "starter" | "standard" | "premium";
 
 function getRecommendedPackage(budget: string): PackageTier {
-  if (budget === "1000+") return "premium";
-  if (budget === "500-1000") return "standard";
+  if (budget === "3000+") return "premium";
+  if (budget === "1500-3000") return "premium";
+  if (budget === "500-1500") return "standard";
   return "starter";
 }
 
@@ -18,31 +19,32 @@ function getPackageDetails(tier: PackageTier) {
   switch (tier) {
     case "starter":
       return {
-        name: "Starter Package",
-        amount: 25000,
-        description: "Initial payment for smaller scoped work",
+        name: "Starter — Landing Page",
+        amount: 25000, // £250 deposit
+        description: "Deposit for landing page / one-page site (from £500)",
       };
     case "standard":
       return {
-        name: "Standard Package",
-        amount: 50000,
-        description: "Initial payment for full website builds",
+        name: "Growth — Multi-page Website",
+        amount: 75000, // £750 deposit
+        description: "Deposit for multi-page website build (from £1,500)",
       };
     case "premium":
       return {
-        name: "Premium Package",
-        amount: 100000,
-        description: "Initial payment for advanced/custom builds",
+        name: "Premium — Web App / Product",
+        amount: 150000, // £1,500 deposit
+        description: "Deposit for web app or full product build (from £3,000)",
       };
   }
 }
 
 function calculateLeadScore(body: Record<string, string>) {
   let score = 0;
-  if (body.budget === "1000+") score += 3;
+  if (body.budget === "3000+" || body.budget === "1500-3000") score += 3;
+  else if (body.budget === "500-1500") score += 2;
   if (body.timeline === "ASAP") score += 2;
   if (body.urgency === "High") score += 2;
-  if (body.goal === "Launch") score += 1;
+  if (body.goal === "Launch" || body.goal === "Leads") score += 1;
   return score;
 }
 

@@ -663,7 +663,9 @@ export function ContactSection({
                       <option value="landing">Landing page</option>
                       <option value="website">Business / brand website</option>
                       <option value="portfolio">Portfolio site</option>
-                      <option value="product">Product / app UI</option>
+                      <option value="ecommerce">E-commerce store</option>
+                      <option value="product">Web app / product UI</option>
+                      <option value="redesign">Redesign existing site</option>
                     </select>
 
                     <select
@@ -676,6 +678,7 @@ export function ContactSection({
                       <option value="Redesign">Redesign existing</option>
                       <option value="Conversions">Improve conversions</option>
                       <option value="MVP">Build an MVP</option>
+                      <option value="Leads">Generate more leads</option>
                     </select>
 
                     <select
@@ -684,9 +687,10 @@ export function ContactSection({
                       className={inputBase}
                     >
                       <option value="">Budget</option>
-                      <option value="0-500">£0–£500</option>
-                      <option value="500-1000">£500–£1000</option>
-                      <option value="1000+">£1000+</option>
+                      <option value="under-500">Under £500</option>
+                      <option value="500-1500">£500–£1,500</option>
+                      <option value="1500-3000">£1,500–£3,000</option>
+                      <option value="3000+">£3,000+</option>
                     </select>
 
                     <select
