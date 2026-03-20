@@ -12,6 +12,7 @@ import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
 import { WorkSection } from "./components/WorkSection";
 import { ServicesSection } from "./components/ServicesSection";
+import { TestimonialsSection } from "./components/TestimonialsSection";
 import { AboutSection } from "./components/AboutSection";
 import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
@@ -139,6 +140,7 @@ export function PortfolioPage() {
         themeClasses={themeClasses}
         focusMode={focusMode}
       />
+      <TestimonialsSection isLight={isLight} themeClasses={themeClasses} />
       <AboutSection themeClasses={themeClasses} />
       <ContactSection isLight={isLight} themeClasses={themeClasses} />
       <Footer themeClasses={themeClasses} />

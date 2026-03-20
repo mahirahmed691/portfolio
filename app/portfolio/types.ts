@@ -34,6 +34,14 @@ export type Project = {
   outcome: string;
 };
 
+export type Testimonial = {
+  name: string;
+  role: string;
+  company: string;
+  quote: string;
+  rating: number;
+};
+
 export type SharedProps = {
   isLight: boolean;
   isMobile: boolean;

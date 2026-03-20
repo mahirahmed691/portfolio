@@ -8,7 +8,9 @@ type Tool =
   | "scaffold"
   | "contract"
   | "hosting"
-  | "seo";
+  | "seo"
+  | "email"
+  | "proposal";
 type SavedComponent = {
   id: string;
   name: string;
@@ -182,6 +184,16 @@ function LandingPageGenerator() {
   const [preview, setPreview] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [savedPages, setSavedPages] = useState<
+    Array<{ id: string; prompt: string; html: string; createdAt: string }>
+  >(() => {
+    try {
+      return JSON.parse(localStorage.getItem("mahir-tools-history") || "[]");
+    } catch {
+      return [];
+    }
+  });
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   // Rebuild blob URL whenever output changes
   useEffect(() => {
@@ -224,7 +236,19 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
           },
         ],
       });
-      setOutput(extractText(data).trim());
+      const html = extractText(data).trim();
+      setOutput(html);
+      const newEntry = {
+        id: Date.now().toString(),
+        prompt: prompt.slice(0, 60),
+        html,
+        createdAt: new Date().toISOString(),
+      };
+      setSavedPages((prev) => {
+        const updated = [newEntry, ...prev].slice(0, 10);
+        localStorage.setItem("mahir-tools-history", JSON.stringify(updated));
+        return updated;
+      });
     } catch {
       setOutput("<!-- Error generating page. Please try again. -->");
     } finally {
@@ -362,6 +386,69 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
                 ? "\n\n… (truncated — download for full file)"
                 : ""}
             </pre>
+          )}
+        </div>
+      )}
+
+      {savedPages.length > 0 && (
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <button
+            onClick={() => setHistoryOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/[0.02]"
+            style={{ background: "rgba(255,255,255,0.02)" }}
+          >
+            <Label>Recent ({savedPages.length})</Label>
+            <span className="text-white/30 text-xs">
+              {historyOpen ? "▲" : "▼"}
+            </span>
+          </button>
+          {historyOpen && (
+            <div className="divide-y divide-white/[0.04]">
+              {savedPages.map((page) => (
+                <div
+                  key={page.id}
+                  className="flex items-center justify-between px-4 py-3 gap-3"
+                  style={{ background: "rgba(0,0,0,0.15)" }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white/70 truncate">{page.prompt}</p>
+                    <p className="text-[10px] text-white/30 mt-0.5">
+                      {new Date(page.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <GhostBtn
+                      onClick={() => setOutput(page.html)}
+                      className="!h-7 !px-3 !text-[11px]"
+                    >
+                      Load
+                    </GhostBtn>
+                    <GhostBtn
+                      onClick={() => {
+                        setSavedPages((prev) => {
+                          const updated = prev.filter((p) => p.id !== page.id);
+                          localStorage.setItem(
+                            "mahir-tools-history",
+                            JSON.stringify(updated),
+                          );
+                          return updated;
+                        });
+                      }}
+                      className="!h-7 !px-3 !text-[11px] hover:!text-red-400"
+                    >
+                      Delete
+                    </GhostBtn>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -1117,6 +1204,266 @@ function SEOAudit() {
   );
 }
 
+// ── Email Copy Writer ─────────────────────────────────────────────
+function EmailCopyWriter() {
+  const [tone, setTone] = useState("Friendly");
+  const [type, setType] = useState("Follow-up");
+  const [context, setContext] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [output, setOutput] = useState("");
+
+  const generate = async () => {
+    if (!context.trim()) return;
+    setLoading(true);
+    setOutput("");
+    try {
+      const data = await ai({
+        max_tokens: 800,
+        messages: [
+          {
+            role: "user",
+            content: `Write a ${tone} ${type} email for a freelance web developer. Context: ${context}. Write the subject line first on its own line prefixed with 'Subject:', then the email body. Keep it concise, no more than 150 words for the body.`,
+          },
+        ],
+      });
+      setOutput(extractText(data).trim());
+    } catch {
+      setOutput("Error generating email. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-3">
+        <div className="flex-1 min-w-[140px]">
+          <Label className="mb-1.5">Tone</Label>
+          <select
+            value={tone}
+            onChange={(e) => setTone(e.target.value)}
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <option>Professional</option>
+            <option>Friendly</option>
+            <option>Bold</option>
+          </select>
+        </div>
+        <div className="flex-1 min-w-[160px]">
+          <Label className="mb-1.5">Type</Label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <option>Cold outreach</option>
+            <option>Follow-up</option>
+            <option>Proposal</option>
+            <option>Thank you</option>
+            <option>Re-engagement</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <Label className="mb-1.5">Brief context about the client or project</Label>
+        <textarea
+          value={context}
+          onChange={(e) => setContext(e.target.value)}
+          placeholder="e.g. Spoke to Sarah at Bloom Studio last week, she needs a new e-commerce site by Q2…"
+          rows={3}
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+        />
+      </div>
+      <PrimaryBtn onClick={generate} disabled={loading || !context.trim()}>
+        {loading ? (
+          <>
+            <Spinner /> Generating…
+          </>
+        ) : (
+          "✦ Generate email"
+        )}
+      </PrimaryBtn>
+      {output && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label>Generated email</Label>
+            <CopyBtn text={output} />
+          </div>
+          <div
+            className="rounded-xl p-4 text-sm text-white/75 leading-relaxed overflow-auto whitespace-pre-wrap"
+            style={{
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              maxHeight: "400px",
+            }}
+          >
+            {output}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Proposal Writer ───────────────────────────────────────────────
+function ProposalWriter() {
+  const [clientName, setClientName] = useState("");
+  const [projectType, setProjectType] = useState("Landing page");
+  const [budget, setBudget] = useState("£500–£1,000");
+  const [timeline, setTimeline] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [output, setOutput] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const generate = async () => {
+    if (!clientName.trim() || !requirements.trim()) return;
+    setLoading(true);
+    setOutput("");
+    try {
+      const data = await ai({
+        max_tokens: 2500,
+        messages: [
+          {
+            role: "user",
+            content: `Write a professional project proposal for a freelance web developer. Client: ${clientName}. Project: ${projectType}. Budget: ${budget}. Timeline: ${timeline || "TBD"}. Requirements: ${requirements}. Include: Executive Summary, Scope of Work, Deliverables, Timeline breakdown, Investment, Next Steps. Keep it professional but warm.`,
+          },
+        ],
+      });
+      setOutput(extractText(data).trim());
+    } catch {
+      setOutput("Error generating proposal. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const download = () => {
+    const url = URL.createObjectURL(new Blob([output], { type: "text/plain" }));
+    const a = Object.assign(document.createElement("a"), {
+      href: url,
+      download: `proposal-${clientName.replace(/\s+/g, "-").toLowerCase()}.txt`,
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <Label className="mb-1.5">Client name</Label>
+          <input
+            value={clientName}
+            onChange={(e) => setClientName(e.target.value)}
+            placeholder="Acme Ltd"
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          />
+        </div>
+        <div>
+          <Label className="mb-1.5">Project type</Label>
+          <select
+            value={projectType}
+            onChange={(e) => setProjectType(e.target.value)}
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <option>Landing page</option>
+            <option>Business website</option>
+            <option>E-commerce</option>
+            <option>Web app</option>
+            <option>Design refresh</option>
+          </select>
+        </div>
+        <div>
+          <Label className="mb-1.5">Budget range</Label>
+          <select
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none cursor-pointer"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <option>£500–£1,000</option>
+            <option>£1,000–£2,500</option>
+            <option>£2,500–£5,000</option>
+            <option>£5,000–£10,000</option>
+            <option>£10,000+</option>
+          </select>
+        </div>
+        <div>
+          <Label className="mb-1.5">Timeline</Label>
+          <input
+            value={timeline}
+            onChange={(e) => setTimeline(e.target.value)}
+            placeholder="4–6 weeks"
+            className="w-full h-9 rounded-xl bg-white/[0.05] px-3 text-xs text-white outline-none placeholder:text-white/30"
+            style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+          />
+        </div>
+      </div>
+      <div>
+        <Label className="mb-1.5">Key requirements</Label>
+        <textarea
+          value={requirements}
+          onChange={(e) => setRequirements(e.target.value)}
+          placeholder="e.g. Booking system, multilingual support, Stripe payments, mobile-first design…"
+          rows={3}
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+        />
+      </div>
+      <PrimaryBtn
+        onClick={generate}
+        disabled={loading || !clientName.trim() || !requirements.trim()}
+      >
+        {loading ? (
+          <>
+            <Spinner /> Generating…
+          </>
+        ) : (
+          "✦ Generate proposal"
+        )}
+      </PrimaryBtn>
+      {output && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <Label>Generated proposal</Label>
+            <div className="flex gap-2">
+              <GhostBtn
+                onClick={async () => {
+                  await navigator.clipboard.writeText(output);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1800);
+                }}
+                className="!h-7 !px-3 !text-[11px]"
+              >
+                {copied ? "✓ Copied" : "Copy"}
+              </GhostBtn>
+              <GhostBtn onClick={download} className="!h-7 !px-3 !text-[11px]">
+                ↓ Download .txt
+              </GhostBtn>
+            </div>
+          </div>
+          <pre
+            className="rounded-xl p-4 text-xs text-white/65 leading-relaxed overflow-auto whitespace-pre-wrap font-mono"
+            style={{
+              background: "rgba(0,0,0,0.3)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              maxHeight: "480px",
+            }}
+          >
+            {output}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Tool definitions ──────────────────────────────────────────────
 const TOOLS: {
   id: Tool;
@@ -1167,6 +1514,20 @@ const TOOLS: {
     desc: "Quick SEO analysis for any URL",
     accent: "rgba(232,121,249,0.15)",
   },
+  {
+    id: "email",
+    label: "Email Copy Writer",
+    icon: "✉",
+    desc: "AI-written cold outreach & follow-ups",
+    accent: "rgba(251,146,60,0.15)",
+  },
+  {
+    id: "proposal",
+    label: "Proposal Writer",
+    icon: "📄",
+    desc: "Full project proposals in seconds",
+    accent: "rgba(134,239,172,0.15)",
+  },
 ];
 
 // ── Main Page ─────────────────────────────────────────────────────
@@ -1188,6 +1549,10 @@ export default function ToolsPage() {
         return <HostingEstimator />;
       case "seo":
         return <SEOAudit />;
+      case "email":
+        return <EmailCopyWriter />;
+      case "proposal":
+        return <ProposalWriter />;
     }
   };
 
@@ -1273,7 +1638,7 @@ export default function ToolsPage() {
         </div>
 
         <div
-          className="flex gap-2 overflow-x-auto pb-2 mb-5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-6 lg:gap-2.5"
+          className="flex gap-2 overflow-x-auto pb-2 mb-5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-8 lg:gap-2.5"
           style={{ scrollbarWidth: "none" }}
         >
           {TOOLS.map((tool) => (

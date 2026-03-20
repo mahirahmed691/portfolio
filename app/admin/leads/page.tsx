@@ -629,6 +629,7 @@ export default function LeadsPage() {
   const [notesDrafts, setNotesDrafts] = useState<Record<string, string>>({});
   const [copySuccessId, setCopySuccessId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [view, setView] = useState<"list" | "kanban">("list");
   const [activityLogs, setActivityLogs] = useState<
     Record<string, ActivityEvent[]>
   >(() => {
@@ -796,6 +797,22 @@ export default function LeadsPage() {
     } catch {
       /* noop */
     }
+  };
+
+  const exportCSV = () => {
+    const headers = ['Name','Email','Phone','Company','Website','Project Type','Goal','Budget','Timeline','Urgency','Package','Score','Status','Created'];
+    const rows = leads.map(l => [
+      l.name, l.email, l.phone, l.company || '', l.website || '',
+      l.project_type || '', l.goal || '', l.budget || '', l.timeline || '',
+      l.urgency || '', l.recommended_package || '', l.lead_score ?? '',
+      l.status || '', l.created_at ? new Date(l.created_at).toLocaleDateString() : ''
+    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: `leads-${new Date().toISOString().slice(0,10)}.csv` });
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -1016,36 +1033,190 @@ export default function LeadsPage() {
                   className="h-full w-full bg-transparent text-xs text-white outline-none placeholder:text-white/30"
                 />
               </div>
+              <GhostBtn onClick={exportCSV}>Export CSV</GhostBtn>
             </div>
             <div className="flex items-center gap-2">
-              <GhostBtn
-                onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
-                disabled={currentIndex === 0}
+              {/* View toggle */}
+              <div
+                className="flex h-9 items-center rounded-xl p-0.5 gap-0.5"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
               >
-                ← Prev
-              </GhostBtn>
-              <span
-                className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/50 tabular-nums"
-                style={{ border: "1px solid rgba(255,255,255,0.04)" }}
-              >
-                {filteredLeads.length > 0
-                  ? `${currentIndex + 1} / ${filteredLeads.length}`
-                  : "—"}
-              </span>
-              <GhostBtn
-                onClick={() =>
-                  setCurrentIndex((p) =>
-                    Math.min(p + 1, filteredLeads.length - 1),
-                  )
-                }
-                disabled={currentIndex >= filteredLeads.length - 1}
-              >
-                Next →
-              </GhostBtn>
+                <button
+                  onClick={() => setView("list")}
+                  className="h-8 px-3 rounded-[10px] text-xs font-medium transition-all"
+                  style={
+                    view === "list"
+                      ? {
+                          background: "rgba(255,255,255,0.1)",
+                          color: "rgba(255,255,255,0.9)",
+                        }
+                      : { color: "rgba(255,255,255,0.38)" }
+                  }
+                >
+                  List
+                </button>
+                <button
+                  onClick={() => setView("kanban")}
+                  className="h-8 px-3 rounded-[10px] text-xs font-medium transition-all"
+                  style={
+                    view === "kanban"
+                      ? {
+                          background: "rgba(255,255,255,0.1)",
+                          color: "rgba(255,255,255,0.9)",
+                        }
+                      : { color: "rgba(255,255,255,0.38)" }
+                  }
+                >
+                  Kanban
+                </button>
+              </div>
+              {view === "list" && (
+                <>
+                  <GhostBtn
+                    onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
+                    disabled={currentIndex === 0}
+                  >
+                    ← Prev
+                  </GhostBtn>
+                  <span
+                    className="rounded-xl bg-white/[0.04] px-3 py-2 text-xs text-white/50 tabular-nums"
+                    style={{ border: "1px solid rgba(255,255,255,0.04)" }}
+                  >
+                    {filteredLeads.length > 0
+                      ? `${currentIndex + 1} / ${filteredLeads.length}`
+                      : "—"}
+                  </span>
+                  <GhostBtn
+                    onClick={() =>
+                      setCurrentIndex((p) =>
+                        Math.min(p + 1, filteredLeads.length - 1),
+                      )
+                    }
+                    disabled={currentIndex >= filteredLeads.length - 1}
+                  >
+                    Next →
+                  </GhostBtn>
+                </>
+              )}
             </div>
           </BentoCard>
 
-          {!lead ? (
+          {view === "kanban" ? (
+            <div className="sm:col-span-2 lg:col-span-12 overflow-x-auto pb-2">
+              <div className="flex gap-3 min-w-[720px]">
+                {(
+                  [
+                    { key: "new", label: "New" },
+                    { key: "contacted", label: "Contacted" },
+                    { key: "qualified", label: "Qualified" },
+                    { key: "won", label: "Won" },
+                    { key: "lost", label: "Lost" },
+                  ] as { key: LeadStatus; label: string }[]
+                ).map(({ key, label }) => {
+                  const colLeads = filteredLeads.filter(
+                    (l) => (l.status || "new") === key,
+                  );
+                  const st = getStatusStyle(key);
+                  return (
+                    <div
+                      key={key}
+                      className="flex-1 min-w-[160px] flex flex-col gap-2"
+                    >
+                      {/* Column header */}
+                      <div
+                        className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                        style={{
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid rgba(255,255,255,0.05)",
+                        }}
+                      >
+                        <span
+                          className="inline-block h-2 w-2 rounded-full shrink-0"
+                          style={{ background: st.dot }}
+                        />
+                        <span className="text-xs font-semibold text-white/75 flex-1 truncate">
+                          {label}
+                        </span>
+                        <span
+                          className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-md px-1.5 text-[10px] font-bold tabular-nums"
+                          style={{ background: st.bg, color: st.color }}
+                        >
+                          {colLeads.length}
+                        </span>
+                      </div>
+                      {/* Cards */}
+                      <div className="flex flex-col gap-2">
+                        {colLeads.length === 0 && (
+                          <div
+                            className="rounded-xl px-3 py-4 text-center text-[11px] text-white/20"
+                            style={{
+                              background: "rgba(255,255,255,0.015)",
+                              border:
+                                "1px dashed rgba(255,255,255,0.06)",
+                            }}
+                          >
+                            Empty
+                          </div>
+                        )}
+                        {colLeads.map((l) => {
+                          const prio = getPriority(l);
+                          const prioStyle = getPriorityInlineStyle(prio);
+                          const realIdx = filteredLeads.indexOf(l);
+                          return (
+                            <button
+                              key={l.id}
+                              type="button"
+                              onClick={() => {
+                                setCurrentIndex(realIdx >= 0 ? realIdx : 0);
+                                setView("list");
+                              }}
+                              className="w-full text-left rounded-xl p-3 transition-all active:scale-[0.98] hover:brightness-110"
+                              style={{
+                                background: "rgba(12,25,41,0.9)",
+                                boxShadow:
+                                  "0 0 0 1px rgba(255,255,255,0.05), 0 2px 12px rgba(0,0,0,0.2)",
+                              }}
+                            >
+                              <div className="flex items-start justify-between gap-1.5 mb-2">
+                                <p className="text-xs font-semibold text-white/85 leading-snug truncate flex-1">
+                                  {l.name || "Unnamed"}
+                                </p>
+                                <span
+                                  className="inline-flex items-center justify-center h-5 min-w-[28px] rounded-md px-1.5 text-[10px] font-bold tabular-nums shrink-0"
+                                  style={prioStyle}
+                                >
+                                  {l.lead_score ?? "—"}
+                                </span>
+                              </div>
+                              {l.company && (
+                                <p className="text-[10px] text-white/35 truncate mb-1.5">
+                                  {l.company}
+                                </p>
+                              )}
+                              {l.recommended_package && (
+                                <span
+                                  className="inline-block rounded-md px-2 py-0.5 text-[10px] font-medium uppercase"
+                                  style={{
+                                    background: "rgba(255,255,255,0.05)",
+                                    color: "rgba(255,255,255,0.45)",
+                                  }}
+                                >
+                                  {l.recommended_package}
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : !lead ? (
             <BentoCard className="p-8 sm:col-span-2 lg:col-span-12">
               <p className="text-white/40 text-sm">
                 No leads match your filters.

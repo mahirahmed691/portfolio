@@ -33,6 +33,21 @@ export function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
+          {/* Availability indicator */}
+          <div
+            className={`mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${
+              isLight
+                ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+            }`}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            Available for new projects — taking on work now
+          </div>
+
           <div
             className={
               isLight

@@ -974,6 +974,129 @@ export default function ReferralsPage() {
               </div>
             </BentoCard>
           )}
+          {/* Earnings Overview */}
+          {!loadingReferrals && referrals.length > 0 && (
+            <BentoCard className="col-span-2 md:col-span-4 lg:col-span-12 p-5">
+              <Label className="mb-1">Earnings Overview</Label>
+              <p className="text-[11px] text-white/35 mb-4">
+                Estimated earnings based on £750 avg project value × commission
+                rate × leads generated.
+              </p>
+
+              <div className="overflow-x-auto -mx-1">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      {["Name", "Clicks", "Leads", "Commission", "Est. Earnings"].map(
+                        (h) => (
+                          <th
+                            key={h}
+                            className="pb-3 text-left text-[10px] uppercase tracking-[0.18em] text-white/30 font-medium px-1"
+                          >
+                            {h}
+                          </th>
+                        )
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {referrals.map((r) => {
+                      const commissionStr = r.commission ?? "";
+                      const percentMatch = commissionStr.match(/(\d+(\.\d+)?)\s*%/);
+                      const commissionRate = percentMatch
+                        ? parseFloat(percentMatch[1]) / 100
+                        : 0;
+                      const estimated =
+                        commissionRate > 0
+                          ? r.leads * 750 * commissionRate
+                          : null;
+
+                      return (
+                        <tr
+                          key={r.id}
+                          style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
+                        >
+                          <td className="py-3 px-1">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="h-6 w-6 rounded-lg bg-white/[0.06] flex items-center justify-center text-[10px] font-semibold text-white shrink-0"
+                                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
+                              >
+                                {r.name[0].toUpperCase()}
+                              </div>
+                              <span className="text-white/80 font-medium">
+                                {r.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-1 text-white/50 tabular-nums">
+                            {r.clicks}
+                          </td>
+                          <td className="py-3 px-1 text-white/50 tabular-nums">
+                            {r.leads}
+                          </td>
+                          <td className="py-3 px-1">
+                            <span
+                              className="rounded-lg px-2 py-0.5 text-[10px] font-semibold"
+                              style={{
+                                background: "rgba(251,191,36,0.12)",
+                                color: "#fcd34d",
+                              }}
+                            >
+                              {r.commission}
+                            </span>
+                          </td>
+                          <td className="py-3 px-1 tabular-nums">
+                            {estimated !== null ? (
+                              <span
+                                className="font-semibold"
+                                style={{ color: "#6ee7b7" }}
+                              >
+                                £{estimated.toFixed(0)}
+                              </span>
+                            ) : (
+                              <span className="text-white/25">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                      <td
+                        colSpan={4}
+                        className="pt-3 px-1 text-[10px] uppercase tracking-[0.18em] text-white/35 font-medium"
+                      >
+                        Total estimated
+                      </td>
+                      <td className="pt-3 px-1 tabular-nums">
+                        <span className="text-sm font-bold text-white">
+                          £
+                          {referrals
+                            .reduce((sum, r) => {
+                              const commissionStr = r.commission ?? "";
+                              const percentMatch =
+                                commissionStr.match(/(\d+(\.\d+)?)\s*%/);
+                              const commissionRate = percentMatch
+                                ? parseFloat(percentMatch[1]) / 100
+                                : 0;
+                              return (
+                                sum +
+                                (commissionRate > 0
+                                  ? r.leads * 750 * commissionRate
+                                  : 0)
+                              );
+                            }, 0)
+                            .toFixed(0)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </BentoCard>
+          )}
         </div>
       </div>
 
