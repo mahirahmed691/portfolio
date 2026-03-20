@@ -312,15 +312,15 @@ function BentoCard({
 
 function getGridSpanClass(span: number) {
   const map: Record<number, string> = {
-    12: "col-span-1 md:col-span-12",
-    8: "col-span-1 md:col-span-8",
-    5: "col-span-1 md:col-span-5",
-    4: "col-span-1 md:col-span-4",
-    3: "col-span-1 sm:col-span-2 xl:col-span-3",
-    2: "col-span-1 sm:col-span-1 xl:col-span-2",
+    12: "col-span-2 md:col-span-4 lg:col-span-12",
+    8: "col-span-2 md:col-span-4 lg:col-span-8",
+    5: "col-span-2 md:col-span-4 lg:col-span-5",
+    4: "col-span-2 md:col-span-4 lg:col-span-4",
+    3: "col-span-1 md:col-span-2 lg:col-span-3",
+    2: "col-span-1 md:col-span-2 lg:col-span-2",
   };
 
-  return map[span] || "col-span-1";
+  return map[span] || "col-span-2";
 }
 
 function Label({
@@ -919,7 +919,7 @@ export default function LeadsPage() {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-12">
           {/* Stats */}
           <BentoCard
             className={`p-5 flex flex-col justify-between min-h-[100px] ${getGridSpanClass(3)}`}
@@ -1081,14 +1081,14 @@ export default function LeadsPage() {
                   }}
                 />
                 <div className="relative">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="mb-4 flex items-start justify-between gap-3">
                     <div
                       className="h-11 w-11 rounded-2xl bg-white/[0.06] flex items-center justify-center text-lg font-semibold text-white shrink-0"
                       style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
                     >
                       {(lead.name || "?")[0].toUpperCase()}
                     </div>
-                    <div className="flex flex-wrap gap-1.5 sm:justify-end">
+                    <div className="flex flex-wrap justify-end gap-1.5">
                       <span
                         className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
                         style={{
