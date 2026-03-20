@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import type { ThemeClasses } from "../types";
 
@@ -12,8 +15,21 @@ export function Header({
   setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   themeClasses: ThemeClasses;
 }) {
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [menuOpen, setMenuOpen]);
+
   return (
-    <header className={themeClasses.header}>
+    <header ref={headerRef} className={themeClasses.header}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <a
           href="#home"

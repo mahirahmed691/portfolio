@@ -823,7 +823,7 @@ export default function LeadsPage() {
   return (
     <div
       className="min-h-screen bg-[#060e1a] text-white pb-24 lg:pb-0"
-      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+      
     >
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">

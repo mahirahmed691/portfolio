@@ -49,6 +49,8 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
               </a>
               <a
                 href="https://github.com/mahirahmed691"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block transition hover:text-white"
               >
                 GitHub

@@ -1194,7 +1194,7 @@ export default function ToolsPage() {
   return (
     <div
       className="min-h-screen bg-[#060e1a] text-white pb-10"
-      style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+      
     >
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/6 blur-[120px]" />

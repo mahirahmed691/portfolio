@@ -62,7 +62,8 @@ export function WorkSection({
                         ? "w-2.5 bg-slate-300 hover:bg-slate-500"
                         : "w-2.5 bg-white/25 hover:bg-white/45"
                   }`}
-                  aria-label={`Open ${project.name} project page`}
+                  aria-label={`View ${project.name}`}
+                  aria-pressed={activeProject === index}
                 />
               ))}
             </div>
@@ -100,11 +101,13 @@ export function WorkSection({
             </div>
           </div>
 
-          <ProjectCard
-            currentProject={currentProject}
-            activeProject={activeProject}
-            themeClasses={themeClasses}
-          />
+          <div aria-live="polite" aria-atomic="true" aria-label={`Now showing: ${currentProject.name}`}>
+            <ProjectCard
+              currentProject={currentProject}
+              activeProject={activeProject}
+              themeClasses={themeClasses}
+            />
+          </div>
 
           <ProjectDeepDive
             currentProject={currentProject}
