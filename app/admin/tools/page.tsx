@@ -349,7 +349,7 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
                 srcDoc={output}
                 className="w-full h-full bg-white"
                 title="Preview"
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-same-origin allow-forms"
               />
             </div>
           ) : (
