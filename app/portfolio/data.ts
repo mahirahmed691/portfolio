@@ -23,70 +23,70 @@ export const services: Service[] = [
 
 export const projects: Project[] = [
   {
-    name: "Sweet Dezire",
-    type: "Brand website concept",
+    name: "GKE Microservices Platform",
+    type: "Production platform engineering · GFT",
     summary:
-      "A warm, indulgent dessert brand experience designed to make browsing feel playful and ordering feel effortless.",
-    impact: "Brand storytelling + menu-led UX",
-    accent: "from-rose-300/30 via-pink-300/20 to-amber-200/30",
+      "Designed and operated production Kubernetes clusters on Google Kubernetes Engine supporting microservices workloads for enterprise clients including HSBC, Zurich, and Deutsche Bank.",
+    impact: "Enterprise-grade reliability at scale",
+    accent: "from-cyan-300/25 via-blue-300/20 to-violet-300/20",
     story:
-      "Designed to feel rich, playful, and instantly craveable, with the interface carrying as much of the brand mood as the visuals.",
-    role: "Brand direction, landing page design, frontend concept",
-    highlight: "Turned a simple menu site into a full visual experience.",
+      "High-stakes production platform work across some of the UK's largest financial institutions — where reliability isn't optional and every incident has real consequences.",
+    role: "Platform engineering, GKE operations, incident response",
+    highlight: "Kept mission-critical microservices stable for HSBC, Zurich, and Deutsche Bank.",
     challenge:
-      "The goal was to make a simple dessert website feel like a branded experience instead of a basic menu page.",
+      "Maintaining platform reliability and performance for enterprise-grade microservices workloads where downtime directly impacts regulated financial services.",
     approach: [
-      "Built a richer visual direction around indulgence, warmth, and appetite appeal.",
-      "Used stronger hierarchy so the menu felt easier to scan and act on.",
-      "Balanced playful branding with enough structure to keep ordering friction low.",
+      "Managed Kubernetes deployments, pod lifecycle, and cluster networking on GKE to maintain platform health.",
+      "Troubleshot incidents across pods, services, and cluster networking under production pressure.",
+      "Supported platform stability through structured incident investigation and root cause resolution.",
     ],
-    stack: ["Next.js", "Responsive UI", "Brand-led layout"],
+    stack: ["GKE", "Kubernetes", "Docker", "GCP", "Jenkins", "Linux"],
     outcome:
-      "The concept feels more memorable, more premium, and more conversion-aware than a typical hospitality landing page.",
+      "Stable, scalable container platform serving multiple enterprise financial clients in production with consistent reliability.",
   },
   {
-    name: "HomeHive",
-    type: "Productivity web app concept",
+    name: "Real-time Data Pipeline",
+    type: "Data platform engineering · GCP",
     summary:
-      "A mobile-first inventory and reminders experience focused on clarity, quick actions, and calm organisation.",
-    impact: "Practical flows + product clarity",
-    accent: "from-cyan-300/25 via-sky-300/20 to-violet-300/20",
+      "Built and operated real-time data pipelines on GCP using Pub/Sub and Dataflow, enabling high-throughput stream ingestion and processing integrated with Cloud SQL and backend services.",
+    impact: "High-throughput ingestion, zero data loss",
+    accent: "from-fuchsia-300/25 via-violet-300/20 to-cyan-300/20",
     story:
-      "Built around reducing friction in everyday tasks, with a cleaner structure that makes planning, reminders, and inventory feel less overwhelming.",
-    role: "Product UX, interface design, frontend system thinking",
-    highlight: "Focused on utility without sacrificing polish.",
+      "Streaming data at volume across distributed systems, where a pipeline failure means lost data or broken downstream services — so reliability and observability had to be built in from the start.",
+    role: "Pipeline engineering, GCP data services, distributed systems",
+    highlight: "Kept high-volume data streams reliable across a distributed GCP architecture.",
     challenge:
-      "The challenge was making a practical productivity tool feel calm and usable rather than dense and overwhelming.",
+      "Keeping high-throughput ingestion and processing reliable across distributed systems while integrating cleanly with Cloud SQL and multiple backend services.",
     approach: [
-      "Simplified the core actions so reminders and inventory updates felt quick.",
-      "Designed for mobile-first use where speed and clarity matter most.",
-      "Kept the interface restrained so utility stayed at the centre of the experience.",
+      "Built and maintained Pub/Sub topics and Dataflow jobs for real-time stream processing.",
+      "Integrated pipelines with Cloud SQL and backend services to ensure consistent data flow.",
+      "Implemented monitoring and alerting with GCP Operations Suite to catch and resolve issues fast.",
     ],
-    stack: ["Product UX", "Mobile-first UI", "Frontend systems"],
+    stack: ["GCP Pub/Sub", "Dataflow", "Cloud SQL", "Python", "GCP Operations Suite"],
     outcome:
-      "The result is a cleaner task flow that makes everyday organisation feel lighter and more manageable.",
+      "Reliable real-time data processing pipeline handling high-volume streams with integrated monitoring and fast incident resolution.",
   },
   {
-    name: "Launch Sprint",
-    type: "Startup landing page system",
+    name: "Multi-cloud Terraform Platform",
+    type: "Infrastructure as Code · GCP & AWS",
     summary:
-      "A high-trust landing page direction for explaining value quickly and turning interest into enquiries or signups.",
-    impact: "Messaging hierarchy + conversion design",
-    accent: "from-violet-300/25 via-fuchsia-300/20 to-cyan-300/25",
+      "Designed and provisioned infrastructure across GCP and AWS using Terraform, building reusable modules that standardised multi-environment deployments and eliminated configuration drift.",
+    impact: "Consistent infra across cloud providers",
+    accent: "from-amber-300/20 via-orange-300/15 to-rose-300/20",
     story:
-      "Structured to help an early-stage product sound sharper, look more credible, and guide visitors toward a clear action without feeling overdesigned.",
-    role: "Messaging layout, landing page UX, design system direction",
-    highlight: "Made the product story clearer within seconds of landing.",
+      "Infrastructure that teams can trust — where provisioning a new environment means running a plan, not writing it from scratch. Built to reduce drift, speed up delivery, and make changes auditable.",
+    role: "Infrastructure design, Terraform, multi-cloud operations",
+    highlight: "Eliminated environment drift across GCP and AWS with reusable IaC modules.",
     challenge:
-      "The brief was to help a startup explain value quickly while still feeling polished enough to trust.",
+      "Reducing configuration drift and enforcing consistency across multiple cloud environments while keeping infrastructure changes safe and auditable.",
     approach: [
-      "Created a clearer messaging sequence from promise to proof to action.",
-      "Used landing page structure to reduce confusion within the first few scrolls.",
-      "Made the interface feel credible without adding unnecessary complexity.",
+      "Designed reusable Terraform modules to support consistent deployments across all environments.",
+      "Applied Infrastructure as Code best practices to make provisioning repeatable and reduce manual risk.",
+      "Managed infrastructure changes with careful validation to prevent drift and deployment failures.",
     ],
-    stack: ["Messaging design", "Landing page UX", "Conversion thinking"],
+    stack: ["Terraform", "GCP", "AWS", "IaC", "CI/CD", "Linux"],
     outcome:
-      "The concept gives an early-stage product a stronger first impression and a clearer path to enquiry or signup.",
+      "Faster, more consistent infrastructure delivery with reduced drift and a clear audit trail for every change.",
   },
 ];
 

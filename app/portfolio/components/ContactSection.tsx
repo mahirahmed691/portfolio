@@ -8,44 +8,44 @@ type PackageTier = "starter" | "standard" | "premium";
 const packages = [
   {
     tier: "starter" as PackageTier,
-    name: "Starter",
-    price: "From £250",
-    note: "Initial payment to begin work",
+    name: "Day rate",
+    price: "From £500/day",
+    note: "Day rate contract",
     description:
-      "A focused option for simple landing pages, smaller sites, and lighter design refreshes.",
-    bestFor: "Quick launches and simple websites",
+      "Flexible, day-rate platform engineering work. Ideal for ongoing contracts, sprint support, or embedded team work. IR35 and limited company arrangements welcome.",
+    bestFor: "Ongoing contracts and embedded team work",
     includes: [
-      "Single-page or smaller scope",
-      "Responsive frontend build",
-      "Fast turnaround",
+      "Flexible day-rate engagement",
+      "Sprint and team embedding",
+      "IR35 and ltd company welcome",
     ],
   },
   {
     tier: "standard" as PackageTier,
-    name: "Standard",
-    price: "From £500",
-    note: "Initial payment to begin work",
+    name: "Project",
+    price: "From £5,000",
+    note: "Fixed-scope project",
     description:
-      "A stronger fit for polished business websites, portfolios, and more complete branded web experiences.",
-    bestFor: "Serious brands and polished web presence",
+      "A defined platform or infrastructure project with clear deliverables — CI/CD pipelines, cloud migrations, Kubernetes setup, IaC builds. Fixed price, fixed scope.",
+    bestFor: "CI/CD, Kubernetes, cloud migrations, IaC builds",
     includes: [
-      "Multi-section website",
-      "Stronger visual direction",
-      "Responsive frontend build",
+      "Fixed price and scope",
+      "Clear deliverables and milestones",
+      "Platform and infrastructure projects",
     ],
   },
   {
     tier: "premium" as PackageTier,
-    name: "Premium",
-    price: "From £1000",
-    note: "Initial payment to begin work",
+    name: "Retainer",
+    price: "From £3,000/mo",
+    note: "Monthly retainer",
     description:
-      "A higher-touch package for custom product UI, premium frontend work, and larger scoped builds.",
-    bestFor: "Custom products and high-end builds",
+      "Ongoing platform support and delivery on a monthly basis. Suits teams that want consistent engineering capacity without the overhead of a full hire.",
+    bestFor: "Consistent engineering capacity, no full-hire overhead",
     includes: [
-      "Custom UI direction",
-      "Advanced frontend work",
-      "Higher-touch collaboration",
+      "Monthly platform support",
+      "Ongoing delivery and improvements",
+      "Predictable capacity and cost",
     ],
   },
 ];
@@ -55,19 +55,19 @@ const recommendationCopy: Record<
   { title: string; summary: string }
 > = {
   starter: {
-    title: "Starter looks like the best fit",
+    title: "Day rate looks like the best fit",
     summary:
-      "Best for smaller scopes, focused launches, and quick delivery with a clearer path to getting live fast.",
+      "Best for flexible, ongoing engagement where scope evolves over time — sprint support, embedded team work, or day-to-day platform engineering.",
   },
   standard: {
-    title: "Standard looks like the best fit",
+    title: "Project looks like the best fit",
     summary:
-      "Best for polished websites, stronger brand presence, and more complete digital experiences with room for refinement.",
+      "Best for well-defined platform work with clear deliverables — CI/CD pipelines, Kubernetes setup, cloud migrations, or IaC builds with a fixed price and scope.",
   },
   premium: {
-    title: "Premium looks like the best fit",
+    title: "Retainer looks like the best fit",
     summary:
-      "Best for custom product UI, more advanced frontend work, and higher-touch collaboration across a bigger scope.",
+      "Best for teams that need consistent, ongoing platform engineering capacity without the overhead of a full hire — predictable monthly cost and delivery.",
   },
 };
 

@@ -5,65 +5,59 @@ export type BlogPost = {
   date: string;
   readTime: string;
   tags: string[];
-  content: string; // plain text with \n\n for paragraphs
-  coverGradient: string; // tailwind gradient classes
+  content: string;
+  coverGradient: string;
 };
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "why-most-small-business-websites-fail",
-    title: "Why Most Small Business Websites Fail (And How to Fix Yours)",
+    slug: "why-gitops-changes-how-your-team-ships",
+    title: "Why GitOps Changes How Your Team Ships to Production",
     subtitle:
-      "The gap between a website that looks fine and one that actually converts visitors into clients.",
-    date: "2026-02-10",
-    readTime: "4 min read",
-    tags: ["Design", "Conversion", "Strategy"],
-    coverGradient: "from-rose-500/20 via-fuchsia-500/20 to-violet-500/20",
-    content: `Most small business websites share the same quiet problem: they exist, but they don't work. They look reasonable enough on the surface — a logo, some copy, a contact form — but they fail to convert the people who actually land on them. Visitors arrive, scan the page for a few seconds, and leave without making contact. The owner never knows why.
+      "The shift from push-based deployments to a pull-based, Git-native model — and why it makes production safer.",
+    date: "2026-02-18",
+    readTime: "5 min read",
+    tags: ["GitOps", "CI/CD", "Platform engineering"],
+    coverGradient: "from-cyan-500/20 via-blue-500/20 to-violet-500/20",
+    content: `Most teams ship to production by running a script, triggering a pipeline, or pressing a button in a deployment tool. Someone applies a change, something happens in the cluster, and the team holds their breath for a few minutes to see if it worked. If it didn't, the rollback is usually manual, often stressful, and sometimes involves someone SSH-ing into a server at 11pm.
 
-The core issue is almost never the colour scheme or the font choice. Those things matter at the margins. The real problem is a fundamental mismatch between what the visitor needs to feel confident reaching out and what the website is actually communicating.
+GitOps is a different model. The core idea is straightforward: your Git repository is the single source of truth for what should be running in your infrastructure. Instead of pushing changes into your cluster, an agent running inside the cluster — ArgoCD is the most common choice — continuously watches the repository and pulls it into sync with what's actually deployed. If your cluster drifts from what's in Git, the agent corrects it. If you want to deploy a new version, you merge a pull request.
 
-Most small business sites lead with the business, not the client. They open with "We are X Company, established in Y, offering Z services." That framing makes the business feel like it's talking at the visitor rather than with them. The person who landed on your site has a problem they want solved. They're not there to read your origin story. They want to know, within five seconds, whether you can help them and whether they can trust you.
+The immediate practical benefit is auditability. Every change to your production environment is a commit. It has an author, a timestamp, a description, and a diff. You can see exactly what changed, when, and why — without digging through CI logs or asking someone what they ran last Tuesday. In regulated industries, that audit trail alone justifies the change.
 
-The fix starts with leading with empathy. What does your ideal client type into Google before they find you? What are they worried about? What would make them feel like they've landed in the right place? Your hero section — the very first thing someone sees — should speak directly to that emotional reality, not to your list of services.
+The second benefit is rollback. Rolling back a GitOps deployment means reverting a commit. The cluster converges on the previous state automatically. There is no special rollback command to remember, no procedure to rehearse, no risk of forgetting a step under pressure. You revert the commit and wait thirty seconds.
 
-Clarity matters more than cleverness. A lot of small business websites try too hard to be interesting and end up being confusing instead. "We deliver transformative solutions for modern challenges" tells a visitor absolutely nothing. "I build websites that get tradespeople more local enquiries" is clear, direct, and immediately valuable. When someone understands exactly what you do and who you do it for, their next step becomes obvious.
+The third benefit is what happens to your team's relationship with production. When the cluster is always converging toward what's in Git, engineers stop treating production as a place where things are manually configured and start treating it as a reflection of code. That shift in mental model reduces the number of undocumented changes, the amount of configuration drift, and the number of incidents that start with "someone changed something but we're not sure what."
 
-The second biggest failure is a weak or absent call to action. If your contact page is buried three clicks deep, or your "Get in touch" button is a low-contrast grey whisper at the bottom of the page, you're creating friction at the exact moment someone is ready to act. Every page of your site should have an obvious, frictionless way to reach you. Not aggressive. Not desperate. Just clearly there.
+The transition to GitOps isn't always frictionless. Teams that are used to imperative deployments — kubectl apply, helm upgrade, direct API calls — have to get comfortable with a more declarative, asynchronous model. Changes don't take effect the moment you merge; they take effect when the agent reconciles. That small delay can feel uncomfortable at first, particularly during incident response when you want to know immediately whether your fix worked.
 
-Social proof is the most underused asset a small business has. Real testimonials — not polished marketing copy, but genuine words from actual clients — build trust faster than almost anything else. A short quote with a name attached is worth ten paragraphs of self-promotional copy. If you have clients who love your work, ask them for a sentence or two. Then put it front and centre, not hidden in a sidebar.
+The tooling has a learning curve too. ArgoCD, Flux, and similar tools have their own concepts — Applications, AppProjects, sync policies, health checks — that take time to understand well. Getting the right balance of auto-sync versus manual sync, understanding how to handle secrets in a GitOps model, and knowing when to break glass and apply something directly are skills that come with experience.
 
-Finally, most small business websites are slow, and slow websites lose business. A site that takes more than three seconds to load will be abandoned by a significant portion of visitors before they see a single word. This is a technical problem, but it has direct commercial consequences. Compress your images, use a proper hosting platform, and test your page speed regularly.
-
-The good news: none of this requires a complete redesign. Often, a few targeted changes — sharper copy in the hero, a more visible contact button, one or two testimonials above the fold — can meaningfully improve how many visitors turn into enquiries. Start with the basics. Speak to your client's problem first. Make it easy to reach you. Show that others trust you. The website you already have might just need a better focus.`,
+But the long-term payoff is a deployment process that teams actually trust. When shipping to production means merging a pull request and watching a dashboard go green, engineers deploy more often, more confidently, and with less ceremony. And that — more frequent, lower-risk deployments — is one of the clearest signals of a healthy engineering platform.`,
   },
   {
-    slug: "building-brand-identity-on-a-budget",
-    title: "Building a Strong Brand Identity Without a Big Budget",
+    slug: "terraform-modules-scaling-multi-cloud-infrastructure",
+    title: "Terraform Modules: The Right Way to Scale Multi-Cloud Infrastructure",
     subtitle:
-      "How founders and small teams can punch above their weight visually.",
-    date: "2026-03-05",
-    readTime: "5 min read",
-    tags: ["Branding", "Design", "Startups"],
-    coverGradient: "from-cyan-500/20 via-blue-500/20 to-violet-500/20",
-    content: `Brand identity isn't just a logo. That's the most common misconception small business owners carry into the process of building their visual presence, and it's the misconception that leads them to spend £50 on a Fiverr logo, call it done, and then wonder why their brand still doesn't feel like anything.
+      "How reusable IaC modules reduce drift, speed up delivery, and keep multi-cloud infrastructure consistent.",
+    date: "2026-03-10",
+    readTime: "6 min read",
+    tags: ["Terraform", "IaC", "Cloud", "Platform engineering"],
+    coverGradient: "from-amber-500/20 via-orange-500/20 to-rose-500/20",
+    content: `The first time most teams use Terraform, they write everything in a single file. It works. The infrastructure gets provisioned. Then the team needs a second environment, so they copy the file, change a few values, and provision that too. Then a third. Then someone changes the VPC configuration in one environment but forgets to update the others. Then a new engineer joins and isn't sure which environment's Terraform is the canonical version. Then something breaks in production and no one is certain whether the infrastructure matches what's in the codebase.
 
-A brand identity is the full system of how your business presents itself visually and tonally: your logo, yes, but also your colour palette, your typography, the way you write your copy, the kinds of images you use, and the feeling those things create together when someone encounters your work. When all of those elements are consistent and intentional, something surprising happens — the business starts to feel bigger, more established, and more trustworthy than it might otherwise seem.
+This is the configuration drift problem, and it's almost universal in teams that haven't deliberately structured their Terraform. The fix isn't more discipline — it's better architecture. Specifically, it's modules.
 
-The good news is that a tight, coherent visual identity doesn't require a big agency budget. It requires decisions. Most small businesses don't have a weak brand because they can't afford better — they have a weak brand because they've never made deliberate choices about what they want their brand to communicate.
+A Terraform module is a reusable unit of infrastructure. You define the pattern once — say, a GKE cluster with standard node pool configuration, network settings, and monitoring — and then call that module everywhere you need it, passing in the values that differ between environments. The module enforces consistency. Every GKE cluster created through that module has the same baseline structure. If you need to change the default machine type, you change it in one place and every environment that uses the module gets the update on the next apply.
 
-Start with what you want people to feel. Before you pick colours or fonts, ask yourself: when a potential client lands on your website or sees your social media for the first time, what do you want them to feel? Reliable and professional? Creative and experimental? Warm and approachable? That emotional target shapes every visual decision that follows. It's not a vague exercise — it's the foundation.
+The practical difference this makes becomes obvious when you're managing infrastructure across multiple environments and multiple cloud providers. GCP for the primary workloads, AWS for specific services, staging and production for each — without modules, that's a sprawling collection of Terraform files that gradually drift apart. With modules, it's a small collection of well-defined patterns and a set of environment-specific configurations that call them. The surface area for drift shrinks dramatically.
 
-Constraint is your friend. One of the most reliable ways to look polished on a limited budget is to limit your palette. Pick two or three colours and use only those. Choose one or two fonts — ideally a strong display face for headings and a simple, readable one for body text — and stick to them across everything. Consistency at a small scale reads as intentionality. The brands that look amateurish almost always use too many colours, too many fonts, and too many visual styles all at once.
+Writing good modules takes more thought than writing flat Terraform. The most important discipline is separating what should be configurable from what should be fixed. A module that exposes every possible input becomes as complex as the resource it wraps and provides no real consistency guarantee. A module that fixes the right defaults and exposes only the values that legitimately differ between environments is much more useful. Getting that balance right requires understanding how the infrastructure is actually used, which comes with time.
 
-Typography does more heavy lifting than most people realise. A well-chosen typeface can make a simple logo or a plain website feel genuinely premium. Google Fonts and free font services like Fontsource have dramatically improved in recent years. You don't need to pay for a custom typeface. You do need to spend time choosing one that fits your brand's character and then use it consistently and well.
+Versioning is the other piece that matters at scale. If your modules live in a shared repository and teams are free to update them directly, a change to a module can unexpectedly affect environments that weren't part of the plan. Pinning module versions — either to a specific Git tag or to a registry release — means that consuming environments get updates deliberately, when they're ready, rather than automatically. It adds a small amount of friction but prevents a large class of surprise.
 
-Photography and imagery is where budget constraints hurt the most, but there are smart workarounds. Unsplash and similar platforms have improved significantly and can provide decent photography for free. Better yet, if your business has a physical product or a workspace, invest a small amount of time in taking real photographs with good light and a clean background. Authentic imagery — even if it's imperfect — beats stock photography almost every time, because it communicates something no stock image can: that the person behind the brand is real.
+The outcome of well-structured Terraform, in practice, is that provisioning a new environment stops being a project and starts being a task. Someone creates a new environment-specific configuration file, calls the existing modules, and runs a plan. If the modules are well-tested and the variables are documented, that can take an hour rather than a day. The team trusts that the new environment matches the existing ones because it's built from the same patterns. And when something needs to change across all environments, the change is made once and applied consistently.
 
-Your tone of voice is part of your brand identity too, and it costs nothing to develop. How you write on your website, in your emails, on social media — formal or casual, warm or precise, direct or expansive — all of it contributes to how people experience your brand. Spend time defining your tone, write it down, and apply it consistently.
-
-The final piece is application. Even the best-designed brand system falls apart if it's applied inconsistently. Your logo should look the same on your website, your invoices, your email signature, and your social profiles. Your colours should be used in the same proportions. Your fonts should be the same size and weight across contexts. Consistency is what makes the pieces add up to something greater than the sum of their parts.
-
-You don't need a big budget to build a brand that punches above its weight. You need clarity about what you want to communicate, the discipline to make deliberate choices, and the consistency to apply those choices everywhere. Start there, and the visual quality will follow.`,
+Infrastructure as Code is most valuable when it actually functions as code — with the same emphasis on reusability, maintainability, and consistency that good application code gets. Modules are the primary mechanism for getting there in Terraform. The investment in writing them well pays back every time you provision something new without starting from scratch.`,
   },
 ];

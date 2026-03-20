@@ -26,18 +26,27 @@ export function AboutSection({
             className={`space-y-6 text-base leading-8 md:text-lg ${themeClasses.muted}`}
           >
             <p>
-              I&apos;ve spent 7 years building the systems most engineers never
-              see — cloud infrastructure, CI/CD pipelines, distributed
-              services, and the observability that keeps them honest in
-              production. That depth changes how I approach everything above it.
+              I&apos;ve spent 7 years building the platforms that keep
+              production services running — Kubernetes clusters on GKE,
+              GitOps-driven CI/CD pipelines, Terraform-managed infrastructure
+              across GCP and AWS, and the incident response that holds it all
+              together when things go wrong. Enterprise clients including HSBC,
+              Zurich, and Deutsche Bank. Currently at Betfred.
             </p>
 
             <p>
-              I also care deeply about what users actually experience. When I
-              build a frontend, I&apos;m not guessing what the backend can
-              handle — I built it. That end-to-end ownership produces work that
-              is faster, more reliable, and easier to scale than anything built
-              in isolation.
+              I also build the frontend. Not as an afterthought — as a natural
+              extension of understanding the full system. When I design an
+              interface, I already know what the API can handle, how the
+              infrastructure is shaped, and what will actually hold up under
+              load. That end-to-end ownership produces work that is faster,
+              more reliable, and easier to scale than anything built in
+              isolation.
+            </p>
+
+            <p>
+              First Class BSc from the University of Salford. Based in
+              Manchester.
             </p>
           </div>
         </div>
