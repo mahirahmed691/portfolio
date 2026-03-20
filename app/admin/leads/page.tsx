@@ -631,7 +631,20 @@ export default function LeadsPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activityLogs, setActivityLogs] = useState<
     Record<string, ActivityEvent[]>
-  >({});
+  >(() => {
+    try {
+      const stored = localStorage.getItem("mahir-crm-activity");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("mahir-crm-activity", JSON.stringify(activityLogs));
+    } catch {}
+  }, [activityLogs]);
 
   useEffect(() => {
     const loadLeads = async () => {

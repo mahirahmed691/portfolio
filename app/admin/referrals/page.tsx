@@ -1,19 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-let supabaseInstance: ReturnType<typeof createClient> | null = null;
-
-function getSupabase() {
-  if (!supabaseInstance) {
-    supabaseInstance = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-  }
-  return supabaseInstance;
-}
 
 type Referral = {
   id: string;
@@ -349,19 +336,15 @@ export default function ReferralsPage() {
   useEffect(() => {
     const load = async () => {
       setLoadingReferrals(true);
-
-      const referralsTable = getSupabase().from("referrals") as any;
-
-      const { data, error } = await referralsTable
-        .select("*")
-        .order("created_at", { ascending: false });
-
-
-      if (!error && data) {
-        setReferrals(data as Referral[]);
+      try {
+        const res = await fetch("/api/referrals");
+        const data = await res.json();
+        if (res.ok) setReferrals(data.referrals ?? []);
+      } catch (err) {
+        console.error("load referrals error:", err);
+      } finally {
+        setLoadingReferrals(false);
       }
-
-      setLoadingReferrals(false);
     };
 
     void load();
@@ -404,20 +387,19 @@ export default function ReferralsPage() {
       active: true,
     };
 
-    const referralsTable = getSupabase().from("referrals") as any;
+    const res = await fetch("/api/referrals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newReferral),
+    });
+    const data = await res.json();
 
-    const { data, error } = await referralsTable
-      .insert([newReferral])
-      .select("*")
-      .single();
-
-    if (!error && data) {
-      setReferrals((prev) => [data as Referral, ...prev]);
+    if (res.ok && data.referral) {
+      setReferrals((prev) => [data.referral as Referral, ...prev]);
       setForm({ name: "", email: "", commission: "10%", customCommission: "" });
       setFormError("");
       setShowForm(false);
     } else {
-      console.error("create referral error:", error);
       setFormError("Failed to save. Please try again.");
     }
 
@@ -426,19 +408,15 @@ export default function ReferralsPage() {
 
   const toggleActive = async (referral: Referral) => {
     const newActive = !referral.active;
-
     setReferrals((prev) =>
       prev.map((r) => (r.id === referral.id ? { ...r, active: newActive } : r)),
     );
-
-    const referralsTable = getSupabase().from("referrals") as any;
-
-    const { error } = await referralsTable
-      .update({ active: newActive })
-      .eq("id", referral.id);
-
-    if (error) {
-      console.error("toggle active error:", error);
+    const res = await fetch("/api/referrals/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: referral.id, active: newActive }),
+    });
+    if (!res.ok) {
       setReferrals((prev) =>
         prev.map((r) =>
           r.id === referral.id ? { ...r, active: referral.active } : r,
@@ -451,13 +429,12 @@ export default function ReferralsPage() {
     const previous = referrals;
     setReferrals((prev) => prev.filter((r) => r.id !== id));
     setDeletingId(null);
-
-    const referralsTable = getSupabase().from("referrals") as any;
-
-    const { error } = await referralsTable.delete().eq("id", id);
-
-    if (error) {
-      console.error("delete referral error:", error);
+    const res = await fetch("/api/referrals/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, action: "delete" }),
+    });
+    if (!res.ok) {
       setReferrals(previous);
     }
   };
