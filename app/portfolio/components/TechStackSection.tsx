@@ -2,18 +2,18 @@ import { motion } from "framer-motion";
 import type { SharedProps } from "../types";
 
 const STACK = [
-  { label: "Kubernetes", category: "Orchestration" },
-  { label: "GCP", category: "Cloud" },
-  { label: "AWS", category: "Cloud" },
-  { label: "Terraform", category: "IaC" },
-  { label: "Docker", category: "Containers" },
-  { label: "Jenkins", category: "CI/CD" },
-  { label: "ArgoCD", category: "GitOps" },
-  { label: "Ansible", category: "Config mgmt" },
-  { label: "Linux", category: "OS" },
-  { label: "Python", category: "Scripting" },
-  { label: "Bash", category: "Scripting" },
-  { label: "MySQL", category: "Databases" },
+  { label: "Kubernetes", category: "Orchestration", color: "#326CE5", icon: "kubernetes" },
+  { label: "GCP", category: "Cloud", color: "#4285F4", icon: "googlecloud" },
+  { label: "AWS", category: "Cloud", color: "#FF9900", icon: "amazonaws" },
+  { label: "Terraform", category: "IaC", color: "#7B42BC", icon: "terraform" },
+  { label: "Docker", category: "Containers", color: "#2496ED", icon: "docker" },
+  { label: "Jenkins", category: "CI/CD", color: "#D24939", icon: "jenkins" },
+  { label: "ArgoCD", category: "GitOps", color: "#EF7B4D", icon: "argo" },
+  { label: "Ansible", category: "Config mgmt", color: "#EE0000", icon: "ansible" },
+  { label: "Linux", category: "OS", color: "#FCC624", icon: "linux" },
+  { label: "Python", category: "Scripting", color: "#3776AB", icon: "python" },
+  { label: "Bash", category: "Scripting", color: "#4EAA25", icon: "gnubash" },
+  { label: "MySQL", category: "Databases", color: "#4479A1", icon: "mysql" },
 ];
 
 export function TechStackSection({
@@ -48,24 +48,50 @@ export function TechStackSection({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.4, delay: index * 0.04 }}
-              className={`flex flex-col gap-1 rounded-2xl border p-4 ${
+              className={`relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-4 ${
                 isLight
                   ? "border-slate-200 bg-white"
                   : "border-white/8 bg-white/[0.03]"
               }`}
             >
-              <p
-                className={`text-[10px] uppercase tracking-[0.18em] ${themeClasses.subtle}`}
+              {/* Brand colour top bar */}
+              <div
+                className="absolute inset-x-0 top-0 h-0.5"
+                style={{ background: item.color }}
+              />
+
+              {/* Brand logo */}
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{
+                  background: `${item.color}18`,
+                  boxShadow: `0 0 0 1px ${item.color}22`,
+                }}
               >
-                {item.category}
-              </p>
-              <p
-                className={`text-sm font-semibold ${
-                  isLight ? "text-slate-900" : "text-white/90"
-                }`}
-              >
-                {item.label}
-              </p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://cdn.simpleicons.org/${item.icon}/${item.color.replace("#", "")}`}
+                  alt={item.label}
+                  width={22}
+                  height={22}
+                  loading="lazy"
+                />
+              </div>
+
+              <div>
+                <p
+                  className={`text-[10px] uppercase tracking-[0.18em] ${themeClasses.subtle}`}
+                >
+                  {item.category}
+                </p>
+                <p
+                  className={`mt-0.5 text-sm font-semibold ${
+                    isLight ? "text-slate-900" : "text-white/90"
+                  }`}
+                >
+                  {item.label}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>

@@ -23,7 +23,7 @@ export function TestimonialsSection({
           </h2>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.name}
@@ -37,8 +37,9 @@ export function TestimonialsSection({
                   : "border-white/10 bg-white/[0.03]"
               }`}
             >
-              {/* Stars */}
-              <div className="flex gap-1">
+              {/* LinkedIn source badge */}
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <svg
                     key={i}
@@ -55,6 +56,17 @@ export function TestimonialsSection({
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
+                </div>
+                {/* LinkedIn logo */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://cdn.simpleicons.org/linkedin/0A66C2"
+                  alt="LinkedIn"
+                  width={16}
+                  height={16}
+                  loading="lazy"
+                  className="opacity-60"
+                />
               </div>
 
               {/* Quote */}
@@ -69,14 +81,26 @@ export function TestimonialsSection({
                 <div
                   className={`h-px w-full mb-5 ${isLight ? "bg-slate-100" : "bg-white/5"}`}
                 />
-                <p
-                  className={`text-sm font-semibold ${isLight ? "text-slate-900" : "text-white/90"}`}
-                >
-                  {testimonial.name}
-                </p>
-                <p className={`mt-0.5 text-xs ${themeClasses.subtle}`}>
-                  {testimonial.role} at {testimonial.company}
-                </p>
+                <div className="flex items-center gap-3">
+                  {/* Initials avatar */}
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-400 via-violet-400 to-cyan-400 text-xs font-bold text-slate-950">
+                    {testimonial.name
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((n) => n[0])
+                      .join("")}
+                  </div>
+                  <div>
+                    <p
+                      className={`text-sm font-semibold ${isLight ? "text-slate-900" : "text-white/90"}`}
+                    >
+                      {testimonial.name}
+                    </p>
+                    <p className={`mt-0.5 text-xs ${themeClasses.subtle}`}>
+                      {testimonial.role} · {testimonial.company}
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           ))}
