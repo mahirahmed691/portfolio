@@ -452,25 +452,8 @@ export default function ReferralsPage() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#060e1a] text-white"
-      
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/8 blur-[100px]" />
-        <div className="absolute top-1/3 -right-32 h-80 w-80 rounded-full bg-violet-600/8 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-600/5 blur-[80px]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-[1440px] px-4 py-5 lg:px-8 lg:py-6">
+    <div className="min-h-screen text-white">
+      <div className="mx-auto max-w-[1400px] px-4 py-5 lg:px-8 lg:py-6">
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div

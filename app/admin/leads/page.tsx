@@ -817,7 +817,7 @@ export default function LeadsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#060e1a] flex items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-4 h-10 w-10 rounded-full border-2 border-white/10 border-t-white/60 animate-spin" />
           <p className="text-sm text-white/40 tracking-widest uppercase">
@@ -838,26 +838,8 @@ export default function LeadsPage() {
     : [];
 
   return (
-    <div
-      className="min-h-screen bg-[#060e1a] text-white pb-24 lg:pb-0"
-      
-    >
-      {/* Background */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/8 blur-[100px]" />
-        <div className="absolute top-1/3 -right-32 h-80 w-80 rounded-full bg-violet-600/8 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-fuchsia-600/6 blur-[80px]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-[1440px] px-4 py-4 lg:px-8 lg:py-6">
+    <div className="min-h-screen text-white pb-24 lg:pb-0">
+      <div className="mx-auto max-w-[1400px] px-4 py-4 lg:px-8 lg:py-6">
         {/* ── Top bar ── */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">

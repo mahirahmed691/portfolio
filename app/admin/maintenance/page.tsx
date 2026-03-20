@@ -422,94 +422,13 @@ export default function MaintenancePage() {
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#060e1a] text-white pb-16">
-      {/* Background decoration */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/8 blur-[100px]" />
-        <div className="absolute top-1/3 -right-32 h-80 w-80 rounded-full bg-violet-600/8 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-600/5 blur-[80px]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-[1440px] px-4 py-5 lg:px-8 lg:py-6">
-        {/* ── Top bar ── */}
-        <div className="mb-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center"
-              style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect
-                  x="1"
-                  y="1"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.9"
-                />
-                <rect
-                  x="8"
-                  y="1"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.5"
-                />
-                <rect
-                  x="1"
-                  y="8"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.5"
-                />
-                <rect
-                  x="8"
-                  y="8"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.9"
-                />
-              </svg>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase tracking-[0.22em] text-white/30">
-                Admin
-              </span>
-              <h1 className="text-base font-semibold text-white leading-none mt-0.5">
-                Maintenance Clients
-              </h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <a
-              href="/admin/leads"
-              className="inline-flex h-9 items-center justify-center rounded-xl bg-white/[0.05] px-4 text-xs font-medium text-white/75 transition-all hover:bg-white/[0.1] hover:text-white"
-            >
-              ← Leads
-            </a>
-            <GhostBtn
-              onClick={async () => {
-                await fetch("/api/admin/logout", { method: "POST" });
-                window.location.href = "/admin/login";
-              }}
-            >
-              Log out
-            </GhostBtn>
-          </div>
+    <div className="min-h-screen text-white pb-16">
+      <div className="mx-auto max-w-[1400px] px-4 py-5 lg:px-8 lg:py-6">
+        {/* Page heading */}
+        <div className="mb-5">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/30">Admin</p>
+          <h1 className="text-xl font-semibold text-white leading-none mt-1">Maintenance Clients</h1>
+          <p className="text-xs text-white/35 mt-1">Recurring retainer clients and renewal tracking</p>
         </div>
 
         {/* ── Stat cards ── */}

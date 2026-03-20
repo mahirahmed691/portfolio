@@ -2560,144 +2560,82 @@ export default function ToolsPage() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#060e1a] text-white pb-10"
-      
-    >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-cyan-600/6 blur-[120px]" />
-        <div className="absolute top-1/2 -right-32 h-96 w-96 rounded-full bg-violet-600/6 blur-[120px]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-      </div>
+    <div className="min-h-screen text-white pb-10">
+      <div className="mx-auto max-w-[1400px] px-4 py-5 lg:px-8 lg:py-7">
+        {/* Page header */}
+        <div className="mb-6">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/30">Admin</p>
+          <h1 className="text-xl font-semibold text-white leading-none mt-1">Dev Tools</h1>
+          <p className="text-xs text-white/35 mt-1">AI-powered tools to save time and win more work</p>
+        </div>
 
-      <div className="relative mx-auto max-w-[1200px] px-4 py-5 lg:px-8 lg:py-7">
-        <div className="mb-7 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex gap-5 lg:gap-6 flex-col lg:flex-row">
+          {/* ── Tool picker sidebar ── */}
+          <div className="lg:w-52 shrink-0">
+            {/* Mobile: horizontal scroll */}
             <div
-              className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0"
-              style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
+              className="flex gap-2 overflow-x-auto pb-2 lg:hidden -mx-4 px-4"
+              style={{ scrollbarWidth: "none" }}
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect
-                  x="1"
-                  y="1"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.9"
-                />
-                <rect
-                  x="8"
-                  y="1"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.5"
-                />
-                <rect
-                  x="1"
-                  y="8"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.5"
-                />
-                <rect
-                  x="8"
-                  y="8"
-                  width="5"
-                  height="5"
-                  rx="1.2"
-                  fill="white"
-                  fillOpacity="0.9"
-                />
-              </svg>
+              {TOOLS.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() => setActiveTool(tool.id)}
+                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-left transition-all active:scale-95 shrink-0"
+                  style={{
+                    background: activeTool === tool.id ? tool.accent : "rgba(255,255,255,0.03)",
+                    border: activeTool === tool.id ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.05)",
+                  }}
+                >
+                  <span className="text-base leading-none">{tool.icon}</span>
+                  <span className="text-xs font-medium text-white/80 whitespace-nowrap">{tool.label}</span>
+                </button>
+              ))}
             </div>
-            <div>
-              <span className="text-[9px] uppercase tracking-[0.22em] text-white/30">
-                Admin
-              </span>
-              <h1 className="text-base font-semibold text-white leading-none mt-0.5">
-                Dev Tools
-              </h1>
+
+            {/* Desktop: vertical list */}
+            <div className="hidden lg:flex flex-col gap-1">
+              {TOOLS.map((tool) => (
+                <button
+                  key={tool.id}
+                  onClick={() => setActiveTool(tool.id)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all active:scale-95 w-full"
+                  style={{
+                    background: activeTool === tool.id ? tool.accent : "rgba(255,255,255,0.02)",
+                    border: activeTool === tool.id ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.04)",
+                    boxShadow: activeTool === tool.id ? "0 4px 16px rgba(0,0,0,0.2)" : "none",
+                  }}
+                >
+                  <span className="text-lg leading-none w-5 text-center shrink-0">{tool.icon}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-white/90 leading-tight truncate">{tool.label}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5 leading-tight truncate">{tool.desc}</p>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
-          <a
-            href="/admin/leads"
-            className="inline-flex h-9 items-center justify-center rounded-xl bg-white/[0.05] px-4 text-xs font-medium text-white/75 hover:bg-white/[0.1] transition-all"
-          >
-            ← Leads
-          </a>
-        </div>
 
-        <div
-          className="flex gap-2 overflow-x-auto pb-2 mb-5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-12 lg:gap-2.5"
-          style={{ scrollbarWidth: "none" }}
-        >
-          {TOOLS.map((tool) => (
-            <button
-              key={tool.id}
-              onClick={() => setActiveTool(tool.id)}
-              className="flex flex-col gap-2 rounded-2xl p-4 text-left transition-all active:scale-95 shrink-0 w-44 lg:w-auto"
-              style={{
-                background:
-                  activeTool === tool.id
-                    ? tool.accent
-                    : "rgba(255,255,255,0.02)",
-                border:
-                  activeTool === tool.id
-                    ? "1px solid rgba(255,255,255,0.1)"
-                    : "1px solid rgba(255,255,255,0.05)",
-                boxShadow:
-                  activeTool === tool.id
-                    ? "0 4px 24px rgba(0,0,0,0.2)"
-                    : "none",
-              }}
-            >
-              <span className="text-xl">{tool.icon}</span>
-              <div>
-                <p className="text-xs font-semibold text-white/90 leading-tight">
-                  {tool.label}
-                </p>
-                <p className="text-[10px] text-white/40 mt-0.5 leading-tight">
-                  {tool.desc}
-                </p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        <div
-          className="rounded-2xl p-5 lg:p-6"
-          style={{
-            background: "#0c1929",
-            boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.3)",
-          }}
-        >
+          {/* ── Tool content panel ── */}
           <div
-            className="flex items-center gap-3 mb-5 pb-4"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            className="flex-1 min-w-0 rounded-2xl p-5 lg:p-7"
+            style={{
+              background: "#0c1929",
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.3)",
+            }}
           >
-            <span className="text-2xl">{active.icon}</span>
-            <div>
-              <h2 className="text-base font-semibold text-white">
-                {active.label}
-              </h2>
-              <p className="text-xs text-white/40">{active.desc}</p>
+            <div
+              className="flex items-center gap-3 mb-6 pb-5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            >
+              <span className="text-2xl">{active.icon}</span>
+              <div>
+                <h2 className="text-base font-semibold text-white">{active.label}</h2>
+                <p className="text-xs text-white/40">{active.desc}</p>
+              </div>
             </div>
+            {renderTool()}
           </div>
-          {renderTool()}
         </div>
       </div>
     </div>
