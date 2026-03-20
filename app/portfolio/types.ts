@@ -25,6 +25,7 @@ export type Project = {
   summary: string;
   impact: string;
   accent: string;
+  diagram: "kubernetes" | "pipeline" | "terraform";
   story: string;
   role: string;
   highlight: string;

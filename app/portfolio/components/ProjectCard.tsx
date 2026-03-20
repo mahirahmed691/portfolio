@@ -1,4 +1,5 @@
 import type { Project, ThemeClasses } from "../types";
+import { ProjectDiagram } from "./ProjectDiagram";
 
 export function ProjectCard({
   currentProject,
@@ -14,27 +15,8 @@ export function ProjectCard({
       className={`relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] ${themeClasses.sectionShell} p-6 sm:p-8`}
     >
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div
-          className={`rounded-[1.6rem] bg-gradient-to-br p-6 ${currentProject.accent}`}
-        >
-          <div className="flex h-full flex-col justify-between rounded-[1.4rem] border border-white/20 bg-black/20 p-5 backdrop-blur-sm">
-            <div className="flex items-start justify-between gap-4">
-              <span className="text-xs uppercase tracking-[0.24em] text-white/70">
-                0{activeProject + 1}
-              </span>
-              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-white/80">
-                {currentProject.type}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm uppercase tracking-[0.22em] text-white/60">
-                Core value
-              </p>
-              <p className="mt-3 text-xl font-semibold leading-8 text-white">
-                {currentProject.impact}
-              </p>
-            </div>
-          </div>
+        <div className="min-h-[220px]">
+          <ProjectDiagram diagram={currentProject.diagram} accent={currentProject.accent} />
         </div>
 
         <div>

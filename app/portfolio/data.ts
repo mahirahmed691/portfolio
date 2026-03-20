@@ -29,6 +29,7 @@ export const projects: Project[] = [
       "Designed and operated production Kubernetes clusters on Google Kubernetes Engine supporting microservices workloads for enterprise clients including HSBC, Zurich, and Deutsche Bank.",
     impact: "Enterprise-grade reliability at scale",
     accent: "from-cyan-300/25 via-blue-300/20 to-violet-300/20",
+    diagram: "kubernetes" as const,
     story:
       "High-stakes production platform work across some of the UK's largest financial institutions — where reliability isn't optional and every incident has real consequences.",
     role: "Platform engineering, GKE operations, incident response",
@@ -51,6 +52,7 @@ export const projects: Project[] = [
       "Built and operated real-time data pipelines on GCP using Pub/Sub and Dataflow, enabling high-throughput stream ingestion and processing integrated with Cloud SQL and backend services.",
     impact: "High-throughput ingestion, zero data loss",
     accent: "from-fuchsia-300/25 via-violet-300/20 to-cyan-300/20",
+    diagram: "pipeline" as const,
     story:
       "Streaming data at volume across distributed systems, where a pipeline failure means lost data or broken downstream services — so reliability and observability had to be built in from the start.",
     role: "Pipeline engineering, GCP data services, distributed systems",
@@ -73,6 +75,7 @@ export const projects: Project[] = [
       "Designed and provisioned infrastructure across GCP and AWS using Terraform, building reusable modules that standardised multi-environment deployments and eliminated configuration drift.",
     impact: "Consistent infra across cloud providers",
     accent: "from-amber-300/20 via-orange-300/15 to-rose-300/20",
+    diagram: "terraform" as const,
     story:
       "Infrastructure that teams can trust — where provisioning a new environment means running a plan, not writing it from scratch. Built to reduce drift, speed up delivery, and make changes auditable.",
     role: "Infrastructure design, Terraform, multi-cloud operations",
