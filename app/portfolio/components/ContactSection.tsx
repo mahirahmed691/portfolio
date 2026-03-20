@@ -227,16 +227,16 @@ export function ContactSection({
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const fieldShell = isLight
-    ? "rounded-[1rem] border border-slate-200/80 bg-white/95 p-0.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-300 focus-within:shadow-[0_14px_32px_rgba(168,85,247,0.12)]"
-    : "rounded-[1rem] border border-white/10 bg-white/[0.045] p-0.5 shadow-[0_8px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-400/40 focus-within:bg-white/[0.07] focus-within:shadow-[0_14px_32px_rgba(168,85,247,0.14)]";
+    ? "rounded-[1.2rem] border border-slate-200/80 bg-white/95 p-1 shadow-[0_10px_35px_rgba(15,23,42,0.06)] transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-300 focus-within:shadow-[0_18px_45px_rgba(168,85,247,0.14)]"
+    : "rounded-[1.2rem] border border-white/10 bg-white/[0.045] p-1 shadow-[0_10px_35px_rgba(0,0,0,0.22)] backdrop-blur-sm transition-all duration-300 focus-within:-translate-y-0.5 focus-within:border-fuchsia-400/40 focus-within:bg-white/[0.07] focus-within:shadow-[0_18px_45px_rgba(168,85,247,0.16)]";
 
   const fieldInput = isLight
-    ? "w-full rounded-[0.8rem] border border-transparent bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
-    : "w-full rounded-[0.8rem] border border-transparent bg-transparent px-3 py-2 text-sm text-white outline-none placeholder:text-white/35";
+    ? "w-full rounded-[0.95rem] border border-transparent bg-transparent px-3.5 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+    : "w-full rounded-[0.95rem] border border-transparent bg-transparent px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/35";
 
   const fieldLabel = isLight
-    ? "mb-1 block px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500"
-    : "mb-1 block px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45";
+    ? "mb-1.5 block px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500"
+    : "mb-1.5 block px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45";
 
   const helperCard = isLight
     ? "rounded-[1.35rem] border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white px-5 py-4 text-sm text-slate-600 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
@@ -436,7 +436,7 @@ export function ContactSection({
                     </p>
                   </div>
 
-                  <div className="mt-5 grid gap-3 md:grid-cols-2">
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
                     <label className={fieldShell}>
                       <span className={fieldLabel}>Your name</span>
                       <input
@@ -497,7 +497,7 @@ export function ContactSection({
                     </label>
                   </div>
 
-                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <label className={fieldShell}>
                       <span className={fieldLabel}>Project type</span>
                       <select
@@ -588,7 +588,7 @@ export function ContactSection({
                     </div>
                   </div>
 
-                  <label className="mt-3 block">
+                  <label className="mt-4 block">
                     <div className={fieldShell}>
                       <span className={fieldLabel}>Project details</span>
                       <textarea
