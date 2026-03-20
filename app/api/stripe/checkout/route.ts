@@ -26,8 +26,9 @@ async function getStripeClient() {
 
 export async function POST(req: Request) {
   try {
-    const origin = new URL(req.url).origin;
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "mahirahmed.co.uk";
+    const proto = req.headers.get("x-forwarded-proto") || "https";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
