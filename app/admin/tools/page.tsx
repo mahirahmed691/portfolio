@@ -346,10 +346,11 @@ Return ONLY the raw HTML. No explanation, no markdown, no backticks.`,
               }}
             >
               <iframe
-                srcDoc={output}
+                src={URL.createObjectURL(
+                  new Blob([output], { type: "text/html" }),
+                )}
                 className="w-full h-full bg-white"
                 title="Preview"
-                sandbox="allow-scripts allow-same-origin allow-forms"
               />
             </div>
           ) : (
