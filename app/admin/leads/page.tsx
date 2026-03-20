@@ -95,6 +95,38 @@ function getStatusStyle(status: string | null) {
   }
 }
 
+function getPaymentStyle(paymentStatus: string | null) {
+  switch (paymentStatus?.toLowerCase()) {
+    case "paid":
+    case "complete":
+      return {
+        bg: "rgba(52,211,153,0.12)",
+        color: "#6ee7b7",
+        border: "rgba(110,231,183,0.15)",
+      };
+    case "pending":
+    case "unpaid":
+      return {
+        bg: "rgba(251,191,36,0.12)",
+        color: "#fcd34d",
+        border: "rgba(252,211,77,0.15)",
+      };
+    case "failed":
+    case "cancelled":
+      return {
+        bg: "rgba(248,113,113,0.12)",
+        color: "#fca5a5",
+        border: "rgba(252,165,165,0.15)",
+      };
+    default:
+      return {
+        bg: "rgba(167,139,250,0.12)",
+        color: "#c4b5fd",
+        border: "rgba(196,181,253,0.15)",
+      };
+  }
+}
+
 function getPriorityInlineStyle(priority: "hot" | "warm" | "cold") {
   switch (priority) {
     case "hot":
@@ -276,6 +308,19 @@ function BentoCard({
       {children}
     </div>
   );
+}
+
+function getGridSpanClass(span: number) {
+  const map: Record<number, string> = {
+    12: "col-span-1 md:col-span-12",
+    8: "col-span-1 md:col-span-8",
+    5: "col-span-1 md:col-span-5",
+    4: "col-span-1 md:col-span-4",
+    3: "col-span-1 sm:col-span-2 xl:col-span-3",
+    2: "col-span-1 sm:col-span-1 xl:col-span-2",
+  };
+
+  return map[span] || "col-span-1";
 }
 
 function Label({
@@ -781,6 +826,9 @@ export default function LeadsPage() {
 
   const priority = lead ? getPriority(lead) : "cold";
   const statusStyle = lead ? getStatusStyle(lead.status) : getStatusStyle(null);
+  const paymentStyle = lead
+    ? getPaymentStyle(lead.stripe_payment_status)
+    : getPaymentStyle(null);
   const activityEvents = lead
     ? buildActivityLog(lead, activityLogs[lead.id] || [])
     : [];
@@ -871,14 +919,10 @@ export default function LeadsPage() {
         </div>
 
         {/* Bento Grid */}
-        <div
-          className="grid gap-3"
-          style={{ gridTemplateColumns: "repeat(12, 1fr)" }}
-        >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12">
           {/* Stats */}
           <BentoCard
-            className="p-5 flex flex-col justify-between min-h-[100px]"
-            style={{ gridColumn: "span 3" }}
+            className={`p-5 flex flex-col justify-between min-h-[100px] ${getGridSpanClass(3)}`}
           >
             <Label>Total leads</Label>
             <div>
@@ -890,8 +934,7 @@ export default function LeadsPage() {
           </BentoCard>
 
           <BentoCard
-            className="p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden"
-            style={{ gridColumn: "span 3" }}
+            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
           >
             <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-fuchsia-500/10 blur-2xl" />
             <Label>Hot leads</Label>
@@ -904,8 +947,7 @@ export default function LeadsPage() {
           </BentoCard>
 
           <BentoCard
-            className="p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden"
-            style={{ gridColumn: "span 3" }}
+            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
           >
             <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl" />
             <Label>Won deals</Label>
@@ -920,8 +962,7 @@ export default function LeadsPage() {
           </BentoCard>
 
           <BentoCard
-            className="p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden"
-            style={{ gridColumn: "span 3" }}
+            className={`p-5 flex flex-col justify-between min-h-[100px] relative overflow-hidden ${getGridSpanClass(3)}`}
           >
             <div className="absolute top-0 right-0 h-20 w-20 rounded-full bg-cyan-500/10 blur-2xl" />
             <Label>Pipeline</Label>
@@ -935,11 +976,11 @@ export default function LeadsPage() {
 
           {/* Search & Nav */}
           <BentoCard
-            className="p-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-            style={{ gridColumn: "1 / -1" }}
+            className={`p-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${getGridSpanClass(12)}`}
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <select
+                aria-label="Filter leads"
                 value={filter}
                 onChange={(e) => {
                   setFilter(e.target.value);
@@ -1022,7 +1063,7 @@ export default function LeadsPage() {
           </BentoCard>
 
           {!lead ? (
-            <BentoCard className="p-8" style={{ gridColumn: "1 / -1" }}>
+            <BentoCard className={`p-8 ${getGridSpanClass(12)}`}>
               <p className="text-white/40 text-sm">
                 No leads match your filters.
               </p>
@@ -1031,8 +1072,7 @@ export default function LeadsPage() {
             <>
               {/* Identity */}
               <BentoCard
-                className="p-6 relative overflow-hidden"
-                style={{ gridColumn: "span 5" }}
+                className={`p-6 relative overflow-hidden ${getGridSpanClass(5)}`}
               >
                 <div
                   className="absolute inset-0 rounded-2xl"
@@ -1041,14 +1081,14 @@ export default function LeadsPage() {
                   }}
                 />
                 <div className="relative">
-                  <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div
                       className="h-11 w-11 rounded-2xl bg-white/[0.06] flex items-center justify-center text-lg font-semibold text-white shrink-0"
                       style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06)" }}
                     >
                       {(lead.name || "?")[0].toUpperCase()}
                     </div>
-                    <div className="flex gap-1.5 flex-wrap justify-end">
+                    <div className="flex flex-wrap gap-1.5 sm:justify-end">
                       <span
                         className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
                         style={{
@@ -1059,12 +1099,25 @@ export default function LeadsPage() {
                       >
                         {lead.status || "new"}
                       </span>
-                      <span
-                        className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
-                        style={getPriorityInlineStyle(priority)}
-                      >
-                        {priority}
-                      </span>
+                      {lead.stripe_payment_status ? (
+                        <span
+                          className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
+                          style={{
+                            background: paymentStyle.bg,
+                            color: paymentStyle.color,
+                            border: `1px solid ${paymentStyle.border}`,
+                          }}
+                        >
+                          {lead.stripe_payment_status}
+                        </span>
+                      ) : (
+                        <span
+                          className="rounded-lg px-3 py-1 text-[10px] font-medium uppercase"
+                          style={getPriorityInlineStyle(priority)}
+                        >
+                          {priority}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <h2 className="text-2xl font-bold tracking-tight text-white leading-tight">
@@ -1085,8 +1138,7 @@ export default function LeadsPage() {
 
               {/* Score ring */}
               <BentoCard
-                className="p-5 flex flex-col items-center justify-center gap-3"
-                style={{ gridColumn: "span 2" }}
+                className={`p-5 flex flex-col items-center justify-center gap-3 ${getGridSpanClass(2)}`}
               >
                 <ScoreRing score={lead.lead_score} />
                 <div className="text-center">
@@ -1099,8 +1151,7 @@ export default function LeadsPage() {
 
               {/* Package / Value */}
               <BentoCard
-                className="p-5 flex flex-col justify-between"
-                style={{ gridColumn: "span 2" }}
+                className={`p-5 flex flex-col justify-between ${getGridSpanClass(2)}`}
               >
                 <div>
                   <Label>Package</Label>
@@ -1121,8 +1172,7 @@ export default function LeadsPage() {
 
               {/* Next action */}
               <BentoCard
-                className="p-5 flex flex-col justify-between relative overflow-hidden"
-                style={{ gridColumn: "span 3" }}
+                className={`p-5 flex flex-col justify-between relative overflow-hidden ${getGridSpanClass(3)}`}
               >
                 <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full bg-white/[0.03] blur-xl" />
                 <div>
@@ -1183,7 +1233,7 @@ export default function LeadsPage() {
               <AISummaryPanel lead={lead} />
 
               {/* Contact details */}
-              <BentoCard className="p-5" style={{ gridColumn: "span 4" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
                 <Label className="mb-3">Contact details</Label>
                 {[
                   { label: "Email", value: lead.email },
@@ -1218,7 +1268,7 @@ export default function LeadsPage() {
               </BentoCard>
 
               {/* Project details */}
-              <BentoCard className="p-5" style={{ gridColumn: "span 4" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
                 <Label className="mb-3">Project details</Label>
                 {[
                   { label: "Type", value: lead.project_type },
@@ -1243,7 +1293,7 @@ export default function LeadsPage() {
               </BentoCard>
 
               {/* Pipeline stage */}
-              <BentoCard className="p-5" style={{ gridColumn: "span 4" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
                 <Label className="mb-3">Pipeline stage</Label>
                 <div className="flex flex-wrap gap-1.5">
                   {statusOptions.map((s) => {
@@ -1288,7 +1338,11 @@ export default function LeadsPage() {
                     <Label className="mb-2">Payment</Label>
                     <span
                       className="rounded-lg px-2.5 py-1 text-xs font-medium text-emerald-300"
-                      style={{ background: "rgba(52,211,153,0.1)" }}
+                      style={{
+                        background: paymentStyle.bg,
+                        color: paymentStyle.color,
+                        border: `1px solid ${paymentStyle.border}`,
+                      }}
                     >
                       {lead.stripe_payment_status}
                     </span>
@@ -1297,18 +1351,18 @@ export default function LeadsPage() {
               </BentoCard>
 
               {/* Quick replies (8 cols) + Activity (4 cols) */}
-              <BentoCard className="p-5" style={{ gridColumn: "span 8" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(8)}`}>
                 <Label className="mb-3">Quick reply templates</Label>
                 <QuickReplyPanel lead={lead} />
               </BentoCard>
 
-              <BentoCard className="p-5" style={{ gridColumn: "span 4" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(4)}`}>
                 <Label className="mb-3">Activity</Label>
                 <ActivityTimeline events={activityEvents} />
               </BentoCard>
 
               {/* Notes */}
-              <BentoCard className="p-5" style={{ gridColumn: "span 12" }}>
+              <BentoCard className={`p-5 ${getGridSpanClass(12)}`}>
                 <div className="flex items-center justify-between mb-3">
                   <Label>Internal notes</Label>
                   {savingLeadId === lead.id && (
