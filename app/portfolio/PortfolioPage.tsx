@@ -11,7 +11,6 @@ import { QuickMenu } from "./components/QuickMenu";
 import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
 import { WorkSection } from "./components/WorkSection";
-import { TechStackSection } from "./components/TechStackSection";
 import { ServicesSection } from "./components/ServicesSection";
 import { TestimonialsSection } from "./components/TestimonialsSection";
 import { AboutSection } from "./components/AboutSection";
@@ -136,18 +135,13 @@ export function PortfolioPage() {
         deepDiveOpen={deepDiveOpen}
         setDeepDiveOpen={setDeepDiveOpen}
       />
-      <TechStackSection
-        isLight={isLight}
-        themeClasses={themeClasses}
-        focusMode={focusMode}
-      />
       <ServicesSection
         isLight={isLight}
         themeClasses={themeClasses}
         focusMode={focusMode}
       />
       <TestimonialsSection isLight={isLight} themeClasses={themeClasses} />
-      <AboutSection themeClasses={themeClasses} />
+      <AboutSection isLight={isLight} themeClasses={themeClasses} />
       <ContactSection isLight={isLight} themeClasses={themeClasses} />
       <Footer themeClasses={themeClasses} />
     </main>

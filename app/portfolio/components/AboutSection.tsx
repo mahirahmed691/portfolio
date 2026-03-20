@@ -1,8 +1,24 @@
 import type { SharedProps } from "../types";
 
+const STACK = [
+  { label: "Kubernetes", icon: "kubernetes", color: "#326CE5" },
+  { label: "GCP", icon: "googlecloud", color: "#4285F4" },
+  { label: "AWS", icon: "amazonaws", color: "#FF9900" },
+  { label: "Terraform", icon: "terraform", color: "#7B42BC" },
+  { label: "Docker", icon: "docker", color: "#2496ED" },
+  { label: "Jenkins", icon: "jenkins", color: "#D24939" },
+  { label: "ArgoCD", icon: "argo", color: "#EF7B4D" },
+  { label: "Ansible", icon: "ansible", color: "#EE0000" },
+  { label: "Linux", icon: "linux", color: "#FCC624" },
+  { label: "Python", icon: "python", color: "#3776AB" },
+  { label: "Bash", icon: "gnubash", color: "#4EAA25" },
+  { label: "MySQL", icon: "mysql", color: "#4479A1" },
+];
+
 export function AboutSection({
+  isLight,
   themeClasses,
-}: Pick<SharedProps, "themeClasses">) {
+}: Pick<SharedProps, "isLight" | "themeClasses">) {
   return (
     <section
       id="about"
@@ -20,6 +36,31 @@ export function AboutSection({
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
               Platform engineer by trade. Frontend craftsman by design.
             </h2>
+
+            {/* Compact stack pills */}
+            <div className="mt-8 flex flex-wrap gap-2">
+              {STACK.map((item) => (
+                <span
+                  key={item.label}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
+                    isLight
+                      ? "border border-slate-200 bg-white text-slate-700"
+                      : "border border-white/10 bg-white/[0.04] text-white/70"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://cdn.simpleicons.org/${item.icon}/${isLight ? item.color.replace("#", "") : "ffffff"}`}
+                    alt={item.label}
+                    width={13}
+                    height={13}
+                    loading="lazy"
+                    className={isLight ? "" : "opacity-70"}
+                  />
+                  {item.label}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div
