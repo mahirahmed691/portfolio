@@ -119,7 +119,7 @@ export function PortfolioPage() {
   };
 
   return (
-    <main className={`${themeClasses.page} pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0`}>
+    <main className={`${themeClasses.page} pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0`}>
       <BackgroundGlow {...sharedProps} />
       <QuickLauncher
         isLight={isLight}

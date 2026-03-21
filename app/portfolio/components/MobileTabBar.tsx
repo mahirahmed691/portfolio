@@ -57,12 +57,22 @@ const TABS = [
 
 export function MobileTabBar({ isLight }: { isLight: boolean }) {
   return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+      {/* Gradient fade so text doesn't hard-clip at the bar edge */}
+      <div
+        className="pointer-events-none h-8 w-full"
+        style={{
+          background: isLight
+            ? "linear-gradient(to bottom, transparent, rgba(247,243,238,0.95))"
+            : "linear-gradient(to bottom, transparent, rgba(7,17,31,0.95))",
+        }}
+      />
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden"
+      className="flex"
       style={{
         background: isLight
-          ? "rgba(255,255,255,0.92)"
-          : "rgba(6,10,20,0.92)",
+          ? "rgba(247,243,238,0.97)"
+          : "rgba(7,17,31,0.97)",
         borderTop: isLight
           ? "1px solid rgba(0,0,0,0.08)"
           : "1px solid rgba(255,255,255,0.07)",
@@ -82,5 +92,6 @@ export function MobileTabBar({ isLight }: { isLight: boolean }) {
         </a>
       ))}
     </nav>
+    </div>
   );
 }
