@@ -104,7 +104,7 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-white/35 sm:px-6 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] text-xs text-white/35 sm:px-6 md:pb-4 md:flex-row md:items-center md:justify-between">
           <p>© 2026 Mahir Ahmed. Crafted with Next.js.</p>
           <p>Designed to feel premium, personal, and memorable.</p>
         </div>
