@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "../portfolio/blog-data";
+import { BlogList } from "./BlogList";
+
+
 
 export const metadata: Metadata = {
   title: "Blog | Mahir Ahmed",
@@ -22,14 +25,6 @@ export const metadata: Metadata = {
       "Thoughts on platform engineering, cloud infrastructure, and frontend development.",
   },
 };
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 export default function BlogPage() {
   return (
@@ -83,61 +78,8 @@ export default function BlogPage() {
           </p>
         </div>
 
-        {/* Post grid */}
-        <div className="grid gap-4 sm:gap-5">
-          {blogPosts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group block rounded-2xl overflow-hidden transition-all hover:scale-[1.01]"
-              style={{
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
-              }}
-            >
-              {/* Gradient cover strip */}
-              <div
-                className={`h-1.5 w-full bg-gradient-to-r ${post.coverGradient}`}
-                style={{
-                  background: undefined, // Let tailwind handle via className
-                }}
-              />
-              {/* Actually use inline style for gradient since tailwind purges dynamic classes */}
-              <div className="p-6 sm:p-7">
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-lg px-2 py-0.5 text-[10px] uppercase tracking-widest font-medium text-white/40"
-                      style={{ background: "rgba(255,255,255,0.05)" }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <h2 className="text-lg sm:text-xl font-semibold text-white leading-snug group-hover:text-white/90 transition-colors mb-2">
-                  {post.title}
-                </h2>
-                <p className="text-sm text-white/45 leading-relaxed mb-5">
-                  {post.subtitle}
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-[11px] text-white/30">
-                    <span>{formatDate(post.date)}</span>
-                    <span>·</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                  <span className="text-xs text-white/30 group-hover:text-white/60 transition-colors">
-                    Read →
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {/* Post grid with search */}
+        <BlogList posts={blogPosts} />
       </div>
     </div>
   );

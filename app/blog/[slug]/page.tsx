@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts } from "../../portfolio/blog-data";
+import { ScrollProgress } from "./ScrollProgress";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -111,6 +112,7 @@ export default async function BlogPostPage({
       className="min-h-screen"
       style={{ background: "#070d1a", color: "white" }}
     >
+      <ScrollProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}

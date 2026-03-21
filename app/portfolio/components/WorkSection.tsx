@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { projects } from "../data";
+import { toSlug } from "../utils";
 import type { SharedProps } from "../types";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectDeepDive } from "./ProjectDeepDive";
@@ -118,6 +120,15 @@ export function WorkSection({
             shouldReduceMotion={shouldReduceMotion}
             themeClasses={themeClasses}
           />
+
+          <div className="flex justify-end">
+            <Link
+              href={`/work/${toSlug(currentProject.name)}`}
+              className={`text-sm transition hover:opacity-80 ${themeClasses.subtle}`}
+            >
+              Full case study →
+            </Link>
+          </div>
         </div>
       </div>
     </section>

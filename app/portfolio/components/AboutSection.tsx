@@ -103,6 +103,27 @@ export function AboutSection({
               First Class BSc from the University of Salford. Based in
               Manchester.
             </p>
+
+            {/* GitHub contribution graph */}
+            <div
+              className={`rounded-2xl overflow-hidden p-4 ${
+                isLight
+                  ? "border border-slate-200 bg-slate-50"
+                  : "border border-white/8 bg-white/[0.02]"
+              }`}
+            >
+              <p className={`text-xs uppercase tracking-[0.22em] mb-3 ${themeClasses.label}`}>
+                GitHub activity
+              </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://ghchart.rshah.org/mahirahmed691"
+                alt="GitHub contribution graph"
+                className="w-full"
+                style={{ filter: isLight ? "none" : "invert(1) opacity(0.55)" }}
+                loading="lazy"
+              />
+            </div>
           </div>
         </div>
       </div>

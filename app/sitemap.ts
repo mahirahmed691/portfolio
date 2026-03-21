@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "./portfolio/blog-data";
+import { projects } from "./portfolio/data";
+import { toSlug } from "./portfolio/utils";
 
 const BASE = "https://mahirahmed.co.uk";
 
@@ -9,6 +11,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
     priority: 0.6,
+  }));
+
+  const workRoutes = projects.map((project) => ({
+    url: `${BASE}/work/${toSlug(project.name)}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   return [
@@ -24,6 +33,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: `${BASE}/services`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE}/uses`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    ...workRoutes,
     ...blogRoutes,
     {
       url: `${BASE}/success`,

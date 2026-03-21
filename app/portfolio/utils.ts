@@ -34,6 +34,13 @@ export function getThemeClasses(isLight: boolean): ThemeClasses {
   };
 }
 
+export function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export function runDevTests() {
   const theme = getStoredTheme();
 
