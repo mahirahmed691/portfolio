@@ -38,7 +38,7 @@ export function SectionArrow({ isLight }: { isLight: boolean }) {
       aria-label="Next section"
       animate={{ y: [0, 6, 0] }}
       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      className="fixed right-8 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-100 opacity-40"
+      className="fixed right-3 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-100 opacity-40"
       style={{
         background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)",
         border: isLight ? "1px solid rgba(0,0,0,0.1)" : "1px solid rgba(255,255,255,0.1)",
