@@ -7,14 +7,14 @@ export function SectionArrow({ href, isLight }: { href: string; isLight: boolean
     <a
       href={href}
       aria-label="Next section"
-      className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex h-9 w-9 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-80 group"
+      className="absolute bottom-6 right-6 hidden md:flex h-9 w-9 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-80 group"
       style={{
         background: isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.04)",
         border: isLight ? "1px solid rgba(0,0,0,0.08)" : "1px solid rgba(255,255,255,0.08)",
       }}
     >
       <motion.svg
-        animate={{ x: [0, 4, 0] }}
+        animate={{ y: [0, 4, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         width="14"
         height="14"
@@ -26,7 +26,7 @@ export function SectionArrow({ href, isLight }: { href: string; isLight: boolean
         strokeLinejoin="round"
         style={{ color: isLight ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.3)" }}
       >
-        <path d="M9 18l6-6-6-6" />
+        <path d="M6 9l6 6 6-6" />
       </motion.svg>
     </a>
   );
