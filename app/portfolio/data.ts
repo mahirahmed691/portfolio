@@ -98,7 +98,7 @@ export const projects: Project[] = [
       "Built a real-time financial operations dashboard for an early-stage fintech, covering transaction monitoring, account management, and role-based access control — from API design through to polished UI.",
     impact: "Reduced ops team reporting time by 60%",
     accent: "from-emerald-300/25 via-teal-300/20 to-cyan-300/20",
-    diagram: "kubernetes" as const,
+    diagram: "pipeline" as const,
     story:
       "A fast-moving fintech team needed internal tooling that matched the quality of their consumer product. The dashboard had to be fast, accurate, and usable by non-technical staff — which meant design and engineering had to work together from the start.",
     role: "Full-stack engineering, UI/UX design, API design",

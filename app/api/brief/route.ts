@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import twilio from "twilio";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -45,10 +46,23 @@ function calculateLeadScore(body: Record<string, string>) {
   if (body.timeline === "ASAP") score += 2;
   if (body.urgency === "High") score += 2;
   if (body.goal === "Launch" || body.goal === "Leads") score += 1;
-  return score;
+  return Math.min(score, 8); // cap at 8 — max achievable is 8 with all high signals
 }
 
 export async function POST(req: Request) {
+  // Rate limit: 5 submissions per IP per 10 minutes
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+
+  if (isRateLimited(`brief:${ip}`, 5, 10 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429 },
+    );
+  }
+
   try {
     const body = await req.json();
 

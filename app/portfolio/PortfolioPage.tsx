@@ -26,6 +26,7 @@ export function PortfolioPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
   const [deepDiveOpen, setDeepDiveOpen] = useState(false);
+  const [userPickedProject, setUserPickedProject] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>("dark");
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
@@ -54,12 +55,12 @@ export function PortfolioPage() {
   }, []);
 
   useEffect(() => {
-    if (shouldReduceMotion || deepDiveOpen) return;
+    if (shouldReduceMotion || deepDiveOpen || userPickedProject) return;
     const interval = window.setInterval(() => {
       setActiveProject((current) => (current + 1) % projects.length);
     }, 4500);
     return () => window.clearInterval(interval);
-  }, [shouldReduceMotion, deepDiveOpen]);
+  }, [shouldReduceMotion, deepDiveOpen, userPickedProject]);
 
   useEffect(() => {
     setDeepDiveOpen(false);
@@ -148,7 +149,7 @@ export function PortfolioPage() {
       <WorkSection
         {...sharedProps}
         activeProject={activeProject}
-        setActiveProject={setActiveProject}
+        setActiveProject={(i) => { setActiveProject(i); setUserPickedProject(true); }}
         deepDiveOpen={deepDiveOpen}
         setDeepDiveOpen={setDeepDiveOpen}
       />

@@ -135,8 +135,9 @@ export function ContactSection({
   const [showBrief, setShowBrief] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [briefResult, setBriefResult] = useState<PackageTier | null>(null);
-  const [leadScore, setLeadScore] = useState<number | null>(null);
+  const [briefCheckoutUrl, setBriefCheckoutUrl] = useState<string | null>(null);
   const [briefError, setBriefError] = useState<string | null>(null);
+  const [briefRedirecting, setBriefRedirecting] = useState(false);
 
   const [form, setForm] = useState<BriefForm>(initialForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -263,7 +264,7 @@ export function ContactSection({
     try {
       setBriefLoading(true);
       setBriefResult(null);
-      setLeadScore(null);
+      setBriefCheckoutUrl(null);
       setBriefError(null);
 
       const res = await fetch("/api/brief", {
@@ -298,7 +299,9 @@ export function ContactSection({
       }
 
       setBriefResult(data.recommendedPackage);
-      setLeadScore(typeof data?.leadScore === "number" ? data.leadScore : null);
+      setBriefCheckoutUrl(typeof data?.url === "string" ? data.url : null);
+      // Clear draft after successful submission
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
     } catch {
       setBriefError("Sorry, something went wrong generating your recommendation.");
     } finally {
@@ -308,7 +311,13 @@ export function ContactSection({
 
   const handleRecommendedCheckout = () => {
     if (!briefResult) return;
-    void handleCheckout(briefResult);
+    // Use the Stripe URL already created by /api/brief — no second session needed
+    if (briefCheckoutUrl) {
+      setBriefRedirecting(true);
+      window.location.href = briefCheckoutUrl;
+    } else {
+      void handleCheckout(briefResult);
+    }
   };
 
   const updateField = <K extends keyof BriefForm>(
@@ -830,13 +839,6 @@ export function ContactSection({
                             {recommendationCopy[briefResult].title}
                           </h4>
 
-                          {leadScore !== null && (
-                            <p
-                              className={`mt-2 text-sm ${themeClasses.subtle}`}
-                            >
-                              Lead score: {leadScore}/8
-                            </p>
-                          )}
                         </div>
                       </div>
 
@@ -850,10 +852,10 @@ export function ContactSection({
                         <button
                           type="button"
                           onClick={handleRecommendedCheckout}
-                          disabled={loadingTier !== null}
+                          disabled={briefRedirecting || loadingTier !== null}
                           className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {loadingTier === briefResult
+                          {briefRedirecting || loadingTier === briefResult
                             ? "Redirecting..."
                             : "Continue"}
                         </button>

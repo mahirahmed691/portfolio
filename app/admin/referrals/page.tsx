@@ -518,7 +518,7 @@ export default function ReferralsPage() {
             </a>
             <GhostBtn
               onClick={async () => {
-                await fetch("/api/admin/logout", { method: "POST" });
+                await fetch("/admin/logout", { method: "POST" });
                 window.location.href = "/admin/login";
               }}
             >

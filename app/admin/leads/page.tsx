@@ -182,15 +182,15 @@ function normaliseWhatsapp(phone: string | null) {
 }
 
 function estimatedValue(pkg: string | null) {
-  if (pkg === "premium") return "£1,000+";
-  if (pkg === "standard") return "£500–1k";
-  return "£250+";
+  if (pkg === "premium") return "£3,000+";
+  if (pkg === "standard") return "£1,500+";
+  return "£500+";
 }
 
 function getEstimatedValueNumber(pkg: string | null) {
-  if (pkg === "premium") return 1000;
-  if (pkg === "standard") return 750;
-  return 250;
+  if (pkg === "premium") return 3000;
+  if (pkg === "standard") return 1500;
+  return 500;
 }
 
 function buildActivityLog(
@@ -747,15 +747,28 @@ export default function LeadsPage() {
     if (currentIndex >= filteredLeads.length) setCurrentIndex(0);
   }, [filteredLeads, currentIndex]);
 
+  // Check if the current lead's notes have unsaved changes
+  const lead = filteredLeads[currentIndex];
+  const hasUnsavedNotes =
+    lead &&
+    (notesDrafts[lead.id] ?? lead.notes ?? "") !== (lead.notes ?? "");
+
+  const navigateTo = (next: number) => {
+    if (hasUnsavedNotes) {
+      if (!window.confirm("You have unsaved notes. Leave without saving?")) return;
+    }
+    setCurrentIndex(next);
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") setCurrentIndex((p) => Math.max(p - 1, 0));
+      if (e.key === "ArrowLeft") navigateTo(Math.max(currentIndex - 1, 0));
       if (e.key === "ArrowRight")
-        setCurrentIndex((p) => Math.min(p + 1, filteredLeads.length - 1));
+        navigateTo(Math.min(currentIndex + 1, filteredLeads.length - 1));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [filteredLeads.length]);
+  }, [filteredLeads.length, currentIndex, hasUnsavedNotes]);
 
   const lead = filteredLeads[currentIndex] || null;
 
@@ -953,7 +966,7 @@ export default function LeadsPage() {
           </div>
           <GhostBtn
             onClick={async () => {
-              await fetch("/api/admin/logout", { method: "POST" });
+              await fetch("/admin/logout", { method: "POST" });
               window.location.href = "/admin/login";
             }}
           >
@@ -1192,7 +1205,7 @@ export default function LeadsPage() {
               {view === "list" && (
                 <>
                   <GhostBtn
-                    onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
+                    onClick={() => navigateTo(Math.max(currentIndex - 1, 0))}
                     disabled={currentIndex === 0}
                   >
                     ← Prev
@@ -1207,8 +1220,8 @@ export default function LeadsPage() {
                   </span>
                   <GhostBtn
                     onClick={() =>
-                      setCurrentIndex((p) =>
-                        Math.min(p + 1, filteredLeads.length - 1),
+                      navigateTo(
+                        Math.min(currentIndex + 1, filteredLeads.length - 1),
                       )
                     }
                     disabled={currentIndex >= filteredLeads.length - 1}
@@ -1703,7 +1716,7 @@ export default function LeadsPage() {
           <div className="flex items-center justify-between px-4 py-3 max-w-[1440px] mx-auto">
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setCurrentIndex((p) => Math.max(p - 1, 0))}
+                onClick={() => navigateTo(Math.max(currentIndex - 1, 0))}
                 disabled={currentIndex === 0}
                 className="h-9 w-9 rounded-xl flex items-center justify-center text-white/60 text-sm disabled:opacity-30 active:scale-95 transition-all"
                 style={{
@@ -1718,9 +1731,7 @@ export default function LeadsPage() {
               </span>
               <button
                 onClick={() =>
-                  setCurrentIndex((p) =>
-                    Math.min(p + 1, filteredLeads.length - 1),
-                  )
+                  navigateTo(Math.min(currentIndex + 1, filteredLeads.length - 1))
                 }
                 disabled={currentIndex >= filteredLeads.length - 1}
                 className="h-9 w-9 rounded-xl flex items-center justify-center text-white/60 text-sm disabled:opacity-30 active:scale-95 transition-all"

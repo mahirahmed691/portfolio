@@ -135,7 +135,9 @@ export function AboutSection({
               <img
                 src="https://ghchart.rshah.org/mahirahmed691"
                 alt="GitHub contribution graph"
-                className="w-full"
+                width={722}
+                height={112}
+                className="w-full h-auto"
                 style={{ filter: isLight ? "none" : "invert(1) opacity(0.55)" }}
                 loading="lazy"
               />
