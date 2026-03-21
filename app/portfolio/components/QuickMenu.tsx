@@ -10,6 +10,7 @@ export function QuickMenu({
   setFocusMode,
   setTheme,
   themeClasses,
+  onOpenTerminal,
 }: {
   isLight: boolean;
   quickMenuOpen: boolean;
@@ -18,6 +19,7 @@ export function QuickMenu({
   setFocusMode: React.Dispatch<React.SetStateAction<boolean>>;
   setTheme: React.Dispatch<React.SetStateAction<ThemeMode>>;
   themeClasses: ThemeClasses;
+  onOpenTerminal: () => void;
 }) {
   return (
     <motion.div
@@ -68,9 +70,10 @@ export function QuickMenu({
             <p className="font-medium">How to use it</p>
             <p className={`mt-1 text-xs leading-6 ${themeClasses.subtle}`}>
               Press <span className="font-semibold">Q</span> to open or close
-              this panel. Press <span className="font-semibold"> D</span> to
-              toggle theme. Press <span className="font-semibold"> F</span> to
-              toggle focus mode.
+              this panel. Press <span className="font-semibold">D</span> to
+              toggle theme. Press <span className="font-semibold">F</span> for
+              focus mode. Press <span className="font-semibold">T</span> for the
+              terminal.
             </p>
           </div>
 
@@ -104,6 +107,23 @@ export function QuickMenu({
               </span>
             </span>
             <QuickKey label="F" isLight={isLight} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setQuickMenuOpen(false);
+              onOpenTerminal();
+            }}
+            className={`${themeClasses.softCard} flex w-full items-center justify-between px-4 py-3 text-left`}
+          >
+            <span>
+              <span className="block text-sm font-medium">Open terminal</span>
+              <span className={`mt-1 block text-xs ${themeClasses.subtle}`}>
+                Interactive CLI — try <code className="font-mono">sudo hire-me</code>
+              </span>
+            </span>
+            <QuickKey label="T" isLight={isLight} />
           </button>
         </div>
       </div>

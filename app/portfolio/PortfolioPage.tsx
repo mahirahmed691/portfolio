@@ -128,6 +128,7 @@ export function PortfolioPage() {
         setFocusMode={setFocusMode}
         setTheme={setTheme}
         themeClasses={themeClasses}
+        onOpenTerminal={() => setTerminalOpen(true)}
       />
       <Header
         isLight={isLight}
