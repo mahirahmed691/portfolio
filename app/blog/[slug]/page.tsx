@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts } from "../../portfolio/blog-data";
@@ -21,6 +22,39 @@ const gradientMap: Record<string, string> = {
 
 export async function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const post = blogPosts.find((p) => p.slug === params.slug);
+  if (!post) return {};
+
+  const url = `https://mahirahmed.co.uk/blog/${post.slug}`;
+  const description = post.subtitle.slice(0, 160);
+
+  return {
+    title: `${post.title} | Mahir Ahmed`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: post.title,
+      description,
+      siteName: "Mahir Ahmed",
+      publishedTime: post.date,
+      authors: ["Mahir Ahmed"],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+    },
+  };
 }
 
 export default function BlogPostPage({

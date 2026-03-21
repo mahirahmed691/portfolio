@@ -1,5 +1,27 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "../portfolio/blog-data";
+
+export const metadata: Metadata = {
+  title: "Blog | Mahir Ahmed",
+  description:
+    "Thoughts on platform engineering, cloud infrastructure, and frontend development — written by Mahir Ahmed.",
+  alternates: { canonical: "https://mahirahmed.co.uk/blog" },
+  openGraph: {
+    type: "website",
+    url: "https://mahirahmed.co.uk/blog",
+    title: "Blog | Mahir Ahmed",
+    description:
+      "Thoughts on platform engineering, cloud infrastructure, and frontend development.",
+    siteName: "Mahir Ahmed",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Mahir Ahmed",
+    description:
+      "Thoughts on platform engineering, cloud infrastructure, and frontend development.",
+  },
+};
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
