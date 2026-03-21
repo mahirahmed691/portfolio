@@ -101,7 +101,7 @@ export function Header({
                 window.open(calendlyUrl, "_blank", "noopener,noreferrer");
               }
             }}
-            className="inline-flex rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
+            className="hidden md:inline-flex rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
           >
             Book a project
           </button>
@@ -138,39 +138,48 @@ export function Header({
           menuOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }
         }
         transition={{ duration: 0.25, ease: "easeInOut" }}
-        className={`overflow-hidden md:hidden ${isLight ? "border-t border-slate-300/70" : "border-t border-white/10"}`}
+        className={`overflow-hidden md:hidden ${isLight ? "border-t border-slate-200" : "border-t border-white/8"}`}
       >
-        <div className="space-y-2 px-4 py-4 sm:px-6">
-          {[
-            ["Work", "#work"],
-            ["Services", "#services"],
-            ["About", "#about"],
-            ["Contact", "#contact"],
-          ].map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              className={
-                isLight
-                  ? "block rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
-                  : "block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/85 hover:bg-white/10"
+        <div className="px-4 pb-5 pt-3 sm:px-6">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              ["Work", "#work"],
+              ["Services", "#services"],
+              ["About", "#about"],
+              ["Contact", "#contact"],
+              ["Blog", "/blog"],
+              ["CV", "/cv"],
+            ].map(([label, href]) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center rounded-2xl px-4 py-3.5 text-sm font-medium transition active:scale-95 ${
+                  isLight
+                    ? "border border-slate-200 bg-slate-50 text-slate-700"
+                    : "border border-white/8 bg-white/[0.04] text-white/80"
+                }`}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              const calendlyUrl = "https://calendly.com/mahirahmed691";
+              if (typeof window !== "undefined" && (window as any).Calendly) {
+                (window as any).Calendly.initPopupWidget({ url: calendlyUrl });
+              } else {
+                window.open(calendlyUrl, "_blank", "noopener,noreferrer");
               }
-            >
-              {label}
-            </a>
-          ))}
-          <a
-            href="/cv"
-            onClick={() => setMenuOpen(false)}
-            className={
-              isLight
-                ? "block rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
-                : "block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/85 hover:bg-white/10"
-            }
+            }}
+            className="mt-3 w-full rounded-2xl bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 py-3.5 text-sm font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition active:scale-95"
           >
-            CV
-          </a>
+            Book a project
+          </button>
         </div>
       </motion.div>
     </header>
