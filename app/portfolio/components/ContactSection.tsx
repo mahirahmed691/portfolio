@@ -140,8 +140,24 @@ export function ContactSection({
 
   const [form, setForm] = useState<BriefForm>(initialForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-
   const [referralCode, setReferralCode] = useState<string>("");
+
+  const DRAFT_KEY = "mahir-brief-draft";
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) setForm((prev) => ({ ...prev, ...JSON.parse(saved) }));
+    } catch {}
+  }, []);
+
+  // Auto-save draft
+  useEffect(() => {
+    const isEmpty = Object.values(form).every((v) => !v);
+    if (isEmpty) return;
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(form)); } catch {}
+  }, [form]);
 
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref");
@@ -492,6 +508,32 @@ export function ContactSection({
                       : "mt-8 max-w-5xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6 disabled:opacity-60"
                   }
                 >
+                  {/* Form progress */}
+                  {(() => {
+                    const required: (keyof BriefForm)[] = ["name", "email", "phone", "projectType", "budget", "timeline"];
+                    const filled = required.filter((f) => Boolean((form[f] || "").trim())).length;
+                    const pct = Math.round((filled / required.length) * 100);
+                    return (
+                      <div className="mb-5">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <p className={`text-xs ${themeClasses.subtle}`}>{filled} of {required.length} required fields</p>
+                          <p className={`text-xs font-medium ${pct === 100 ? "text-emerald-400" : themeClasses.subtle}`}>{pct}%</p>
+                        </div>
+                        <div className={`h-1 w-full rounded-full overflow-hidden ${isLight ? "bg-slate-100" : "bg-white/8"}`}>
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${pct}%`,
+                              background: pct === 100
+                                ? "linear-gradient(90deg, #4ade80, #34d399)"
+                                : "linear-gradient(90deg, #e879f9, #818cf8, #67e8f9)",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   <div className={`${helperCard} md:flex md:items-center`}>
                     Higher budgets, tighter timelines, and clearer goals help me
                     recommend the strongest starting point faster.
@@ -750,6 +792,7 @@ export function ContactSection({
                         setForm(initialForm);
                         setBriefResult(null);
                         setLeadScore(null);
+                        try { localStorage.removeItem(DRAFT_KEY); } catch {}
                       }}
                       className={
                         isLight
@@ -855,6 +898,30 @@ export function ContactSection({
                     {item}
                   </div>
                 ))}
+              </div>
+
+              {/* What happens next */}
+              <div className="mt-8 max-w-2xl">
+                <p className={`text-xs uppercase tracking-[0.22em] mb-4 ${themeClasses.label}`}>
+                  What happens next
+                </p>
+                <ol className="space-y-3">
+                  {[
+                    { n: "1", label: "Submit your brief", detail: "Fill in the form above — takes about 2 minutes." },
+                    { n: "2", label: "Get a recommendation", detail: "I'll match your project to the right package and respond within 24 hours." },
+                    { n: "3", label: "Kick off your project", detail: "We agree on scope, I send a proposal, and we start." },
+                  ].map(({ n, label, detail }) => (
+                    <li key={n} className="flex items-start gap-4">
+                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${isLight ? "bg-slate-100 text-slate-600" : "bg-white/8 text-white/50"}`}>
+                        {n}
+                      </span>
+                      <div>
+                        <p className={`text-sm font-medium ${isLight ? "text-slate-900" : "text-white/90"}`}>{label}</p>
+                        <p className={`mt-0.5 text-xs leading-5 ${themeClasses.subtle}`}>{detail}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
           </div>

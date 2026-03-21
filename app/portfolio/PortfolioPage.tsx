@@ -160,7 +160,7 @@ export function PortfolioPage() {
       <TestimonialsSection isLight={isLight} themeClasses={themeClasses} />
       <AboutSection isLight={isLight} themeClasses={themeClasses} />
       <ContactSection isLight={isLight} themeClasses={themeClasses} />
-      <Footer themeClasses={themeClasses} />
+      <Footer themeClasses={themeClasses} isLight={isLight} />
 
       <Terminal
         open={terminalOpen}

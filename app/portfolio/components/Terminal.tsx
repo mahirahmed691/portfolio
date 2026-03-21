@@ -38,6 +38,7 @@ const COMMANDS: Record<string, (args: string[]) => Line[]> = {
     { type: "output", text: "  docker ps        — running containers" },
     { type: "output", text: "  ping mahir       — test the connection" },
     { type: "output", text: "  sudo hire-me     — make an offer" },
+    { type: "output", text: "  history          — show command history" },
     { type: "output", text: "  clear            — clear terminal" },
     { type: "output", text: "  exit             — close terminal" },
     { type: "blank" },
@@ -257,6 +258,12 @@ const COMMANDS: Record<string, (args: string[]) => Line[]> = {
   clear: () => [],
 };
 
+// Commands that simulate async work with an initial loading line
+const SLOW_COMMANDS: Record<string, { loading: string; delay: number }> = {
+  "terraform plan": { loading: "Initializing the backend... Refreshing Terraform state...", delay: 1400 },
+  "kubectl get pods": { loading: "Fetching pods from cluster europe-west2...", delay: 900 },
+};
+
 // ── Fuzzy match closest command ────────────────────────────────────
 function findSuggestion(input: string): string | null {
   const keys = Object.keys(COMMANDS);
@@ -283,8 +290,9 @@ export function Terminal({
 }) {
   const [lines, setLines] = useState<Line[]>(WELCOME);
   const [input, setInput] = useState("");
-  const [history, setHistory] = useState<string[]>([]);
+  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
+  const [processing, setProcessing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -313,8 +321,6 @@ export function Terminal({
   const runCommand = useCallback(
     (raw: string) => {
       const trimmed = raw.trim().toLowerCase();
-
-      // Add input line
       const inputLine: Line = { type: "input", text: raw.trim() };
 
       if (!trimmed) {
@@ -322,25 +328,47 @@ export function Terminal({
         return;
       }
 
-      // Update history
-      setHistory((prev) => [raw.trim(), ...prev.slice(0, 49)]);
+      setCmdHistory((prev) => [raw.trim(), ...prev.slice(0, 49)]);
       setHistoryIdx(-1);
 
-      if (trimmed === "exit") {
-        onClose();
-        return;
-      }
+      if (trimmed === "exit") { onClose(); return; }
+      if (trimmed === "clear") { setLines(WELCOME); return; }
 
-      if (trimmed === "clear") {
-        setLines(WELCOME);
+      // history command — needs access to cmdHistory state
+      if (trimmed === "history") {
+        setCmdHistory((prev) => {
+          const histLines: Line[] = prev.length === 0
+            ? [{ type: "output", text: "No command history yet.", color: "text-white/40" }]
+            : prev.map((cmd, i) => ({ type: "output" as const, text: `  ${String(i + 1).padStart(3)}  ${cmd}` }));
+          setLines((l) => [...l, inputLine, { type: "blank" }, ...histLines, { type: "blank" }]);
+          return prev;
+        });
         return;
       }
 
       const handler = COMMANDS[trimmed];
 
       if (handler) {
-        const output = handler([]);
-        setLines((prev) => [...prev, inputLine, { type: "blank" }, ...output, { type: "blank" }]);
+        const slow = SLOW_COMMANDS[trimmed];
+        if (slow) {
+          // Show loading indicator, then reveal full output after delay
+          setProcessing(true);
+          setLines((prev) => [
+            ...prev,
+            inputLine,
+            { type: "blank" },
+            { type: "output", text: slow.loading, color: "text-white/40" },
+          ]);
+          setTimeout(() => {
+            const output = handler([]);
+            // Skip lines already shown in the loading message
+            setLines((prev) => [...prev, { type: "blank" }, ...output, { type: "blank" }]);
+            setProcessing(false);
+          }, slow.delay);
+        } else {
+          const output = handler([]);
+          setLines((prev) => [...prev, inputLine, { type: "blank" }, ...output, { type: "blank" }]);
+        }
       } else {
         const suggestion = findSuggestion(trimmed);
         const notFound: Line[] = [
@@ -361,14 +389,14 @@ export function Terminal({
       setInput("");
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      const next = Math.min(historyIdx + 1, history.length - 1);
+      const next = Math.min(historyIdx + 1, cmdHistory.length - 1);
       setHistoryIdx(next);
-      setInput(history[next] ?? "");
+      setInput(cmdHistory[next] ?? "");
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       const next = Math.max(historyIdx - 1, -1);
       setHistoryIdx(next);
-      setInput(next === -1 ? "" : history[next]);
+      setInput(next === -1 ? "" : cmdHistory[next]);
     } else if (e.key === "Tab") {
       e.preventDefault();
       // Tab completion
@@ -456,8 +484,9 @@ export function Terminal({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            className="flex-1 bg-transparent font-mono text-[13px] text-white outline-none placeholder:text-white/20 caret-emerald-400"
-            placeholder="type a command..."
+            className="flex-1 bg-transparent font-mono text-[13px] text-white outline-none placeholder:text-white/20 caret-emerald-400 disabled:opacity-40"
+            placeholder={processing ? "running..." : "type a command..."}
+            disabled={processing}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
