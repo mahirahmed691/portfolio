@@ -53,6 +53,13 @@ export function Header({
           <a href="#contact" className="transition hover:text-inherit">
             Contact
           </a>
+          <a
+            href="/mahir-ahmed-cv.pdf"
+            download
+            className={`transition hover:opacity-80 ${isLight ? "text-slate-500" : "text-white/40 hover:text-white/70"}`}
+          >
+            CV ↓
+          </a>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -154,6 +161,18 @@ export function Header({
               {label}
             </a>
           ))}
+          <a
+            href="/mahir-ahmed-cv.pdf"
+            download
+            onClick={() => setMenuOpen(false)}
+            className={
+              isLight
+                ? "block rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                : "block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/85 hover:bg-white/10"
+            }
+          >
+            Download CV ↓
+          </a>
         </div>
       </motion.div>
     </header>
