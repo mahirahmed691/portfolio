@@ -1,6 +1,16 @@
+"use client";
+
+import { useState } from "react";
 import type { ThemeClasses } from "../types";
 
 export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    await navigator.clipboard.writeText("hello@mahirahmed.co.uk");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   return (
     <footer className="mx-auto mt-6 max-w-7xl rounded-[2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,15,26,0.96),rgba(5,10,18,0.96))] shadow-[0_18px_70px_rgba(0,0,0,0.2)]">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
@@ -43,6 +53,16 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
               <a href="/uses" className="block transition hover:text-white">
                 Uses
               </a>
+              <a href="/now" className="block transition hover:text-white">
+                Now
+              </a>
+              <a
+                href="/mahir-ahmed-cv.pdf"
+                download
+                className="block transition hover:text-white"
+              >
+                Download CV ↓
+              </a>
             </div>
           </div>
 
@@ -51,12 +71,23 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
               Connect
             </p>
             <div className="mt-4 space-y-3 text-sm text-white/65">
-              <a
-                href="mailto:hello@mahirahmed.co.uk"
-                className="block transition hover:text-white"
-              >
-                hello@mahirahmed.co.uk
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href="mailto:hello@mahirahmed.co.uk"
+                  className="transition hover:text-white"
+                >
+                  hello@mahirahmed.co.uk
+                </a>
+                <button
+                  onClick={copyEmail}
+                  className="text-[10px] transition hover:text-white/80"
+                  aria-label="Copy email address"
+                  title={copied ? "Copied!" : "Copy email"}
+                  style={{ color: copied ? "rgba(74,222,128,0.8)" : "rgba(255,255,255,0.25)" }}
+                >
+                  {copied ? "✓" : "⎘"}
+                </button>
+              </div>
               <a
                 href="https://github.com/mahirahmed691"
                 target="_blank"

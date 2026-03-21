@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/referrals", label: "Referrals", icon: "◎" },
   { href: "/admin/analytics", label: "Analytics", icon: "◬" },
   { href: "/admin/tools", label: "Dev Tools", icon: "⌥" },
+  { href: "/admin/settings", label: "Settings", icon: "⚙" },
 ];
 
 export default function AdminLayout({

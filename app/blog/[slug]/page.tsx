@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { blogPosts } from "../../portfolio/blog-data";
 import { ScrollProgress } from "./ScrollProgress";
+import { ShareButtons } from "./ShareButtons";
+import { BackToTop } from "../../portfolio/components/BackToTop";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -103,6 +105,14 @@ export default async function BlogPostPage({
     .map((p) => p.trim())
     .filter(Boolean);
 
+  const related = blogPosts
+    .filter(
+      (p) =>
+        p.slug !== post.slug &&
+        p.tags.some((t) => post.tags.includes(t)),
+    )
+    .slice(0, 3);
+
   const coverBackground =
     gradientMap[post.coverGradient] ??
     "linear-gradient(135deg, rgba(232,121,249,0.15), rgba(99,102,241,0.15))";
@@ -199,6 +209,56 @@ export default async function BlogPostPage({
           ))}
         </div>
 
+        {/* Share */}
+        <div
+          className="mt-12 flex items-center justify-between"
+          style={{
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            paddingTop: 20,
+          }}
+        >
+          <ShareButtons title={post.title} slug={post.slug} />
+          <a
+            href="/blog/rss.xml"
+            className="text-[11px] text-white/25 hover:text-white/50 transition-colors"
+            title="RSS feed"
+          >
+            RSS
+          </a>
+        </div>
+
+        {/* Related posts */}
+        {related.length > 0 && (
+          <div className="mt-12">
+            <p className="text-xs uppercase tracking-[0.22em] text-white/30 mb-4">
+              Related posts
+            </p>
+            <div className="space-y-3">
+              {related.map((rel) => (
+                <Link
+                  key={rel.slug}
+                  href={`/blog/${rel.slug}`}
+                  className="group flex items-center justify-between rounded-2xl p-4 transition hover:scale-[1.01]"
+                  style={{
+                    background: "rgba(255,255,255,0.025)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  <div className="min-w-0 mr-4">
+                    <p className="text-sm font-medium text-white/80 group-hover:text-white truncate">
+                      {rel.title}
+                    </p>
+                    <p className="text-xs text-white/35 mt-0.5">{rel.readTime}</p>
+                  </div>
+                  <span className="shrink-0 text-xs text-white/30 group-hover:text-white/60 transition-colors">
+                    Read →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Footer CTA */}
         <div
           className="mt-16 rounded-2xl p-6 text-center"
@@ -234,6 +294,7 @@ export default async function BlogPostPage({
           </Link>
         </div>
       </div>
+      <BackToTop />
     </div>
   );
 }

@@ -27,11 +27,16 @@ export function PortfolioPage() {
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     setTheme(getStoredTheme());
     if (process.env.NODE_ENV === "development") runDevTests();
+    fetch("/api/availability")
+      .then((r) => r.json())
+      .then((d) => setIsAvailable(d.available !== false))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -136,7 +141,7 @@ export function PortfolioPage() {
         setMenuOpen={setMenuOpen}
         themeClasses={themeClasses}
       />
-      <HeroSection {...sharedProps} />
+      <HeroSection {...sharedProps} isAvailable={isAvailable} />
       <WorkSection
         {...sharedProps}
         activeProject={activeProject}

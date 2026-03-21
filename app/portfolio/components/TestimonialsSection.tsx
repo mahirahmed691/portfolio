@@ -23,7 +23,15 @@ export function TestimonialsSection({
           </h2>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={`grid gap-6 ${
+            testimonials.length === 1
+              ? "max-w-2xl"
+              : testimonials.length === 2
+                ? "md:grid-cols-2 max-w-4xl"
+                : "md:grid-cols-2 lg:grid-cols-3"
+          }`}
+        >
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.name}
@@ -104,6 +112,28 @@ export function TestimonialsSection({
               </div>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <a
+            href="https://www.linkedin.com/in/mahir-ahmed691/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition hover:scale-[0.98] ${
+              isLight
+                ? "border-slate-200 bg-white text-slate-600 hover:text-slate-900"
+                : "border-white/10 bg-white/[0.03] text-white/50 hover:text-white/80"
+            }`}
+          >
+            <img
+              src="https://cdn.simpleicons.org/linkedin/0A66C2"
+              alt=""
+              width={14}
+              height={14}
+              className="opacity-70"
+            />
+            Leave a recommendation on LinkedIn
+          </a>
         </div>
       </div>
     </section>

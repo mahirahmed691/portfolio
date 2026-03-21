@@ -9,7 +9,8 @@ export function HeroSection({
   focusMode,
   shouldReduceMotion,
   themeClasses,
-}: SharedProps) {
+  isAvailable = true,
+}: SharedProps & { isAvailable?: boolean }) {
   const cardFloat =
     shouldReduceMotion || isMobile || focusMode
       ? {}
@@ -36,16 +37,28 @@ export function HeroSection({
           {/* Availability indicator */}
           <div
             className={`mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${
-              isLight
-                ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                : "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+              isAvailable
+                ? isLight
+                  ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                : isLight
+                  ? "border border-slate-200 bg-slate-100 text-slate-500"
+                  : "border border-white/10 bg-white/5 text-white/40"
             }`}
           >
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              {isAvailable && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              )}
+              <span
+                className={`relative inline-flex h-2 w-2 rounded-full ${
+                  isAvailable ? "bg-emerald-500" : "bg-slate-400"
+                }`}
+              />
             </span>
-            Platform engineer · available for new projects
+            {isAvailable
+              ? "Platform engineer · available for new projects"
+              : "Platform engineer · not currently available"}
           </div>
 
           <div
@@ -103,6 +116,13 @@ export function HeroSection({
             </a>
             <a href="#about" className={themeClasses.buttonAlt}>
               Explore more
+            </a>
+            <a
+              href="/mahir-ahmed-cv.pdf"
+              download
+              className={themeClasses.buttonAlt}
+            >
+              Download CV ↓
             </a>
           </div>
 
