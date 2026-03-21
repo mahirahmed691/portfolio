@@ -48,6 +48,48 @@ export const metadata: Metadata = {
   },
 };
 
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Mahir Ahmed",
+  url: "https://mahirahmed.co.uk",
+  jobTitle: "Platform Engineer & Frontend Developer",
+  description:
+    "Platform engineer and frontend developer with 7+ years experience building cloud infrastructure and product interfaces for HSBC, Zurich, Deutsche Bank and growing brands.",
+  knowsAbout: [
+    "Platform Engineering",
+    "Kubernetes",
+    "Terraform",
+    "Google Cloud Platform",
+    "AWS",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "CI/CD",
+    "GitOps",
+  ],
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "University of Salford",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Manchester",
+    addressCountry: "GB",
+  },
+  sameAs: [
+    "https://www.linkedin.com/in/mahirahmed691",
+    "https://github.com/mahirahmed691",
+  ],
+  email: "hello@mahirahmed.co.uk",
+  offers: {
+    "@type": "Offer",
+    description:
+      "Platform engineering contracts, full-stack product builds, and website development",
+    areaServed: "GB",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -55,7 +97,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head />
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+      </head>
       <body
         className={`${displaySans.className} ${displaySans.variable} ${geistMono.variable} antialiased`}
       >

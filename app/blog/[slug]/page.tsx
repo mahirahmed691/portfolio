@@ -68,6 +68,33 @@ export default function BlogPostPage({
     notFound();
   }
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.subtitle,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      "@type": "Person",
+      name: "Mahir Ahmed",
+      url: "https://mahirahmed.co.uk",
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Mahir Ahmed",
+      url: "https://mahirahmed.co.uk",
+    },
+    url: `https://mahirahmed.co.uk/blog/${post.slug}`,
+    keywords: post.tags.join(", "),
+    inLanguage: "en-GB",
+    isPartOf: {
+      "@type": "Blog",
+      name: "Mahir Ahmed — Blog",
+      url: "https://mahirahmed.co.uk/blog",
+    },
+  };
+
   const paragraphs = post.content
     .split(/\n\n+/)
     .map((p) => p.trim())
@@ -82,6 +109,10 @@ export default function BlogPostPage({
       className="min-h-screen"
       style={{ background: "#070d1a", color: "white" }}
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
