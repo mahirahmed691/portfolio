@@ -30,12 +30,13 @@ export function SectionArrow({ isLight }: { isLight: boolean }) {
   }, []);
 
   const nextSection = SECTIONS[active + 1];
-  if (!nextSection) return null;
+  const isLast = !nextSection;
+  const target = isLast ? "home" : nextSection;
 
   return (
     <motion.a
-      href={`#${nextSection}`}
-      aria-label="Next section"
+      href={`#${target}`}
+      aria-label={isLast ? "Back to top" : "Next section"}
       animate={{ y: [0, 6, 0], boxShadow: ["0 0 16px rgba(232,121,249,0.25), 0 0 32px rgba(129,140,248,0.15)", "0 0 28px rgba(232,121,249,0.55), 0 0 52px rgba(129,140,248,0.35)", "0 0 16px rgba(232,121,249,0.25), 0 0 32px rgba(129,140,248,0.15)"] }}
       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       className="fixed right-16 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-100 opacity-40"
@@ -55,7 +56,11 @@ export function SectionArrow({ isLight }: { isLight: boolean }) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ color: isLight ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.4)" }}
+        style={{
+          color: isLight ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.4)",
+          transform: isLast ? "rotate(180deg)" : undefined,
+          transition: "transform 0.3s ease",
+        }}
       >
         <path d="M6 9l6 6 6-6" />
       </svg>
