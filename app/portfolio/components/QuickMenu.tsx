@@ -30,7 +30,7 @@ export function QuickMenu({
         pointerEvents: quickMenuOpen ? "auto" : "none",
       }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed bottom-24 left-5 z-50 w-[calc(100vw-2.5rem)] max-w-md"
+      className="fixed bottom-24 left-5 z-50 hidden md:block w-[calc(100vw-2.5rem)] max-w-md"
     >
       <div
         className={
