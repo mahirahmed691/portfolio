@@ -6,6 +6,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Prevent iOS Safari from zooming in when focusing inputs */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
 :root {
   --surface: rgba(255, 255, 255, 0.05);
   --surface-strong: rgba(255, 255, 255, 0.09);
