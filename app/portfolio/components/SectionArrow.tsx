@@ -38,11 +38,12 @@ export function SectionArrow({ isLight }: { isLight: boolean }) {
       aria-label="Next section"
       animate={{ y: [0, 6, 0] }}
       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      className="fixed right-3 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-100 opacity-40"
+      className="fixed right-16 top-1/2 -translate-y-1/2 z-40 hidden md:flex h-10 w-10 items-center justify-center rounded-full transition-all hover:scale-110 hover:opacity-100 opacity-40"
       style={{
-        background: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)",
-        border: isLight ? "1px solid rgba(0,0,0,0.1)" : "1px solid rgba(255,255,255,0.1)",
+        background: "linear-gradient(135deg, rgba(232,121,249,0.15), rgba(129,140,248,0.15), rgba(103,232,249,0.15))",
+        border: "1px solid rgba(232,121,249,0.3)",
         backdropFilter: "blur(8px)",
+        boxShadow: "0 0 16px rgba(232,121,249,0.25), 0 0 32px rgba(129,140,248,0.15)",
       }}
     >
       <svg
