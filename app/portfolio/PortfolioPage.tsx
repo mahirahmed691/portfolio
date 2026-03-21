@@ -174,7 +174,7 @@ export function PortfolioPage() {
       {!terminalOpen && !quickMenuOpen && (
         <button
           onClick={() => setQuickMenuOpen(true)}
-          className="fixed bottom-6 left-6 z-40 hidden md:flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-30 hover:scale-105"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-6 left-6 z-40 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-30 hover:scale-105"
           style={{
             background: "rgba(0,0,0,0.6)",
             border: "1px solid rgba(255,255,255,0.1)",
@@ -192,7 +192,7 @@ export function PortfolioPage() {
       {!terminalOpen && (
         <button
           onClick={() => setTerminalOpen(true)}
-          className="fixed bottom-6 right-6 z-40 hidden md:flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-40 hover:scale-105"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-6 right-6 z-40 flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-40 hover:scale-105"
           style={{
             background: "rgba(0,0,0,0.6)",
             border: "1px solid rgba(255,255,255,0.1)",
