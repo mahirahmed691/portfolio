@@ -54,11 +54,10 @@ export function Header({
             Contact
           </a>
           <a
-            href="/mahir-ahmed-cv.pdf"
-            download
+            href="/cv"
             className={`transition hover:opacity-80 ${isLight ? "text-slate-500" : "text-white/40 hover:text-white/70"}`}
           >
-            CV ↓
+            CV
           </a>
         </nav>
 
@@ -162,8 +161,7 @@ export function Header({
             </a>
           ))}
           <a
-            href="/mahir-ahmed-cv.pdf"
-            download
+            href="/cv"
             onClick={() => setMenuOpen(false)}
             className={
               isLight
@@ -171,7 +169,7 @@ export function Header({
                 : "block rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/85 hover:bg-white/10"
             }
           >
-            Download CV ↓
+            CV
           </a>
         </div>
       </motion.div>

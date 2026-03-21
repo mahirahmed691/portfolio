@@ -118,11 +118,10 @@ export function HeroSection({
               Explore more
             </a>
             <a
-              href="/mahir-ahmed-cv.pdf"
-              download
+              href="/cv"
               className={themeClasses.buttonAlt}
             >
-              Download CV ↓
+              View CV ↓
             </a>
           </div>
 

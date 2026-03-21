@@ -57,11 +57,10 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
                 Now
               </a>
               <a
-                href="/mahir-ahmed-cv.pdf"
-                download
+                href="/cv"
                 className="block transition hover:text-white"
               >
-                Download CV ↓
+                View CV ↓
               </a>
             </div>
           </div>
