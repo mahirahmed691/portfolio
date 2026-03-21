@@ -747,10 +747,11 @@ export default function LeadsPage() {
     if (currentIndex >= filteredLeads.length) setCurrentIndex(0);
   }, [filteredLeads, currentIndex]);
 
+  const lead = filteredLeads[currentIndex] || null;
+
   // Check if the current lead's notes have unsaved changes
-  const lead = filteredLeads[currentIndex];
   const hasUnsavedNotes =
-    lead &&
+    lead != null &&
     (notesDrafts[lead.id] ?? lead.notes ?? "") !== (lead.notes ?? "");
 
   const navigateTo = (next: number) => {
@@ -769,8 +770,6 @@ export default function LeadsPage() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [filteredLeads.length, currentIndex, hasUnsavedNotes]);
-
-  const lead = filteredLeads[currentIndex] || null;
 
   const addActivity = (
     leadId: string,
