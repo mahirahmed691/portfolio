@@ -91,6 +91,52 @@ export const projects: Project[] = [
     outcome:
       "Faster, more consistent infrastructure delivery with reduced drift and a clear audit trail for every change.",
   },
+  {
+    name: "Fintech Dashboard",
+    type: "Full-stack product build · React & Next.js",
+    summary:
+      "Built a real-time financial operations dashboard for an early-stage fintech, covering transaction monitoring, account management, and role-based access control — from API design through to polished UI.",
+    impact: "Reduced ops team reporting time by 60%",
+    accent: "from-emerald-300/25 via-teal-300/20 to-cyan-300/20",
+    diagram: "kubernetes" as const,
+    story:
+      "A fast-moving fintech team needed internal tooling that matched the quality of their consumer product. The dashboard had to be fast, accurate, and usable by non-technical staff — which meant design and engineering had to work together from the start.",
+    role: "Full-stack engineering, UI/UX design, API design",
+    highlight: "Shipped a production-grade financial dashboard in 6 weeks.",
+    challenge:
+      "Building a reliable real-time dashboard where stale data or incorrect figures could have direct financial consequences — while keeping the interface simple enough for non-technical ops staff.",
+    approach: [
+      "Designed a clean component system in React with role-based views so different user types see only what's relevant to them.",
+      "Built a Next.js API layer that aggregated data from multiple upstream services and normalised it into a consistent shape.",
+      "Implemented optimistic updates and real-time polling to keep the dashboard accurate without overwhelming the backend.",
+    ],
+    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "PostgreSQL", "Supabase"],
+    outcome:
+      "Operations team reporting time dropped by 60%. The dashboard became the primary tool for daily financial reconciliation within two weeks of launch.",
+  },
+  {
+    name: "CI/CD Platform Modernisation",
+    type: "Platform engineering · Jenkins to GitHub Actions",
+    summary:
+      "Led the migration of a legacy Jenkins-based CI/CD setup to a modern GitHub Actions pipeline, reducing build times, eliminating flaky tests, and giving developers confidence in the deployment process.",
+    impact: "Build times cut by 55%, zero flaky deploys",
+    accent: "from-violet-300/25 via-purple-300/20 to-fuchsia-300/20",
+    diagram: "pipeline" as const,
+    story:
+      "The team had inherited a Jenkins setup that nobody fully understood, where builds would randomly fail and deploys required a senior engineer to babysit. Migrating it was partly a technical challenge and partly a trust-rebuilding exercise.",
+    role: "Platform engineering, CI/CD design, developer experience",
+    highlight: "Eliminated unreliable builds and gave the team confidence to deploy daily.",
+    challenge:
+      "Replacing a working (if fragile) CI system without disrupting ongoing development, while building something the whole team could understand and maintain.",
+    approach: [
+      "Audited the existing Jenkins pipelines and identified the real failure modes — mostly implicit environment dependencies and shared mutable state.",
+      "Designed GitHub Actions workflows around isolated, declarative steps with explicit dependencies and artifact caching.",
+      "Migrated services incrementally with parallel runs, so the team could validate the new pipeline before committing to it.",
+    ],
+    stack: ["GitHub Actions", "Docker", "GCP", "Terraform", "Jest", "Node.js"],
+    outcome:
+      "Build times reduced by 55%. Flaky deploys eliminated. Developers now ship to production multiple times a day without a babysitter.",
+  },
 ];
 
 export const founderNotes = [

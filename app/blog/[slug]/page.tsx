@@ -5,6 +5,9 @@ import { blogPosts } from "../../portfolio/blog-data";
 import { ScrollProgress } from "./ScrollProgress";
 import { ShareButtons } from "./ShareButtons";
 import { BackToTop } from "../../portfolio/components/BackToTop";
+import { TableOfContents } from "./TableOfContents";
+import { ReadProgress } from "./ReadProgress";
+import { NewsletterCta } from "./NewsletterCta";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -100,10 +103,19 @@ export default async function BlogPostPage({
     },
   };
 
-  const paragraphs = post.content
+  const blocks = post.content
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean);
+
+  const headings = blocks
+    .filter((b) => b.startsWith("## ") || b.startsWith("### "))
+    .map((b) => {
+      const level = b.startsWith("### ") ? 3 : 2;
+      const text = b.replace(/^#{2,3} /, "");
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      return { id, text, level };
+    });
 
   const related = blogPosts
     .filter(
@@ -123,6 +135,7 @@ export default async function BlogPostPage({
       style={{ background: "#070d1a", color: "white" }}
     >
       <ScrollProgress />
+      <ReadProgress title={post.title} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -146,7 +159,14 @@ export default async function BlogPostPage({
         />
       </div>
 
-      <div className="relative mx-auto max-w-2xl px-6 py-16 sm:py-24">
+      <div className="relative mx-auto max-w-5xl px-6 py-16 sm:py-24">
+        {/* ToC sidebar — desktop only */}
+        {headings.length > 0 && (
+          <div className="hidden xl:block fixed top-28 right-[max(2rem,calc(50%-42rem))] w-48">
+            <TableOfContents headings={headings} />
+          </div>
+        )}
+      <div className="mx-auto max-w-2xl">
         {/* Back link */}
         <div className="mb-10">
           <Link
@@ -199,14 +219,31 @@ export default async function BlogPostPage({
 
         {/* Content */}
         <div className="space-y-5">
-          {paragraphs.map((paragraph, i) => (
-            <p
-              key={i}
-              className="text-base leading-[1.75] text-white/65"
-            >
-              {paragraph}
-            </p>
-          ))}
+          {blocks.map((block, i) => {
+            if (block.startsWith("## ")) {
+              const text = block.replace(/^## /, "");
+              const id = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+              return (
+                <h2 key={i} id={id} className="pt-4 text-xl font-semibold tracking-tight text-white/90 scroll-mt-24">
+                  {text}
+                </h2>
+              );
+            }
+            if (block.startsWith("### ")) {
+              const text = block.replace(/^### /, "");
+              const id = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+              return (
+                <h3 key={i} id={id} className="pt-2 text-base font-semibold text-white/80 scroll-mt-24">
+                  {text}
+                </h3>
+              );
+            }
+            return (
+              <p key={i} className="text-base leading-[1.75] text-white/65">
+                {block}
+              </p>
+            );
+          })}
         </div>
 
         {/* Share */}
@@ -259,6 +296,8 @@ export default async function BlogPostPage({
           </div>
         )}
 
+        <NewsletterCta />
+
         {/* Footer CTA */}
         <div
           className="mt-16 rounded-2xl p-6 text-center"
@@ -295,6 +334,7 @@ export default async function BlogPostPage({
         </div>
       </div>
       <BackToTop />
-    </div>
+      </div>
+      </div>
   );
 }

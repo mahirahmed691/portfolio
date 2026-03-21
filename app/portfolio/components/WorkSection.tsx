@@ -4,6 +4,7 @@ import { toSlug } from "../utils";
 import type { SharedProps } from "../types";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectDeepDive } from "./ProjectDeepDive";
+import { useSwipe } from "../hooks/useSwipe";
 
 export function WorkSection({
   isLight,
@@ -21,6 +22,10 @@ export function WorkSection({
   setDeepDiveOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const currentProject = projects[activeProject];
+  const swipe = useSwipe(
+    () => setActiveProject((activeProject + 1) % projects.length),
+    () => setActiveProject((activeProject - 1 + projects.length) % projects.length),
+  );
 
   return (
     <section
@@ -103,7 +108,7 @@ export function WorkSection({
             </div>
           </div>
 
-          <div aria-live="polite" aria-atomic="true" aria-label={`Now showing: ${currentProject.name}`}>
+          <div aria-live="polite" aria-atomic="true" aria-label={`Now showing: ${currentProject.name}`} {...swipe}>
             <ProjectCard
               currentProject={currentProject}
               activeProject={activeProject}

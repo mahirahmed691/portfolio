@@ -17,6 +17,7 @@ import { AboutSection } from "./components/AboutSection";
 import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
 import { Terminal } from "./components/Terminal";
+import { MobileTabBar } from "./components/MobileTabBar";
 
 export function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -118,7 +119,7 @@ export function PortfolioPage() {
   };
 
   return (
-    <main className={themeClasses.page}>
+    <main className={`${themeClasses.page} pb-16 md:pb-0`}>
       <BackgroundGlow {...sharedProps} />
       <QuickLauncher
         isLight={isLight}
@@ -164,6 +165,26 @@ export function PortfolioPage() {
         onClose={() => setTerminalOpen(false)}
         isLight={isLight}
       />
+
+      <MobileTabBar isLight={isLight} />
+
+      {/* Keyboard shortcuts hint */}
+      {!terminalOpen && !quickMenuOpen && (
+        <button
+          onClick={() => setQuickMenuOpen(true)}
+          className="fixed bottom-6 left-6 z-40 hidden md:flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-30 hover:scale-105"
+          style={{
+            background: "rgba(0,0,0,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backdropFilter: "blur(8px)",
+            color: "rgba(255,255,255,0.7)",
+          }}
+          aria-label="Open keyboard shortcuts"
+        >
+          <span className="text-fuchsia-400">Q</span>
+          <span>shortcuts</span>
+        </button>
+      )}
 
       {/* Terminal hint pill */}
       {!terminalOpen && (
