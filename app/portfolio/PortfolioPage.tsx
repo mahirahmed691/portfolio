@@ -16,6 +16,7 @@ import { TestimonialsSection } from "./components/TestimonialsSection";
 import { AboutSection } from "./components/AboutSection";
 import { ContactSection } from "./components/ContactSection";
 import { Footer } from "./components/Footer";
+import { Terminal } from "./components/Terminal";
 
 export function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,6 +26,7 @@ export function PortfolioPage() {
   const [theme, setTheme] = useState<ThemeMode>("dark");
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -74,6 +76,11 @@ export function PortfolioPage() {
         setQuickMenuOpen((open) => !open);
       }
 
+      if (key === "t") {
+        event.preventDefault();
+        setTerminalOpen((open) => !open);
+      }
+
       if (key === "d") {
         event.preventDefault();
         setTheme((current) => (current === "dark" ? "light" : "dark"));
@@ -86,6 +93,7 @@ export function PortfolioPage() {
 
       if (event.key === "Escape") {
         setQuickMenuOpen(false);
+        setTerminalOpen(false);
       }
     };
 
@@ -144,6 +152,30 @@ export function PortfolioPage() {
       <AboutSection isLight={isLight} themeClasses={themeClasses} />
       <ContactSection isLight={isLight} themeClasses={themeClasses} />
       <Footer themeClasses={themeClasses} />
+
+      <Terminal
+        open={terminalOpen}
+        onClose={() => setTerminalOpen(false)}
+        isLight={isLight}
+      />
+
+      {/* Terminal hint pill */}
+      {!terminalOpen && (
+        <button
+          onClick={() => setTerminalOpen(true)}
+          className="fixed bottom-6 right-6 z-40 hidden md:flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-mono transition-all hover:opacity-100 opacity-40 hover:scale-105"
+          style={{
+            background: "rgba(0,0,0,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            backdropFilter: "blur(8px)",
+            color: "rgba(255,255,255,0.7)",
+          }}
+          aria-label="Open terminal"
+        >
+          <span className="text-emerald-400">$</span>
+          <span>press T</span>
+        </button>
+      )}
     </main>
   );
 }
