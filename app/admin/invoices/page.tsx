@@ -391,13 +391,34 @@ export default function InvoicesPage() {
     }
   };
 
-  // ── Copy payment link ──
-  const copyPaymentLink = async () => {
+  // ── Generate & copy Stripe payment link for an invoice ──
+  const [generatingLinkId, setGeneratingLinkId] = useState<string | null>(null);
+
+  const copyPaymentLink = async (invoice: Invoice) => {
     try {
-      await navigator.clipboard.writeText("https://mahirahmed.co.uk/#contact");
-      setToast("Link copied!");
+      setGeneratingLinkId(invoice.id);
+      const res = await fetch("/api/stripe/invoice-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          invoice_id: invoice.id,
+          client_name: invoice.client_name,
+          client_email: invoice.client_email,
+          amount_pence: invoice.amount_pence,
+          description: invoice.description,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        setToast(data.error || "Failed to generate payment link.");
+        return;
+      }
+      await navigator.clipboard.writeText(data.url);
+      setToast("Payment link copied!");
     } catch {
-      /* noop */
+      setToast("Could not generate payment link.");
+    } finally {
+      setGeneratingLinkId(null);
     }
   };
 
@@ -733,15 +754,16 @@ export default function InvoicesPage() {
                                 </button>
                               )}
                               <button
-                                onClick={copyPaymentLink}
-                                className="inline-flex h-7 items-center rounded-lg px-3 text-[11px] font-medium transition-all active:scale-95"
+                                onClick={() => copyPaymentLink(invoice)}
+                                disabled={generatingLinkId === invoice.id}
+                                className="inline-flex h-7 items-center rounded-lg px-3 text-[11px] font-medium transition-all active:scale-95 disabled:opacity-40"
                                 style={{
                                   background: "rgba(255,255,255,0.04)",
                                   color: "rgba(255,255,255,0.45)",
                                   border: "1px solid rgba(255,255,255,0.06)",
                                 }}
                               >
-                                Copy link
+                                {generatingLinkId === invoice.id ? "Generating…" : "Copy link"}
                               </button>
                               {deletingId === invoice.id ? (
                                 <div className="flex items-center gap-1">

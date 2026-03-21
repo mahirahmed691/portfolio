@@ -623,13 +623,23 @@ function QuickReplyPanel({ lead }: { lead: Lead }) {
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState(() => {
+    try { return localStorage.getItem("mahir-leads-filter") || "all"; } catch { return "all"; }
+  });
+  const [search, setSearch] = useState(() => {
+    try { return localStorage.getItem("mahir-leads-search") || ""; } catch { return ""; }
+  });
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
   const [notesDrafts, setNotesDrafts] = useState<Record<string, string>>({});
   const [copySuccessId, setCopySuccessId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [view, setView] = useState<"list" | "kanban">("list");
+  const [view, setView] = useState<"list" | "kanban">(() => {
+    try { return (localStorage.getItem("mahir-leads-view") as "list" | "kanban") || "list"; } catch { return "list"; }
+  });
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [newLeadCount, setNewLeadCount] = useState(0);
+  const [bulkStatus, setBulkStatus] = useState<LeadStatus>("contacted");
+  const [bulkUpdating, setBulkUpdating] = useState(false);
   const [activityLogs, setActivityLogs] = useState<
     Record<string, ActivityEvent[]>
   >(() => {
@@ -647,6 +657,10 @@ export default function LeadsPage() {
     } catch {}
   }, [activityLogs]);
 
+  useEffect(() => { try { localStorage.setItem("mahir-leads-filter", filter); } catch {} }, [filter]);
+  useEffect(() => { try { localStorage.setItem("mahir-leads-search", search); } catch {} }, [search]);
+  useEffect(() => { try { localStorage.setItem("mahir-leads-view", view); } catch {} }, [view]);
+
   useEffect(() => {
     const loadLeads = async () => {
       try {
@@ -658,6 +672,10 @@ export default function LeadsPage() {
         }
         const fetchedLeads: Lead[] = data.leads || [];
         setLeads(fetchedLeads);
+        try {
+          const lastSeen = parseInt(localStorage.getItem("mahir-leads-last-seen") || "0", 10);
+          if (fetchedLeads.length > lastSeen) setNewLeadCount(fetchedLeads.length - lastSeen);
+        } catch {}
         const notesMap: Record<string, string> = {};
         fetchedLeads.forEach((lead) => {
           notesMap[lead.id] = lead.notes || "";
@@ -815,6 +833,44 @@ export default function LeadsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const allSelected = filteredLeads.length > 0 && filteredLeads.every((l) => selectedIds.has(l.id));
+
+  const toggleSelectAll = () => {
+    if (allSelected) setSelectedIds(new Set());
+    else setSelectedIds(new Set(filteredLeads.map((l) => l.id)));
+  };
+
+  const bulkUpdateStatus = async () => {
+    setBulkUpdating(true);
+    await Promise.all([...selectedIds].map((id) => updateLead(id, { status: bulkStatus })));
+    setBulkUpdating(false);
+    setSelectedIds(new Set());
+  };
+
+  const exportSelected = () => {
+    const selected = leads.filter((l) => selectedIds.has(l.id));
+    const headers = ['Name','Email','Phone','Company','Budget','Package','Score','Status','Created'];
+    const rows = selected.map(l => [
+      l.name, l.email, l.phone, l.company || '', l.budget || '',
+      l.recommended_package || '', l.lead_score ?? '', l.status || '',
+      l.created_at ? new Date(l.created_at).toLocaleDateString() : ''
+    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: `selected-leads-${new Date().toISOString().slice(0,10)}.csv` });
+    a.click();
+    URL.revokeObjectURL(url);
+    setSelectedIds(new Set());
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -904,6 +960,75 @@ export default function LeadsPage() {
             Log out
           </GhostBtn>
         </div>
+
+        {/* ── New lead notification ── */}
+        {newLeadCount > 0 && (
+          <div
+            className="mb-4 flex items-center justify-between rounded-2xl px-5 py-3"
+            style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(252,211,77,0.2)" }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-400/20 text-xs font-bold text-yellow-300">
+                {newLeadCount}
+              </span>
+              <p className="text-sm font-medium text-yellow-200">
+                {newLeadCount} new lead{newLeadCount > 1 ? "s" : ""} since your last visit
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setNewLeadCount(0);
+                try { localStorage.setItem("mahir-leads-last-seen", String(leads.length)); } catch {}
+              }}
+              className="text-xs text-yellow-300/60 hover:text-yellow-300 transition"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* ── Bulk action toolbar ── */}
+        {selectedIds.size > 0 && (
+          <div
+            className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl px-5 py-3"
+            style={{ background: "rgba(129,140,248,0.1)", border: "1px solid rgba(129,140,248,0.2)" }}
+          >
+            <span className="text-sm font-medium text-violet-200">{selectedIds.size} selected</span>
+            <div className="flex items-center gap-2 flex-1 flex-wrap">
+              <select
+                value={bulkStatus}
+                onChange={(e) => setBulkStatus(e.target.value as LeadStatus)}
+                className="h-8 rounded-xl bg-white/[0.08] px-3 text-xs text-white outline-none cursor-pointer"
+                style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+              >
+                {statusOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <button
+                type="button"
+                onClick={bulkUpdateStatus}
+                disabled={bulkUpdating}
+                className="inline-flex h-8 items-center justify-center rounded-xl bg-violet-500/20 px-4 text-xs font-medium text-violet-200 transition hover:bg-violet-500/30 disabled:opacity-40"
+              >
+                {bulkUpdating ? "Updating…" : "Set status"}
+              </button>
+              <button
+                type="button"
+                onClick={exportSelected}
+                className="inline-flex h-8 items-center justify-center rounded-xl bg-white/[0.06] px-4 text-xs font-medium text-white/70 transition hover:bg-white/[0.1]"
+              >
+                Export selected
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedIds(new Set())}
+              className="text-xs text-white/30 hover:text-white/60 transition"
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         {/* ── Bento Grid ── */}
         {/*
@@ -1016,6 +1141,15 @@ export default function LeadsPage() {
                 />
               </div>
               <GhostBtn onClick={exportCSV}>Export CSV</GhostBtn>
+              <label className="flex items-center gap-2 cursor-pointer px-3 h-9 rounded-xl bg-white/[0.04] text-xs text-white/50 hover:text-white/75 transition" style={{ border: "1px solid rgba(255,255,255,0.04)" }}>
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={toggleSelectAll}
+                  className="accent-violet-400 h-3.5 w-3.5"
+                />
+                Select all
+              </label>
             </div>
             <div className="flex items-center gap-2">
               {/* View toggle */}
@@ -1148,20 +1282,31 @@ export default function LeadsPage() {
                           const prioStyle = getPriorityInlineStyle(prio);
                           const realIdx = filteredLeads.indexOf(l);
                           return (
-                            <button
+                            <div
                               key={l.id}
-                              type="button"
-                              onClick={() => {
-                                setCurrentIndex(realIdx >= 0 ? realIdx : 0);
-                                setView("list");
-                              }}
-                              className="w-full text-left rounded-xl p-3 transition-all active:scale-[0.98] hover:brightness-110"
+                              className="relative rounded-xl transition-all hover:brightness-110"
                               style={{
-                                background: "rgba(12,25,41,0.9)",
-                                boxShadow:
-                                  "0 0 0 1px rgba(255,255,255,0.05), 0 2px 12px rgba(0,0,0,0.2)",
+                                background: selectedIds.has(l.id) ? "rgba(129,140,248,0.12)" : "rgba(12,25,41,0.9)",
+                                boxShadow: selectedIds.has(l.id)
+                                  ? "0 0 0 1px rgba(129,140,248,0.3), 0 2px 12px rgba(0,0,0,0.2)"
+                                  : "0 0 0 1px rgba(255,255,255,0.05), 0 2px 12px rgba(0,0,0,0.2)",
                               }}
                             >
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.has(l.id)}
+                                onChange={() => toggleSelect(l.id)}
+                                className="absolute top-2.5 right-2.5 accent-violet-400 h-3.5 w-3.5 z-10 cursor-pointer"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCurrentIndex(realIdx >= 0 ? realIdx : 0);
+                                  setView("list");
+                                }}
+                                className="w-full text-left p-3"
+                              >
                               <div className="flex items-start justify-between gap-1.5 mb-2">
                                 <p className="text-xs font-semibold text-white/85 leading-snug truncate flex-1">
                                   {l.name || "Unnamed"}
@@ -1189,7 +1334,8 @@ export default function LeadsPage() {
                                   {l.recommended_package}
                                 </span>
                               )}
-                            </button>
+                              </button>
+                            </div>
                           );
                         })}
                       </div>

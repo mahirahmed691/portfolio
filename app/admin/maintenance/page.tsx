@@ -431,6 +431,43 @@ export default function MaintenancePage() {
           <p className="text-xs text-white/35 mt-1">Recurring retainer clients and renewal tracking</p>
         </div>
 
+        {/* ── Renewal alert banner ── */}
+        {(() => {
+          const dueClients = clients.filter(
+            (c) => c.status === "active" && isWithinDays(c.next_renewal, 14)
+          );
+          if (dueClients.length === 0) return null;
+          return (
+            <div
+              className="mb-5 rounded-2xl px-5 py-4"
+              style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(252,211,77,0.2)" }}
+            >
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-yellow-400/20 text-[10px] font-bold text-yellow-300">
+                  {dueClients.length}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-yellow-200">
+                    {dueClients.length} client{dueClients.length > 1 ? "s" : ""} renewing within 14 days
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {dueClients.map((c) => (
+                      <span
+                        key={c.id}
+                        className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-medium"
+                        style={{ background: "rgba(251,191,36,0.15)", color: "#fcd34d", border: "1px solid rgba(252,211,77,0.15)" }}
+                      >
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-yellow-400" />
+                        {c.client_name} · {formatDate(c.next_renewal)} · {daysUntil(c.next_renewal)}d
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── Stat cards ── */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-12 gap-3">
           <div className="col-span-1 lg:col-span-3">
