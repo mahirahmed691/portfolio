@@ -51,6 +51,7 @@ export function ProjectDeepDive({
             ? { height: "auto", opacity: 1, marginTop: 24 }
             : { height: 0, opacity: 0, marginTop: 0 }
         }
+        style={{ overflow: "hidden" }}
         transition={{
           duration: shouldReduceMotion || focusMode ? 0 : 0.35,
           ease: "easeInOut",

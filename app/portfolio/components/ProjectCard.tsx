@@ -12,7 +12,7 @@ export function ProjectCard({
 }) {
   return (
     <div
-      className={`relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] ${themeClasses.sectionShell} p-6 sm:p-8`}
+      className={`relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] ${themeClasses.sectionShell} p-6 sm:p-8 min-h-[480px] sm:min-h-[520px]`}
     >
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="min-h-[220px]">
