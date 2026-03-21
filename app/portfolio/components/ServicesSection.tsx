@@ -13,7 +13,7 @@ export function ServicesSection({
   return (
     <section
       id="services"
-      className={`mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
+      className={`relative mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
     >
       <div className="px-4 py-16 sm:px-6 sm:py-20">
         <div className="mb-12 max-w-2xl">
@@ -59,6 +59,7 @@ export function ServicesSection({
         </div>
       </div>
       <SectionArrow href="#testimonials" isLight={isLight} />
+
     </section>
   );
 }

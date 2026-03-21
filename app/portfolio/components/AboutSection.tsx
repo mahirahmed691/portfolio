@@ -31,7 +31,7 @@ export function AboutSection({
   return (
     <section
       id="about"
-      className={`mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
+      className={`relative mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
     >
       <div className="px-4 pb-24 pt-16 sm:px-6 md:p-12">
         <div className="grid gap-8 md:grid-cols-[0.95fr_1.05fr]">

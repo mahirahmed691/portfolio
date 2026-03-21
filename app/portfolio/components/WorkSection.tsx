@@ -31,7 +31,7 @@ export function WorkSection({
   return (
     <section
       id="work"
-      className={`mx-auto mt-6 max-w-7xl ${themeClasses.shell} ${
+      className={`relative mx-auto mt-6 max-w-7xl ${themeClasses.shell} ${
         focusMode ? "opacity-90" : ""
       }`}
     >
