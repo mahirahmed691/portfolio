@@ -800,7 +800,7 @@ export function ContactSection({
                       onClick={() => {
                         setForm(initialForm);
                         setBriefResult(null);
-                        setLeadScore(null);
+                        setBriefCheckoutUrl(null);
                         try { localStorage.removeItem(DRAFT_KEY); } catch {}
                       }}
                       className={
