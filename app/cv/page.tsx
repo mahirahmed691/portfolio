@@ -29,7 +29,7 @@ export default function CVPage() {
         </div>
 
         <a
-          href="/mahir-ahmed-cv.pdf"
+          href="/Mahir_Ahmed_CV.pdf"
           download
           className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 px-4 py-1.5 text-xs font-semibold text-slate-950 shadow-lg shadow-fuchsia-500/20 transition hover:scale-[0.98]"
         >
@@ -44,7 +44,7 @@ export default function CVPage() {
           style={{ border: "1px solid rgba(255,255,255,0.08)" }}
         >
           <iframe
-            src="/mahir-ahmed-cv.pdf"
+            src="/Mahir_Ahmed_CV.pdf"
             className="h-[80vh] w-full sm:h-[90vh]"
             title="Mahir Ahmed CV"
           />
