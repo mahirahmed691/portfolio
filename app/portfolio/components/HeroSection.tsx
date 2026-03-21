@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import { founderNotes, heroMetrics } from "../data";
 import type { SharedProps } from "../types";
-import { SectionArrow } from "./SectionArrow";
 
 export function HeroSection({
   isLight,
@@ -289,7 +288,6 @@ export function HeroSection({
           </motion.div>
         </motion.div>
       </div>
-      <SectionArrow href="#work" isLight={isLight} />
     </section>
   );
 }

@@ -19,6 +19,7 @@ import { Footer } from "./components/Footer";
 import { Terminal } from "./components/Terminal";
 import { MobileTabBar } from "./components/MobileTabBar";
 import { MobileMenu } from "./components/MobileMenu";
+import { SectionArrow } from "./components/SectionArrow";
 
 export function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -167,6 +168,7 @@ export function PortfolioPage() {
         isLight={isLight}
       />
 
+      <SectionArrow isLight={isLight} />
       <MobileMenu isLight={isLight} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <MobileTabBar isLight={isLight} />
 

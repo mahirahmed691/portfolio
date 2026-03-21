@@ -5,7 +5,6 @@ import type { SharedProps } from "../types";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectDeepDive } from "./ProjectDeepDive";
 import { useSwipe } from "../hooks/useSwipe";
-import { SectionArrow } from "./SectionArrow";
 
 export function WorkSection({
   isLight,
@@ -137,7 +136,6 @@ export function WorkSection({
           </div>
         </div>
       </div>
-      <SectionArrow href="#services" isLight={isLight} />
     </section>
   );
 }
