@@ -434,7 +434,7 @@ export function ContactSection({
                 </button>
 
                 <a
-                  href="mailto:mahirahmed691@gmail.com"
+                  href="mailto:hello@mahirahmed.co.uk"
                   className={`group relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium transition-all duration-300 ${
                     isLight
                       ? "bg-white/80 text-slate-900 shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
@@ -456,7 +456,7 @@ export function ContactSection({
                       d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 17.25V6.75m19.5 0l-9.75 6.5-9.75-6.5m19.5 0A2.25 2.25 0 0019.5 4.5H4.5A2.25 2.25 0 002.25 6.75"
                     />
                   </svg>
-                  <span className="relative">mahirahmed691@gmail.com</span>
+                  <span className="relative">hello@mahirahmed.co.uk</span>
                 </a>
 
                 <a
@@ -484,11 +484,12 @@ export function ContactSection({
               </div>
 
               {showBrief && (
-                <div
+                <fieldset
+                  disabled={briefLoading}
                   className={
                     isLight
-                      ? "mt-8 max-w-5xl rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-6"
-                      : "mt-8 max-w-5xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6"
+                      ? "mt-8 max-w-5xl rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.06)] backdrop-blur-sm md:p-6 disabled:opacity-60"
+                      : "mt-8 max-w-5xl rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm md:p-6 disabled:opacity-60"
                   }
                 >
                   <div className={`${helperCard} md:flex md:items-center`}>
@@ -824,7 +825,7 @@ export function ContactSection({
                       </div>
                     </div>
                   )}
-                </div>
+                </fieldset>
               )}
 
               <div

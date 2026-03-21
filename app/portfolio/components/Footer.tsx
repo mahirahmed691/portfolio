@@ -34,6 +34,9 @@ export function Footer({ themeClasses }: { themeClasses: ThemeClasses }) {
               <a href="#about" className="block transition hover:text-white">
                 About
               </a>
+              <a href="/blog" className="block transition hover:text-white">
+                Blog
+              </a>
             </div>
           </div>
 
