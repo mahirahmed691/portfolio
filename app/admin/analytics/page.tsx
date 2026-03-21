@@ -42,7 +42,9 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     fetch("/api/leads")
       .then(async (r) => {
         if (!r.ok) throw new Error(`${r.status}`);
@@ -53,7 +55,9 @@ export default function AnalyticsPage() {
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
 
   const total = leads.length;
   const byStatus = leads.reduce<Record<string, number>>((acc, l) => {
@@ -117,10 +121,17 @@ export default function AnalyticsPage() {
 
       {error && (
         <div
-          className="rounded-xl px-4 py-3 text-sm text-rose-400"
+          className="rounded-xl px-4 py-3 text-sm text-rose-400 flex items-center gap-3"
           style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
         >
-          Failed to load leads: {error}
+          <span className="flex-1">Failed to load leads: {error}</span>
+          <button
+            onClick={load}
+            className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-rose-300 transition-colors hover:text-white"
+            style={{ background: "rgba(239,68,68,0.15)" }}
+          >
+            Retry
+          </button>
         </div>
       )}
 

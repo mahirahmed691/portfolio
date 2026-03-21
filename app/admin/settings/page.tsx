@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const toggle = async () => {
     if (available === null) return;
     const next = !available;
+    setAvailable(next); // optimistic
     setSaving(true);
     setError(null);
     setSaved(false);
@@ -29,10 +30,10 @@ export default function SettingsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
-      setAvailable(next);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
+      setAvailable(!next); // rollback
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setSaving(false);

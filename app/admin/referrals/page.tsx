@@ -323,6 +323,7 @@ export default function ReferralsPage() {
   const [shareTarget, setShareTarget] = useState<Referral | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
@@ -333,22 +334,22 @@ export default function ReferralsPage() {
   });
   const [formError, setFormError] = useState("");
 
-  useEffect(() => {
-    const load = async () => {
-      setLoadingReferrals(true);
-      try {
-        const res = await fetch("/api/referrals");
-        const data = await res.json();
-        if (res.ok) setReferrals(data.referrals ?? []);
-      } catch (err) {
-        console.error("load referrals error:", err);
-      } finally {
-        setLoadingReferrals(false);
-      }
-    };
+  const loadReferrals = async () => {
+    setLoadingReferrals(true);
+    setLoadError(null);
+    try {
+      const res = await fetch("/api/referrals");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `${res.status}`);
+      setReferrals(data.referrals ?? []);
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load referrals");
+    } finally {
+      setLoadingReferrals(false);
+    }
+  };
 
-    void load();
-  }, []);
+  useEffect(() => { void loadReferrals(); }, []);
 
   const stats = useMemo(() => {
     const total = referrals.length;
@@ -679,6 +680,22 @@ export default function ReferralsPage() {
                 </div>
               </div>
             </BentoCard>
+          )}
+
+          {loadError && (
+            <div
+              className="col-span-2 md:col-span-4 lg:col-span-12 rounded-2xl px-4 py-3 text-sm text-rose-400 flex items-center gap-3"
+              style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
+            >
+              <span className="flex-1">{loadError}</span>
+              <button
+                onClick={loadReferrals}
+                className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-rose-300 hover:text-white transition-colors"
+                style={{ background: "rgba(239,68,68,0.15)" }}
+              >
+                Retry
+              </button>
+            </div>
           )}
 
           {loadingReferrals && (
