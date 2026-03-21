@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { projects } from "../data";
 import { toSlug } from "../utils";
 import type { SharedProps } from "../types";
@@ -35,7 +36,13 @@ export function WorkSection({
       }`}
     >
       <div className="px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <motion.div
+          className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+          initial={shouldReduceMotion ? {} : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <div className="max-w-2xl">
             <p
               className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
@@ -52,7 +59,7 @@ export function WorkSection({
             stylish, conversion-aware, and distinct enough to actually be
             remembered.
           </p>
-        </div>
+        </motion.div>
 
         <div className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -109,11 +116,21 @@ export function WorkSection({
           </div>
 
           <div aria-live="polite" aria-atomic="true" aria-label={`Now showing: ${currentProject.name}`} {...swipe}>
-            <ProjectCard
-              currentProject={currentProject}
-              activeProject={activeProject}
-              themeClasses={themeClasses}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProject}
+                initial={shouldReduceMotion ? {} : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={shouldReduceMotion ? {} : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+              >
+                <ProjectCard
+                  currentProject={currentProject}
+                  activeProject={activeProject}
+                  themeClasses={themeClasses}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           <ProjectDeepDive

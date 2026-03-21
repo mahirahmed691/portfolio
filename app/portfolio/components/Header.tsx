@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ThemeClasses } from "../types";
 
 export function Header({
@@ -15,6 +15,13 @@ export function Header({
   themeClasses: ThemeClasses;
 }) {
   const headerRef = useRef<HTMLElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 48);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -28,7 +35,21 @@ export function Header({
   }, [menuOpen, setMenuOpen]);
 
   return (
-    <header ref={headerRef} className={themeClasses.header}>
+    <header
+      ref={headerRef}
+      className={themeClasses.header}
+      style={{
+        transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
+        ...(scrolled
+          ? {
+              backgroundColor: isLight ? "rgba(247,243,238,0.95)" : "rgba(7,17,31,0.92)",
+              boxShadow: isLight
+                ? "0 1px 0 rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05)"
+                : "0 1px 0 rgba(255,255,255,0.07), 0 4px 16px rgba(0,0,0,0.3)",
+            }
+          : {}),
+      }}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <a
           href="#home"

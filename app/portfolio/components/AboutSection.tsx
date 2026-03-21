@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type { SharedProps } from "../types";
 import type React from "react";
 
@@ -35,21 +36,32 @@ export function AboutSection({
       <div className="px-4 pb-24 pt-16 sm:px-6 md:p-12">
         <div className="grid gap-8 md:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p
-              className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              About
-            </p>
+              <p
+                className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
+              >
+                About
+              </p>
 
-            <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
-              Platform engineer by trade. Frontend craftsman by design.
-            </h2>
+              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
+                Platform engineer by trade. Frontend craftsman by design.
+              </h2>
+            </motion.div>
 
             {/* Compact stack pills */}
             <div className="mt-8 flex flex-wrap gap-2">
-              {STACK.map((item) => (
-                <span
+              {STACK.map((item, index) => (
+                <motion.span
                   key={item.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ duration: 0.3, delay: index * 0.04, ease: "easeOut" }}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
                     isLight
                       ? "border border-slate-200 bg-white text-slate-700"
@@ -72,13 +84,17 @@ export function AboutSection({
                     />
                   )}
                   {item.label}
-                </span>
+                </motion.span>
               ))}
             </div>
           </div>
 
-          <div
+          <motion.div
             className={`space-y-6 text-base leading-8 md:text-lg ${themeClasses.muted}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           >
             <p>
               I&apos;ve spent 7 years building the platforms that keep
@@ -124,7 +140,7 @@ export function AboutSection({
                 loading="lazy"
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

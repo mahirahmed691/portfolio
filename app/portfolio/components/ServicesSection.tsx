@@ -15,7 +15,13 @@ export function ServicesSection({
       className={`relative mx-auto mt-6 max-w-7xl ${themeClasses.shell}`}
     >
       <div className="px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mb-12 max-w-2xl">
+        <motion.div
+          className="mb-12 max-w-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <p
             className={`text-sm uppercase tracking-[0.25em] ${themeClasses.label}`}
           >
@@ -24,7 +30,7 @@ export function ServicesSection({
           <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] md:text-5xl">
             Infrastructure that holds. Interfaces that land. Shipped end to end.
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {services.map((service, index) => (
