@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { services } from "../data";
 import type { SharedProps } from "../types";
+import { SectionArrow } from "./SectionArrow";
 
 export function ServicesSection({
   isLight,
@@ -57,6 +58,7 @@ export function ServicesSection({
           ))}
         </div>
       </div>
+      <SectionArrow href="#testimonials" isLight={isLight} />
     </section>
   );
 }

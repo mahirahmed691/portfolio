@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { testimonials } from "../data";
 import type { SharedProps } from "../types";
+import { SectionArrow } from "./SectionArrow";
 
 export function TestimonialsSection({
   isLight,
@@ -136,6 +137,7 @@ export function TestimonialsSection({
           </a>
         </div>
       </div>
+      <SectionArrow href="#about" isLight={isLight} />
     </section>
   );
 }

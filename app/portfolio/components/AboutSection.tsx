@@ -1,5 +1,6 @@
 import type { SharedProps } from "../types";
 import type React from "react";
+import { SectionArrow } from "./SectionArrow";
 
 // AWS SVG path (inline — not available on Simple Icons CDN)
 const AWSSvg = ({ color }: { color: string }) => (
@@ -127,6 +128,7 @@ export function AboutSection({
           </div>
         </div>
       </div>
+      <SectionArrow href="#contact" isLight={isLight} />
     </section>
   );
 }
