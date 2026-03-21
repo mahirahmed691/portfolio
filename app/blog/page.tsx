@@ -72,14 +72,14 @@ export default function BlogPage() {
             Writing
           </p>
           <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight leading-[0.95]">
-            Thoughts on design,{" "}
-            <span className="bg-gradient-to-r from-rose-300 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-              brand, and the web
+            Writing on platform engineering,{" "}
+            <span className="bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              infrastructure, and the web
             </span>
           </h1>
           <p className="mt-4 text-base text-white/45 max-w-xl">
-            Case studies and perspectives from building premium digital products
-            for founders and growing brands.
+            Practical perspectives on cloud infrastructure, developer tooling,
+            and building things that actually ship.
           </p>
         </div>
 

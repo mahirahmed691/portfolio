@@ -549,11 +549,13 @@ export function ContactSection({
                           value={form.email || ""}
                           onChange={(e) => updateField("email", e.target.value)}
                           onBlur={() => markTouched("email")}
+                          aria-describedby={emailError ? "email-error" : undefined}
+                          aria-invalid={!!emailError}
                           className={`${inputWithIcon} ${emailError ? errorClass : ""}`}
                         />
                       </InputWrap>
                       {emailError && (
-                        <p className="mt-2 text-xs text-rose-400">
+                        <p id="email-error" role="alert" className="mt-2 text-xs text-rose-400">
                           {emailError}
                         </p>
                       )}
@@ -585,11 +587,13 @@ export function ContactSection({
                             updateField("phone", normalizePhone(e.target.value))
                           }
                           onBlur={() => markTouched("phone")}
+                          aria-describedby={phoneError ? "phone-error" : undefined}
+                          aria-invalid={!!phoneError}
                           className={`${inputWithIcon} ${phoneError ? errorClass : ""}`}
                         />
                       </InputWrap>
                       {phoneError && (
-                        <p className="mt-2 text-xs text-rose-400">
+                        <p id="phone-error" role="alert" className="mt-2 text-xs text-rose-400">
                           {phoneError}
                         </p>
                       )}

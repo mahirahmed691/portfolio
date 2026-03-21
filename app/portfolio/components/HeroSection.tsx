@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import { motion } from "framer-motion";
 import { founderNotes, heroMetrics } from "../data";
 import type { SharedProps } from "../types";
@@ -189,60 +189,80 @@ export function HeroSection({
             </div>
 
             <div
-              className={`overflow-hidden rounded-[1.5rem] p-5 sm:p-6 ${isLight ? "border border-slate-200 bg-white" : "border border-white/10 bg-[linear-gradient(180deg,rgba(34,19,42,0.94),rgba(10,17,31,0.96))]"}`}
+              className={`overflow-hidden rounded-[1.5rem] p-5 sm:p-6 ${isLight ? "border border-slate-200 bg-white" : "border border-white/10 bg-[linear-gradient(180deg,rgba(6,18,40,0.97),rgba(5,10,20,0.98))]"}`}
             >
               <div
                 className={`flex items-center justify-between gap-4 border-b pb-5 ${isLight ? "border-slate-200" : "border-white/10"}`}
               >
                 <div>
-                  <p
-                    className={`text-xs uppercase tracking-[0.25em] ${themeClasses.label}`}
-                  >
-                    Signature direction
+                  <p className={`text-xs uppercase tracking-[0.25em] ${themeClasses.label}`}>
+                    Production infrastructure
                   </p>
-                  <h2 className="mt-2 text-2xl font-semibold">Sweet Dezire</h2>
+                  <h2 className="mt-2 text-2xl font-semibold">GKE Platform</h2>
                 </div>
                 <span
                   className={
                     isLight
-                      ? "rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-900"
-                      : "rounded-full border border-amber-200/20 bg-amber-200/10 px-3 py-1 text-xs text-amber-100"
+                      ? "rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs text-cyan-900"
+                      : "rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs text-cyan-300"
                   }
                 >
-                  Hospitality branding
+                  Live · GCP
                 </span>
               </div>
 
+              {/* Cluster dashboard mockup */}
               <div
-                className={`mt-6 overflow-hidden rounded-[1.35rem] ${isLight ? "border border-slate-200 bg-slate-50" : "border border-rose-200/10 bg-[#2a1320]/60"}`}
+                className={`mt-6 overflow-hidden rounded-[1.35rem] ${isLight ? "border border-slate-200 bg-slate-950" : "border border-cyan-400/10 bg-[#020c1a]"}`}
               >
-                <div className="relative">
-                  <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.28),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(244,114,182,0.2),transparent_40%)] mix-blend-screen" />
-                  <Image
-                    src="/sweetdezire.jpg"
-                    alt="Sweet Dezire hospitality brand website — custom design and build by Mahir Ahmed"
-                    width={800}
-                    height={288}
-                    className="h-52 w-full object-cover sm:h-72"
-                    priority
-                  />
+                {/* Top bar */}
+                <div className="flex items-center justify-between border-b border-white/6 px-4 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="font-mono text-[11px] text-white/40">cluster · europe-west2</span>
+                  </div>
+                  <span className="font-mono text-[10px] text-white/25">kubectl get pods</span>
                 </div>
-                <div className="space-y-4 p-5 sm:p-6">
-                  <p
-                    className={`text-sm uppercase tracking-[0.2em] ${themeClasses.label}`}
-                  >
-                    Why it matters
-                  </p>
-                  <h3 className="text-2xl font-semibold">
-                    A stronger visual identity with a smoother ordering journey.
-                  </h3>
-                  <p
-                    className={`text-sm leading-7 sm:text-base ${themeClasses.muted}`}
-                  >
-                    This concept combines rich colours, playful food-led
-                    presentation, and a clear menu structure to make the brand
-                    feel irresistible without becoming cluttered.
-                  </p>
+
+                {/* Metrics row */}
+                <div className="grid grid-cols-3 gap-px border-b border-white/6">
+                  {[
+                    { label: "Pods", value: "24/24", color: "text-emerald-400" },
+                    { label: "CPU", value: "38%", color: "text-cyan-400" },
+                    { label: "Memory", value: "61%", color: "text-violet-400" },
+                  ].map((m) => (
+                    <div key={m.label} className="bg-white/[0.02] px-4 py-3">
+                      <p className="text-[10px] uppercase tracking-widest text-white/25">{m.label}</p>
+                      <p className={`mt-1 text-lg font-semibold font-mono ${m.color}`}>{m.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pod list */}
+                <div className="space-y-0 divide-y divide-white/[0.04]">
+                  {[
+                    { name: "api-gateway", status: "Running", restarts: 0, age: "12d" },
+                    { name: "auth-service", status: "Running", restarts: 0, age: "12d" },
+                    { name: "data-processor", status: "Running", restarts: 1, age: "3d" },
+                    { name: "cache-layer", status: "Running", restarts: 0, age: "12d" },
+                  ].map((pod) => (
+                    <div key={pod.name} className="flex items-center justify-between px-4 py-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400/80 shrink-0" />
+                        <span className="font-mono text-[11px] text-white/60">{pod.name}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="font-mono text-[10px] text-white/25">{pod.restarts} restarts</span>
+                        <span className="font-mono text-[10px] text-white/35">{pod.age}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between border-t border-white/6 px-4 py-2.5">
+                  <span className="font-mono text-[10px] text-white/25">terraform managed · auto-scaling enabled</span>
+                  <span className="font-mono text-[10px] text-emerald-400/70">healthy</span>
                 </div>
               </div>
             </div>
