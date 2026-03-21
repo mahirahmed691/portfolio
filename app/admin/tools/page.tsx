@@ -88,7 +88,7 @@ const HOSTING_TIERS = {
   ],
 };
 
-const MODEL = "claude-sonnet-4-5";
+const MODEL = "claude-sonnet-4-6";
 
 function ai(body: object) {
   return fetch("/api/ai", {
@@ -159,6 +159,18 @@ function PrimaryBtn({
 function Spinner() {
   return (
     <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+  );
+}
+
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div
+      className="rounded-xl px-4 py-3 text-xs text-red-300 flex items-center gap-2"
+      style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+    >
+      <span className="shrink-0">⚠</span>
+      {message}
+    </div>
   );
 }
 
@@ -279,7 +291,7 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="e.g. A SaaS landing page for a project management tool aimed at freelancers. Focus on simplicity and speed."
           rows={3}
-          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-y"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
       </div>
@@ -356,10 +368,9 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
 
           {preview ? (
             <div
-              className="rounded-xl overflow-hidden"
+              className="rounded-xl overflow-hidden h-[260px] sm:h-[420px] lg:h-[520px]"
               style={{
                 border: "1px solid rgba(255,255,255,0.06)",
-                height: "520px",
               }}
             >
               {previewUrl ? (
@@ -436,6 +447,7 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
                     </GhostBtn>
                     <GhostBtn
                       onClick={() => {
+                        if (!window.confirm("Delete this page?")) return;
                         setSavedPages((prev) => {
                           const updated = prev.filter((p) => p.id !== page.id);
                           localStorage.setItem(
@@ -452,6 +464,21 @@ Return ONLY raw HTML. No explanation, no markdown, no backticks.`,
                   </div>
                 </div>
               ))}
+              <div
+                className="px-4 py-2.5 flex justify-end"
+                style={{ background: "rgba(0,0,0,0.15)" }}
+              >
+                <GhostBtn
+                  onClick={() => {
+                    if (!window.confirm("Clear all history?")) return;
+                    setSavedPages([]);
+                    localStorage.removeItem("mahir-tools-history");
+                  }}
+                  className="!h-7 !px-3 !text-[11px] hover:!text-red-400"
+                >
+                  Clear all
+                </GhostBtn>
+              </div>
             </div>
           )}
         </div>
@@ -474,6 +501,7 @@ function ComponentLibrary() {
   const [code, setCode] = useState("");
   const [generating, setGenerating] = useState(false);
   const [genPrompt, setGenPrompt] = useState("");
+  const [genError, setGenError] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const save = () => {
@@ -495,6 +523,7 @@ function ComponentLibrary() {
   };
 
   const remove = (id: string) => {
+    if (!window.confirm("Delete this component?")) return;
     const updated = components.filter((c) => c.id !== id);
     setComponents(updated);
     localStorage.setItem("dev_components", JSON.stringify(updated));
@@ -503,6 +532,7 @@ function ComponentLibrary() {
   const generateComponent = async () => {
     if (!genPrompt.trim()) return;
     setGenerating(true);
+    setGenError("");
     try {
       const data = await ai({
         max_tokens: 2000,
@@ -516,7 +546,7 @@ function ComponentLibrary() {
       setCode(extractText(data).trim());
       setName(genPrompt.slice(0, 40));
     } catch {
-      /* noop */
+      setGenError("Failed to generate component. Please try again.");
     } finally {
       setGenerating(false);
     }
@@ -564,6 +594,7 @@ function ComponentLibrary() {
             )}
           </GhostBtn>
         </div>
+        {genError && <ErrorBanner message={genError} />}
       </div>
 
       <div className="space-y-3">
@@ -594,7 +625,7 @@ function ComponentLibrary() {
           onChange={(e) => setCode(e.target.value)}
           placeholder="Paste your component code here…"
           rows={5}
-          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-xs text-white/80 font-mono outline-none placeholder:text-white/25 resize-none"
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-xs text-white/80 font-mono outline-none placeholder:text-white/25 resize-y"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
         <PrimaryBtn onClick={save} disabled={!name.trim() || !code.trim()}>
@@ -935,7 +966,7 @@ function ContractGenerator() {
           onChange={(e) => setProjectDesc(e.target.value)}
           placeholder="Design and develop a full-stack e-commerce site…"
           rows={3}
-          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-y"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
       </div>
@@ -1007,6 +1038,7 @@ function HostingEstimator() {
 
   return (
     <div className="space-y-5">
+      <p className="text-[10px] text-white/25">Pricing last verified Mar 2025 — confirm on provider websites before quoting clients.</p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <Label className="mb-1.5">Platform</Label>
@@ -1277,7 +1309,7 @@ function EmailCopyWriter() {
           onChange={(e) => setContext(e.target.value)}
           placeholder="e.g. Spoke to Sarah at Bloom Studio last week, she needs a new e-commerce site by Q2…"
           rows={3}
-          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-y"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
       </div>
@@ -1416,7 +1448,7 @@ function ProposalWriter() {
           onChange={(e) => setRequirements(e.target.value)}
           placeholder="e.g. Booking system, multilingual support, Stripe payments, mobile-first design…"
           rows={3}
-          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-none"
+          className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-sm text-white/85 outline-none placeholder:text-white/25 resize-y"
           style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
       </div>
@@ -1747,7 +1779,11 @@ function WebsiteAudit() {
             <GhostBtn onClick={copyReport} className="!h-8 !px-3 !text-[11px]">
               {reportCopied ? "✓ Report copied" : "Copy report"}
             </GhostBtn>
-            <GhostBtn onClick={copyPitch} className="!h-8 !px-3 !text-[11px]">
+            <GhostBtn
+              onClick={copyPitch}
+              className="!h-8 !px-3 !text-[11px]"
+              title="Copies a pre-written cold pitch email using this audit's findings — paste it straight into your email client"
+            >
               {pitchCopied ? "✓ Pitch copied" : "Use as cold outreach"}
             </GhostBtn>
           </div>
@@ -1952,6 +1988,7 @@ function LeadFollowup() {
                     </GhostBtn>
                     <GhostBtn
                       onClick={() => {
+                        if (!window.confirm("Delete this entry?")) return;
                         setHistory((prev) => {
                           const updated = prev.filter((e) => e.id !== entry.id);
                           localStorage.setItem(
@@ -1968,6 +2005,21 @@ function LeadFollowup() {
                   </div>
                 </div>
               ))}
+              <div
+                className="px-4 py-2.5 flex justify-end"
+                style={{ background: "rgba(0,0,0,0.15)" }}
+              >
+                <GhostBtn
+                  onClick={() => {
+                    if (!window.confirm("Clear all follow-up history?")) return;
+                    setHistory([]);
+                    localStorage.removeItem("mahir-followup-history");
+                  }}
+                  className="!h-7 !px-3 !text-[11px] hover:!text-red-400"
+                >
+                  Clear all
+                </GhostBtn>
+              </div>
             </div>
           )}
         </div>
@@ -2074,6 +2126,8 @@ To proceed, reply to this email or book a call at calendly.com/mahirahmed691
 — Mahir Ahmed | mahirahmed.co.uk`;
 }
 
+type QuoteEntry = { id: string; clientName: string; projectType: string; total: number; text: string; createdAt: string };
+
 function QuickQuoteGenerator() {
   const [clientName, setClientName] = useState("");
   const [projectType, setProjectType] = useState("Landing page");
@@ -2083,6 +2137,10 @@ function QuickQuoteGenerator() {
   const [depositPct, setDepositPct] = useState(50);
   const [quote, setQuote] = useState("");
   const [copied, setCopied] = useState(false);
+  const [quoteHistory, setQuoteHistory] = useState<QuoteEntry[]>(() => {
+    try { return JSON.parse(localStorage.getItem("mahir-quotes-history") || "[]"); } catch { return []; }
+  });
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const showPages = ["Multi-page website", "E-commerce"].includes(projectType);
 
@@ -2117,19 +2175,11 @@ function QuickQuoteGenerator() {
       text,
       createdAt: new Date().toISOString(),
     };
-    const prev: typeof entry[] = (() => {
-      try {
-        return JSON.parse(
-          localStorage.getItem("mahir-quotes-history") || "[]",
-        );
-      } catch {
-        return [];
-      }
-    })();
-    localStorage.setItem(
-      "mahir-quotes-history",
-      JSON.stringify([entry, ...prev].slice(0, 10)),
-    );
+    setQuoteHistory((prev) => {
+      const updated = [entry, ...prev].slice(0, 10);
+      localStorage.setItem("mahir-quotes-history", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const downloadTxt = () => {
@@ -2215,6 +2265,7 @@ function QuickQuoteGenerator() {
           >
             <option value={25}>25%</option>
             <option value={50}>50%</option>
+            <option value={100}>100% upfront</option>
           </select>
         </div>
       </div>
@@ -2324,6 +2375,65 @@ function QuickQuoteGenerator() {
           >
             {quote}
           </pre>
+        </div>
+      )}
+
+      {quoteHistory.length > 0 && (
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+        >
+          <button
+            onClick={() => setHistoryOpen((o) => !o)}
+            className="w-full flex items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/[0.02]"
+            style={{ background: "rgba(255,255,255,0.02)" }}
+          >
+            <Label>Quote history ({quoteHistory.length})</Label>
+            <span className="text-white/30 text-xs">{historyOpen ? "▲" : "▼"}</span>
+          </button>
+          {historyOpen && (
+            <div className="divide-y divide-white/[0.04]">
+              {quoteHistory.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between px-4 py-3 gap-3"
+                  style={{ background: "rgba(0,0,0,0.15)" }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white/70 truncate">{entry.clientName} · {entry.projectType}</p>
+                    <p className="text-[10px] text-white/30 mt-0.5">
+                      £{entry.total.toLocaleString()} ·{" "}
+                      {new Date(entry.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <GhostBtn onClick={() => setQuote(entry.text)} className="!h-7 !px-3 !text-[11px]">Load</GhostBtn>
+                    <GhostBtn
+                      onClick={() => {
+                        if (!window.confirm("Delete this quote?")) return;
+                        setQuoteHistory((prev) => {
+                          const updated = prev.filter((q) => q.id !== entry.id);
+                          localStorage.setItem("mahir-quotes-history", JSON.stringify(updated));
+                          return updated;
+                        });
+                      }}
+                      className="!h-7 !px-3 !text-[11px] hover:!text-red-400"
+                    >Delete</GhostBtn>
+                  </div>
+                </div>
+              ))}
+              <div className="px-4 py-2.5 flex justify-end" style={{ background: "rgba(0,0,0,0.15)" }}>
+                <GhostBtn
+                  onClick={() => {
+                    if (!window.confirm("Clear all quote history?")) return;
+                    setQuoteHistory([]);
+                    localStorage.removeItem("mahir-quotes-history");
+                  }}
+                  className="!h-7 !px-3 !text-[11px] hover:!text-red-400"
+                >Clear all</GhostBtn>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -2528,6 +2638,7 @@ const TOOLS: {
 // ── Main Page ─────────────────────────────────────────────────────
 export default function ToolsPage() {
   const [activeTool, setActiveTool] = useState<Tool>("landing");
+  const [navCollapsed, setNavCollapsed] = useState(false);
   const active = TOOLS.find((t) => t.id === activeTool)!;
 
   const renderTool = () => {
@@ -2560,8 +2671,8 @@ export default function ToolsPage() {
   };
 
   return (
-    <div className="min-h-screen text-white pb-10">
-      <div className="mx-auto max-w-[1400px] px-4 py-5 lg:px-8 lg:py-7">
+    <div className="min-h-screen text-white pb-10 overflow-x-hidden">
+      <div className="mx-auto max-w-[1400px] px-4 py-5 lg:px-8 lg:py-7 overflow-x-hidden">
         {/* Page header */}
         <div className="mb-6">
           <p className="text-[10px] uppercase tracking-[0.22em] text-white/30">Admin</p>
@@ -2571,46 +2682,90 @@ export default function ToolsPage() {
 
         <div className="flex gap-5 lg:gap-6 flex-col lg:flex-row">
           {/* ── Tool picker sidebar ── */}
-          <div className="lg:w-52 shrink-0">
-            {/* Mobile: horizontal scroll */}
-            <div
-              className="flex gap-2 overflow-x-auto pb-2 lg:hidden -mx-4 px-4"
-              style={{ scrollbarWidth: "none" }}
-            >
-              {TOOLS.map((tool) => (
-                <button
-                  key={tool.id}
-                  onClick={() => setActiveTool(tool.id)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-left transition-all active:scale-95 shrink-0"
-                  style={{
-                    background: activeTool === tool.id ? tool.accent : "rgba(255,255,255,0.03)",
-                    border: activeTool === tool.id ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.05)",
-                  }}
+          <div className={`shrink-0 transition-all duration-300 ${navCollapsed ? "lg:w-12" : "lg:w-52"}`}>
+
+            {/* Mobile: collapsible grid with toggle */}
+            <div className="lg:hidden">
+              <button
+                onClick={() => setNavCollapsed((v) => !v)}
+                className="mb-2 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-medium text-white/60 transition-colors hover:text-white/90"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <span className="flex items-center gap-2">
+                  <span>{TOOLS.find((t) => t.id === activeTool)?.icon}</span>
+                  <span>{TOOLS.find((t) => t.id === activeTool)?.label}</span>
+                </span>
+                <svg
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${navCollapsed ? "" : "rotate-180"}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
                 >
-                  <span className="text-base leading-none">{tool.icon}</span>
-                  <span className="text-xs font-medium text-white/80 whitespace-nowrap">{tool.label}</span>
-                </button>
-              ))}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {!navCollapsed && (
+                <div className="grid grid-cols-3 gap-2">
+                  {TOOLS.map((tool) => {
+                    const isActive = activeTool === tool.id;
+                    return (
+                      <button
+                        key={tool.id}
+                        onClick={() => { setActiveTool(tool.id); setNavCollapsed(true); }}
+                        className="flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-center transition-all active:scale-95"
+                        style={{
+                          background: isActive ? tool.accent : "rgba(255,255,255,0.03)",
+                          border: isActive ? "1px solid rgba(255,255,255,0.14)" : "1px solid rgba(255,255,255,0.05)",
+                        }}
+                      >
+                        <span className="text-xl leading-none">{tool.icon}</span>
+                        <span
+                          className="text-[10px] font-medium leading-tight line-clamp-2"
+                          style={{ color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.55)" }}
+                        >
+                          {tool.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {/* Desktop: vertical list */}
+            {/* Desktop: vertical list with collapse toggle */}
             <div className="hidden lg:flex flex-col gap-1">
+              {/* Collapse toggle */}
+              <button
+                onClick={() => setNavCollapsed((v) => !v)}
+                className="mb-1 flex items-center justify-center rounded-xl py-2 text-white/30 hover:text-white/70 transition-colors"
+                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}
+                title={navCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              >
+                <svg
+                  className={`h-3.5 w-3.5 transition-transform duration-300 ${navCollapsed ? "rotate-180" : ""}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
               {TOOLS.map((tool) => (
                 <button
                   key={tool.id}
                   onClick={() => setActiveTool(tool.id)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all active:scale-95 w-full"
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all active:scale-95 w-full overflow-hidden"
                   style={{
                     background: activeTool === tool.id ? tool.accent : "rgba(255,255,255,0.02)",
                     border: activeTool === tool.id ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.04)",
                     boxShadow: activeTool === tool.id ? "0 4px 16px rgba(0,0,0,0.2)" : "none",
+                    justifyContent: navCollapsed ? "center" : undefined,
                   }}
+                  title={navCollapsed ? tool.label : undefined}
                 >
                   <span className="text-lg leading-none w-5 text-center shrink-0">{tool.icon}</span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white/90 leading-tight truncate">{tool.label}</p>
-                    <p className="text-[10px] text-white/40 mt-0.5 leading-tight truncate">{tool.desc}</p>
-                  </div>
+                  {!navCollapsed && (
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-white/90 leading-tight truncate">{tool.label}</p>
+                      <p className="text-[10px] text-white/40 mt-0.5 leading-tight truncate">{tool.desc}</p>
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -2618,7 +2773,7 @@ export default function ToolsPage() {
 
           {/* ── Tool content panel ── */}
           <div
-            className="flex-1 min-w-0 rounded-2xl p-5 lg:p-7"
+            className="flex-1 min-w-0 rounded-2xl p-4 sm:p-5 lg:p-7 overflow-x-hidden"
             style={{
               background: "#0c1929",
               boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.3)",
