@@ -114,7 +114,7 @@ const COMMANDS: Record<string, (args: string[]) => Line[]> = {
     { type: "output", text: "GET IN TOUCH", color: "text-cyan-400" },
     { type: "blank" },
     { type: "output", text: "  📧  hello@mahirahmed.co.uk" },
-    { type: "output", text: "  🔗  linkedin.com/in/mahirahmed691" },
+    { type: "output", text: "  🔗  linkedin.com/in/mahir-ahmed-84a346149" },
     { type: "output", text: "  💻  github.com/mahirahmed691" },
     { type: "output", text: "  🌐  mahirahmed.co.uk" },
     { type: "blank" },

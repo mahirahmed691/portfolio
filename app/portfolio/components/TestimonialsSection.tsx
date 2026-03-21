@@ -116,7 +116,7 @@ export function TestimonialsSection({
 
         <div className="mt-10">
           <a
-            href="https://www.linkedin.com/in/mahir-ahmed691/"
+            href="https://www.linkedin.com/in/mahir-ahmed-84a346149/"
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition hover:scale-[0.98] ${

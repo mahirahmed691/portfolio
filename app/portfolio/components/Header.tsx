@@ -64,7 +64,7 @@ export function Header({
           {/* Social icons — desktop only */}
           <div className="hidden md:flex items-center gap-1.5">
             <a
-              href="https://www.linkedin.com/in/mahirahmed691"
+              href="https://www.linkedin.com/in/mahir-ahmed-84a346149"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"

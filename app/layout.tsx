@@ -78,7 +78,7 @@ const personJsonLd = {
     addressCountry: "GB",
   },
   sameAs: [
-    "https://www.linkedin.com/in/mahirahmed691",
+    "https://www.linkedin.com/in/mahir-ahmed-84a346149",
     "https://github.com/mahirahmed691",
   ],
   email: "hello@mahirahmed.co.uk",
